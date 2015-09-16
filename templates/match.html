@@ -1,0 +1,11 @@
+<template name="match">
+	<tr>
+		<td>{{prettyDate}}</td>
+		<td>{{arbitro}}</td>
+		<td>{{> team side="local"}}</td>
+		<td><h2 class="text-center">{{score1}}</h2></td>
+		<td><h2 class="text-center">{{score2}}</h2></td>
+		<td>{{> team side="visitant"}}</td>
+		<td><a href="{{pathFor route='matchDetails'}}">Details</a></td>
+	</tr>
+</template>

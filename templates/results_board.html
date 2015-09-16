@@ -1,0 +1,22 @@
+<template name="resultsBoard">
+	<div class="col-md-8 col-md-offset-2">
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<td>Date</td>
+					<td>Referee</td>
+					<td>Local</td>
+					<td>Local score</td>
+					<td>Visitant score</td>
+					<td>Visitant</td>
+					<td></td>
+				</tr>
+			</thead>
+			<tbody>
+				{{#each matches}}
+					{{> match}}
+				{{/each}}
+			</tbody>
+		</table>
+	</div>
+</template>
