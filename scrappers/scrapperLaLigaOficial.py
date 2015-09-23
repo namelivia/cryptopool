@@ -47,6 +47,7 @@ data = scripts[7].text.split('\n')[20][20:-2]
 parsedData = json.loads(data)
 newMatchesCounter = 0
 newTeamsCounter = 0
+updatedMatchesCounter = 0
 logger.info('Fetching events')
 for event in parsedData :
 	logger.debug('Fetching an event')
@@ -105,6 +106,9 @@ for event in parsedData :
 		for item in matches :
 			if (item['player1'] == match['player1'] and item['player2'] == match['player2'] and item['date'] == match['date']) :
 				duplicated = True
+				if (item['resultadohora'] != match['resultadohora']) :
+					item['resultadohora'] = match['resultadohora'];
+					updatedMatchesCounter += 1
 		if not duplicated :
 			logger.debug('Inserting a new match')
 			matches.append(match)
@@ -112,6 +116,7 @@ for event in parsedData :
 
 logger.info("{0} new teams added".format(newTeamsCounter))
 logger.info("{0} new matches added".format(newMatchesCounter))
+logger.info("{0} new matches updated".format(updatedMatchesCounter))
 logger.info("Writing the teams file")
 try:
 	with open(execPath+'/../data/teams.json', 'w') as outfile:
