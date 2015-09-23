@@ -8,4 +8,6 @@ mongoimport --host localhost:3001 --jsonArray --db meteor --collection teams tea
 mongoimport --host localhost:3001 --jsonArray --db meteor --collection matches matches.json;
 echo "=====[Fixing the database]====="
 mongo localhost:3001/meteor ../.mongoscripts/fix_match_times.js
+echo "=====[Creating indexes]====="
+mongo localhost:3001/meteor --eval "db.matches.createIndex({ date : 1 })"
 echo "=====[DONE]====="
