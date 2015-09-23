@@ -16,18 +16,15 @@ try:
 except:
 	print('Could not get the contents of teams.json')
 	matches = []
-#TODO: Borrar
-matches = []
-#FinBorrar
 page = requests.get('http://www.laliga.es/calendario-horario/')
 tree = html.fromstring(page.text)
 scripts = tree.xpath('//script')
 data = scripts[7].text.split('\n')[20][20:-2]
 parsedData = json.loads(data)
-#Listado de eventos
-#print(parsedData[350])
+newMatchesCounter = 0
+newTeamsCounter = 0
+print('Fetching data...')
 for event in parsedData :
-	print('.')
 	urlEvento = 'http://www.laliga.es/includes/ajax.php?action=ver_evento_calendario'
 	datosPeticion = {'filtro': event['url']}
 	page = requests.post(urlEvento, data=datosPeticion)
@@ -35,8 +32,6 @@ for event in parsedData :
 	partidos = tree.xpath('//div[contains(@class,"partido")]')[2:]
 	for idx,partido in enumerate(partidos):
 		match = {}
-		#print('=====[PARTIDO{0}:]=====').format(idx)
-		#print(map(etree.tostring,partido))
 		fecha = partido.xpath('.//span[@class="fecha left"]')
 		arbitro = partido.xpath('.//span[@class="arbitro last"]')
 		localDiv = partido.xpath('.//span[@class="equipo left local"]')
@@ -50,6 +45,7 @@ for event in parsedData :
 		if foundTeam is None:
 			newTeam = {'id' : len(teams)+1, 'name' : local[0].text}
 			teams.append(newTeam)
+			newTeamsCounter += 1
 			local = newTeam['id']
 		else:
 			local = foundTeam['id']
@@ -58,6 +54,7 @@ for event in parsedData :
 		if foundTeam is None:
 			newTeam = {'id' : len(teams)+1, 'name' : visitante[0].text}
 			teams.append(newTeam)
+			newTeamsCounter += 1
 			visitant = newTeam['id']
 		else:
 			visitant = foundTeam['id']
@@ -81,7 +78,10 @@ for event in parsedData :
 				duplicated = True
 		if not duplicated :
 			matches.append(match)
+			newMatchesCounter += 1
 
+print("{0} new teams added".format(newTeamsCounter))
+print("{0} new matches added".format(newMatchesCounter))
 with open('../data/teams.json', 'w') as outfile:
 	json.dump(teams, outfile)
 with open('../data/matches.json', 'w') as outfile:
