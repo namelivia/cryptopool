@@ -6,29 +6,34 @@ import requests
 import json
 import logging
 import time
+import os
+
+#set the root path
+execPath = os.path.dirname(os.path.realpath(__file__))
 
 #init logging
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("requests").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
-handler = logging.FileHandler("logs/scrapper-{0}.log".format(time.time()))
+handler = logging.FileHandler(execPath+"/logs/scrapper-{0}.log".format(int(time.time())))
 handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+
 #start scrapping
 logger.info('Scrapping the official La Liga page')
 logger.info('Loading existing teams')
 try:
-	with open('../data/teams.json') as teamsFile:    
+	with open(execPath+'/../data/teams.json') as teamsFile:    
 		teams = json.load(teamsFile)
 except:
 	logger.warning('Could not get the contents of teams.json')
 	teams = []
 logger.info('Loading exsiting matches')
 try:
-	with open('../data/matches.json') as matchesFile:    
+	with open(execPath+'/../data/matches.json') as matchesFile:    
 		matches = json.load(matchesFile)
 except:
 	logger.warning('Could not get the contents of teams.json')
@@ -109,13 +114,13 @@ logger.info("{0} new teams added".format(newTeamsCounter))
 logger.info("{0} new matches added".format(newMatchesCounter))
 logger.info("Writing the teams file")
 try:
-	with open('../data/teams.json', 'w') as outfile:
+	with open(execPath+'/../data/teams.json', 'w') as outfile:
 		json.dump(teams, outfile)
 except:
 	logger.error('Could not write the teams file',exc_info=True)
 logger.info("Writing the matches file")
 try:
-	with open('../data/matches.json', 'w') as outfile:
+	with open(execPath+'/../data/matches.json', 'w') as outfile:
 		json.dump(matches, outfile)
 except:
 	logger.error('Could not write the matches file',exc_info=True)
