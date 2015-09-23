@@ -4,18 +4,37 @@ from lxml import html
 from lxml import etree
 import requests
 import json
+import logging
+import time
+
+#init logging
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("requests").setLevel(logging.WARNING)
+logger = logging.getLogger(__name__)
+handler = logging.FileHandler("logs/scrapper-{0}.log".format(time.time()))
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+#start scrapping
+logger.info('Scrapping the official La Liga page')
+logger.info('Loading existing teams')
 try:
 	with open('../data/teams.json') as teamsFile:    
 		teams = json.load(teamsFile)
 except:
-	print('Could not get the contents of teams.json')
+	logger.warning('Could not get the contents of teams.json')
 	teams = []
+logger.info('Loading exsiting matches')
 try:
 	with open('../data/matches.json') as matchesFile:    
 		matches = json.load(matchesFile)
 except:
-	print('Could not get the contents of teams.json')
+	logger.warning('Could not get the contents of teams.json')
 	matches = []
+logger.info('Fetching information')
+logger.debug('Fetching the calendar')
 page = requests.get('http://www.laliga.es/calendario-horario/')
 tree = html.fromstring(page.text)
 scripts = tree.xpath('//script')
@@ -23,14 +42,17 @@ data = scripts[7].text.split('\n')[20][20:-2]
 parsedData = json.loads(data)
 newMatchesCounter = 0
 newTeamsCounter = 0
-print('Fetching data...')
+logger.info('Fetching events')
 for event in parsedData :
+	logger.debug('Fetching an event')
 	urlEvento = 'http://www.laliga.es/includes/ajax.php?action=ver_evento_calendario'
 	datosPeticion = {'filtro': event['url']}
 	page = requests.post(urlEvento, data=datosPeticion)
 	tree = html.fromstring(page.text)
 	partidos = tree.xpath('//div[contains(@class,"partido")]')[2:]
+	logger.debug('Fetching the matches')
 	for idx,partido in enumerate(partidos):
+		logger.debug('Fetching a match')
 		match = {}
 		fecha = partido.xpath('.//span[@class="fecha left"]')
 		arbitro = partido.xpath('.//span[@class="arbitro last"]')
@@ -43,6 +65,7 @@ for event in parsedData :
 
 		foundTeam = (next((item for item in teams if item["name"] == local[0].text), None))
 		if foundTeam is None:
+			logger.debug('Inserting a new team')
 			newTeam = {'id' : len(teams)+1, 'name' : local[0].text}
 			teams.append(newTeam)
 			newTeamsCounter += 1
@@ -52,6 +75,7 @@ for event in parsedData :
 
 		foundTeam = (next((item for item in teams if item["name"] == visitante[0].text), None))
 		if foundTeam is None:
+			logger.debug('Inserting a new team')
 			newTeam = {'id' : len(teams)+1, 'name' : visitante[0].text}
 			teams.append(newTeam)
 			newTeamsCounter += 1
@@ -77,12 +101,22 @@ for event in parsedData :
 			if (item['player1'] == match['player1'] and item['player2'] == match['player2'] and item['date'] == match['date']) :
 				duplicated = True
 		if not duplicated :
+			logger.debug('Inserting a new match')
 			matches.append(match)
 			newMatchesCounter += 1
 
-print("{0} new teams added".format(newTeamsCounter))
-print("{0} new matches added".format(newMatchesCounter))
-with open('../data/teams.json', 'w') as outfile:
-	json.dump(teams, outfile)
-with open('../data/matches.json', 'w') as outfile:
-	json.dump(matches, outfile)
+logger.info("{0} new teams added".format(newTeamsCounter))
+logger.info("{0} new matches added".format(newMatchesCounter))
+logger.info("Writing the teams file")
+try:
+	with open('../data/teams.json', 'w') as outfile:
+		json.dump(teams, outfile)
+except:
+	logger.error('Could not write the teams file',exc_info=True)
+logger.info("Writing the matches file")
+try:
+	with open('../data/matches.json', 'w') as outfile:
+		json.dump(matches, outfile)
+except:
+	logger.error('Could not write the matches file',exc_info=True)
+logger.info("Done")
