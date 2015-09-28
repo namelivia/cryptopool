@@ -108,6 +108,8 @@ for event in parsedData :
 				duplicated = True
 				if (item['resultadohora'] != match['resultadohora']) :
 					item['resultadohora'] = match['resultadohora'];
+					match['score1'] = horaResultado[0].text.split("-")[0]
+					match['score2'] = horaResultado[0].text.split("-")[1]
 					updatedMatchesCounter += 1
 		if not duplicated :
 			logger.debug('Inserting a new match')
