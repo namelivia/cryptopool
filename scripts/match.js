@@ -11,8 +11,14 @@ if (Meteor.isClient) {
 	//events
 	//helpers
 	Template.match.helpers({
-		prettyDate : function (){
+		prettyTime : function() {
 			return moment(this.date).format("HH:mm");
+		},
+		prettyDateTime : function() {
+			return moment(this.date).format("DD-MM-YYYY HH:mm");
+		},
+		upcomingMatchesContext: function() {
+			return this.context === "upcomingMatches";
 		}
 	});
 }

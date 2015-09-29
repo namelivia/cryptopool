@@ -1,13 +1,19 @@
 <template name="home">
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-md-6 col-md-offset-3">
-				<div class="text-center">
+			<div class="col-md-6 col-md-offset-3 text-center">
 					<h1>Welcome to CryptoQuiniela</h1>
 					<h2>Where you can make Quinielas using cryptocurrencies</h2>
-					<hr />
-					<a href="{{pathFor route='calendar'}}">Go to the calendar</a>
-				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2">
+					{{> nextMatches}}
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2 text-center">
+				<a href="{{pathFor route='calendar'}}">Go to the calendar</a>
 			</div>
 		</div>
 	</div>

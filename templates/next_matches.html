@@ -1,12 +1,11 @@
-<template name="resultsBoard">
+<template name="nextMatches">
+	<h3 class="text-center">Upcoming matches</h3>
 	<div class="col-md-8 col-md-offset-2">
 		<table class="table table-bordered">
 			<thead>
 				<tr>
 					<td>Time</td>
 					<td>Local</td>
-					<td>Local score</td>
-					<td>Visitant score</td>
 					<td>Visitant</td>
 					<td>Referee</td>
 					<td></td>
@@ -14,7 +13,7 @@
 			</thead>
 			<tbody>
 				{{#each matches}}
-					{{> match}}
+					{{> match upcomingMatches}}
 				{{/each}}
 			</tbody>
 		</table>
