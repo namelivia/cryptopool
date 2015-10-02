@@ -43,7 +43,7 @@ logger.debug('Fetching the calendar')
 page = requests.get('http://www.laliga.es/calendario-horario/')
 tree = html.fromstring(page.text)
 scripts = tree.xpath('//script')
-data = scripts[7].text.split('\n')[20][20:-2]
+data = scripts[8].text.split('\n')[20][20:-2]
 parsedData = json.loads(data)
 newMatchesCounter = 0
 newTeamsCounter = 0
