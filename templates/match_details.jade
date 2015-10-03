@@ -1,12 +1,15 @@
 template(name='matchDetails')
 	div(class='container-fluid')
-		div(class='row-fluid')
-			div(class='col-md-8 col-md-offset-2')
-				table(class='table table-bordered')
-					tr
-						td #{prettyDateTime}
-					tr
-						td
-							h2(class='text-center') #{score1}
-						td
-							h2(class='text-center') #{score2}
+		div(class='row')
+			h3(class='text-center') #{prettyDateTime}
+		div(class='row')
+			div(class='col-md-3 col-md-offset-1')
+				+team(side='local')
+			div(class='col-md-3')
+				h1(class='text-center') VS
+			div(class='col-md-3')
+				+team(side='visitant')
+		div(class='row')
+			h4(class='text-center') #{arbitro}
+		div(class='row')
+			+poolList(pools=pools matchId=id)

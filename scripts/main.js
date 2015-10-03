@@ -1,5 +1,6 @@
 Matches = new Mongo.Collection("matches");
 Teams = new Mongo.Collection("teams");
+Pools = new Mongo.Collection("pools");
 
 Router.configure({
 	    layoutTemplate: 'main'
@@ -12,6 +13,8 @@ if (Meteor.isClient) {
 	Meteor.subscribe("userData");
 	Meteor.subscribe("matches");
 	Meteor.subscribe("teams");
+	Meteor.subscribe("pools");
+	Meteor.subscribe("findOneMatch");
 }
 
 if (Meteor.isServer) {
@@ -28,8 +31,12 @@ if (Meteor.isServer) {
 		return Teams.find();
 	});
 
-	Meteor.publish("oneMatch", function (matchId) {
-		return Matches.findOne({id : matchId});
+	Meteor.publish("pools", function () {
+		return Pools.find();
+	});
+
+	Meteor.publish("findOneMatch", function (matchId) {
+		return Matches.find({id : matchId});
 	});
 
 	// Extending the user model

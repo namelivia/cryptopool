@@ -1,0 +1,16 @@
+template(name='poolList')
+	div(class='col-md-8 col-md-offset-2')
+		div(class='row')
+			h3 Public pools
+		div(class='row')
+			table(class='table table-bordered')
+				thead
+					tr
+						td Match Id
+						td Amount
+						td
+				tbody
+					each pools 
+						+pool
+		div(class='row text-right')
+			a(href='{{pathFor route="newPool" id=matchId}}') Create a new pool

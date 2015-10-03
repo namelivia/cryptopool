@@ -1,18 +1,7 @@
 Router.route('/match/:id', function () {
 	this.render('matchDetails', {
-		waitOn: function(){
-			return [
-				Meteor.suscribe("oneMatch",this.params.id)
-			];
-		},
 		data: function () {
-			return Matches.findOne({id : this.params.id});
-		},
-		action : function () {	
-			if (this.ready()) {
-				console.log('ready');
-				this.render();
-			}
+			return Matches.findOne({id : parseInt(this.params.id)});
 		}
 	});
 },{ name: 'matchDetails'});
@@ -23,9 +12,10 @@ if (Meteor.isClient) {
 	//helpers
 	Template.matchDetails.helpers({
 		prettyDateTime : function() {
-			console.log('data:');
-			console.log(this);
-			return 'log';
+			return moment(this.date).format("DD-MM-YYYY HH:mm");
+		},
+		pools : function(){
+			return Pools.find({match_id : this.id});
 		}
 	});
 }
