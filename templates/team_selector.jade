@@ -1,0 +1,5 @@
+template(name='teamSelector')
+	select(name='#{side}Team' class='form-control')
+	//	option(selected='true' disabled='disabled' value='')Select a #{side} team
+		each teams
+			option(value='#{id}') #{name}

@@ -28,6 +28,10 @@ if (Meteor.isServer) {
 		return Teams.find();
 	});
 
+	Meteor.publish("oneMatch", function (matchId) {
+		return Matches.findOne({id : matchId});
+	});
+
 	// Extending the user model
 	Accounts.onCreateUser(function(options, user) {
 		user.tokens = 10;

@@ -1,0 +1,14 @@
+template(name='nextMatches')
+	h3(class='text-center') Upcoming matches
+	div(class='col-md-8 col-md-offset-2')
+		table(class='table table-bordered')
+			thead
+				tr
+					td Time
+					td Local
+					td Visitant
+					td Referee
+					td
+			tbody
+				each matches
+					+match(upcomingMatches)

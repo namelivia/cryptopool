@@ -1,0 +1,18 @@
+template(name='match')
+	tr
+		if upcomingMatchesContext
+			td #{prettyDateTime}
+		else
+			td #{prettyTime}
+		td
+			+team(side='local')
+		unless upcomingMatchesContext
+			td
+				h2(class='text-center') #{score1}
+			td
+				h2(class='text-center') #{score2}
+		td 
+			+team(side='visitant')
+		td #{arbitro}
+		td
+			a(href='{{pathFor route="matchDetails" id=id}}') Details

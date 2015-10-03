@@ -97,6 +97,7 @@ for event in parsedData :
 			match['date'] = splittedDate[2]+"-"+splittedDate[1]+"-"+splittedDate[0]
 			if len(splittedDateTime) > 1 :
 				match['date'] += " "+splittedDateTime[2]+":00"
+		match['id'] = len(matches)+1
 		match['player1'] = local
 		match['player2'] = visitant
 		match['resultadohora'] = horaResultado[0].text
