@@ -3,10 +3,12 @@ template(name='newPool')
 		div(class='row')
 			div(class='col-md-6 col-md-offset-3 text-center')
 				h1 Create a new pool
+				{{log}}
 		div(class='row')
 			div(class='col-md-6 col-md-offset-3 text-center')
-				div(class="form-group")
-					label Amount
-					input(type="number")
-				button(class='btn btn-primary' type='submit' value='Create')
-					i(class='fa fa-plus') Create
+				form(class='new-pool form-inline' role='form')
+					div(class="form-group")
+						label Amount
+						input(type="number" name="amount")
+					button(class='btn btn-primary' type='submit' value='Create')
+						i(class='fa fa-plus') Create

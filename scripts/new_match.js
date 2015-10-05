@@ -1,7 +1,6 @@
 if (Meteor.isClient) {
 	//init
 	//events
-	//helpers
 	Template.newMatch.events({
 		"submit .new-match": function (event) {
 			event.preventDefault();
@@ -24,4 +23,5 @@ if (Meteor.isClient) {
 			event.target.score2.value = "";
 		}
 	});
+	//helpers
 }
