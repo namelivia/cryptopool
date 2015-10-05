@@ -3,3 +3,10 @@ template(name='poolDetails')
 		div(class='row')
 			h3(class='text-center') Pool details
 		div(class='row')
+			div(class='col-md-3 col-md-offset-1')
+				h3 Amount: #{amount}
+				h3 Status id: #{status_id}
+				h3 User count: #{userCount}
+				h3 Total amount: #{totalAmount}
+				button(class='btn btn-primary btn-success' type='submit' value='Participate')
+					i(class='fa fa-plus') Participate

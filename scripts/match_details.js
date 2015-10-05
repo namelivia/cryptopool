@@ -1,7 +1,8 @@
 Router.route('/match/:id', function () {
 	this.render('matchDetails', {
 		data: function () {
-			return Matches.findOne({id : parseInt(this.params.id)});
+			var oid = new Meteor.Collection.ObjectID(this.params.id);
+			return Matches.findOne({_id : oid});
 		}
 	});
 },{ name: 'matchDetails'});
@@ -15,7 +16,7 @@ if (Meteor.isClient) {
 			return moment(this.date).format("DD-MM-YYYY HH:mm");
 		},
 		pools : function(){
-			return Pools.find({match_id : this.id});
+			return Pools.find({match_id : this._id});
 		}
 	});
 }

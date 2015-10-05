@@ -9,7 +9,7 @@ if (Meteor.isClient) {
 			} else {
 				var teamId = Template.parentData().player2;
 			}
-			var teamData = Teams.findOne({id : parseInt(teamId)});
+			var teamData = Teams.findOne({_id : teamId});
 			return teamData.name;
 		},
 		teamLogo : function () {
@@ -18,7 +18,7 @@ if (Meteor.isClient) {
 			} else {
 				var teamId = Template.parentData().player2;
 			}
-			var teamData = Teams.findOne({id : parseInt(teamId)});
+			var teamData = Teams.findOne({_id : teamId});
 			return teamData.logo;
 		},
 	});

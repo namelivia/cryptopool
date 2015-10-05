@@ -7,9 +7,13 @@ import json
 import logging
 import time
 import os
+from pymongo import MongoClient
 
 #set the root path
 execPath = os.path.dirname(os.path.realpath(__file__))
+
+client = MongoClient('localhost',3001)
+db = client.meteor
 
 #init logging
 logging.basicConfig(level=logging.INFO)
@@ -25,19 +29,25 @@ logger.addHandler(handler)
 #start scrapping
 logger.info('Scrapping the official La Liga page')
 logger.info('Loading existing teams')
+'''
 try:
 	with open(execPath+'/../data/teams.json') as teamsFile:    
 		teams = json.load(teamsFile)
 except:
 	logger.warning('Could not get the contents of teams.json')
 	teams = []
+'''
+teams = db.teams
 logger.info('Loading exsiting matches')
+'''
 try:
 	with open(execPath+'/../data/matches.json') as matchesFile:    
 		matches = json.load(matchesFile)
 except:
 	logger.warning('Could not get the contents of teams.json')
 	matches = []
+'''
+matches = db.matches
 logger.info('Fetching information')
 logger.debug('Fetching the calendar')
 page = requests.get('http://www.laliga.es/calendario-horario/')
@@ -68,26 +78,26 @@ for event in parsedData :
 		visitante = visitanteDiv[0].xpath('.//span[@class="team"]')
 		horaResultadoDiv = partido.xpath('.//span[@class="hora_resultado left"]')
 		horaResultado = horaResultadoDiv[0].xpath('.//span[@class="horario_partido hora"]')
-
-		foundTeam = (next((item for item in teams if item["name"] == local[0].text), None))
+		
+		foundTeam = teams.find_one({"name" : local[0].text})
 		if foundTeam is None:
 			logger.debug('Inserting a new team')
-			newTeam = {'id' : len(teams)+1, 'name' : local[0].text}
-			teams.append(newTeam)
+			newTeam = {'name' : local[0].text}
+			newTeamId = teams.insert(newTeam)
 			newTeamsCounter += 1
-			local = newTeam['id']
+			local = newTeamId
 		else:
-			local = foundTeam['id']
+			local = foundTeam['_id']
 
-		foundTeam = (next((item for item in teams if item["name"] == visitante[0].text), None))
+		foundTeam = teams.find_one({"name" : visitante[0].text})
 		if foundTeam is None:
 			logger.debug('Inserting a new team')
-			newTeam = {'id' : len(teams)+1, 'name' : visitante[0].text}
-			teams.append(newTeam)
+			newTeam = {'name' : visitante[0].text}
+			newTeamId = teams.insert(newTeam)
 			newTeamsCounter += 1
-			visitant = newTeam['id']
+			visitant = newTeamId
 		else:
-			visitant = foundTeam['id']
+			visitant = foundTeam['_id']
 
 		if (len(arbitro) > 0) :
 			match['arbitro'] = arbitro[0].text
@@ -97,39 +107,29 @@ for event in parsedData :
 			match['date'] = splittedDate[2]+"-"+splittedDate[1]+"-"+splittedDate[0]
 			if len(splittedDateTime) > 1 :
 				match['date'] += " "+splittedDateTime[2]+":00"
-		match['id'] = len(matches)+1
 		match['player1'] = local
 		match['player2'] = visitant
 		match['resultadohora'] = horaResultado[0].text
 		match['score1'] = horaResultado[0].text.split("-")[0]
 		match['score2'] = horaResultado[0].text.split("-")[1]
-		duplicated = False
-		for item in matches :
-			if (item['player1'] == match['player1'] and item['player2'] == match['player2'] and item['date'] == match['date']) :
-				duplicated = True
-				if (item['resultadohora'] != match['resultadohora']) :
-					item['resultadohora'] = match['resultadohora'];
-					match['score1'] = horaResultado[0].text.split("-")[0]
-					match['score2'] = horaResultado[0].text.split("-")[1]
-					updatedMatchesCounter += 1
-		if not duplicated :
+		foundMatch = matches.find_one({
+			"player1" : match['player1'],
+			"player2" : match['player2'],
+			"date" : match['date'],
+		})
+		if foundMatch is None:
 			logger.debug('Inserting a new match')
-			matches.append(match)
+			matches.insert(match)
 			newMatchesCounter += 1
+		else : 
+			if (foundMatch['resultadohora'] != match['resultadohora']) :
+				foundMatch['resultadohora'] = match['resultadohora']
+				foundMatch['score1'] = horaResultado[0].text.split("-")[0]
+				foundMatch['score2'] = horaResultado[0].text.split("-")[1]
+				matches.update({'_id' : foundMatch['_id']}, {"$set" : foundMatch})
+				updatedMatchesCounter += 1
 
 logger.info("{0} new teams added".format(newTeamsCounter))
 logger.info("{0} new matches added".format(newMatchesCounter))
 logger.info("{0} new matches updated".format(updatedMatchesCounter))
-logger.info("Writing the teams file")
-try:
-	with open(execPath+'/../data/teams.json', 'w') as outfile:
-		json.dump(teams, outfile)
-except:
-	logger.error('Could not write the teams file',exc_info=True)
-logger.info("Writing the matches file")
-try:
-	with open(execPath+'/../data/matches.json', 'w') as outfile:
-		json.dump(matches, outfile)
-except:
-	logger.error('Could not write the matches file',exc_info=True)
 logger.info("Done")

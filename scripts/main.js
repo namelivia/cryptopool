@@ -36,7 +36,7 @@ if (Meteor.isServer) {
 	});
 
 	Meteor.publish("findOneMatch", function (matchId) {
-		return Matches.find({id : matchId});
+		return Matches.find({_id : matchId});
 	});
 
 	// Extending the user model
