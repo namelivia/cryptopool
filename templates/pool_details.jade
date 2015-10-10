@@ -8,5 +8,6 @@ template(name='poolDetails')
 				h3 Status id: #{status_id}
 				h3 User count: #{userCount}
 				h3 Total amount: #{totalAmount}
-				button(class='btn btn-primary btn-success' type='submit' value='Participate')
-					i(class='fa fa-plus') Participate
+				button(class='btn btn-primary btn-success join' value='Participate') Participate
+		div(class='row')
+			+userList(users=participants)

@@ -17,6 +17,16 @@ if (Meteor.isClient) {
 		},
 		totalAmount: function() {
 			return this.users.length*this.amount;
+		},
+		participants: function() {
+			return this.users;
+		}
+	});
+
+	Template.poolDetails.events({
+		"click .join": function (event) {
+			event.preventDefault();
+			Modal.show('confirmJoin',{ _id : this._id })
 		}
 	});
 }
