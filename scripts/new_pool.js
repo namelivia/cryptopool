@@ -23,7 +23,8 @@ if (Meteor.isClient) {
 				users : [],
 				createdAt: new Date() // current time
 			});
-
+			
+			Flash.success('Pool successfully created');
 			event.target.amount.value = "";
 		}
 	});
