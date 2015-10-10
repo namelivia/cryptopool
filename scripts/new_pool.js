@@ -24,8 +24,9 @@ if (Meteor.isClient) {
 				createdAt: new Date() // current time
 			});
 			
-			Flash.success('Pool successfully created');
 			event.target.amount.value = "";
+			Flash.success("__default__",'Pool successfully created',3000,true);
+			Router.go('matchDetails', {id : this._id._str});
 		}
 	});
 	//helpers
