@@ -1,6 +1,6 @@
-Matches = new Mongo.Collection("matches");
 Teams = new Mongo.Collection("teams");
 Pools = new Mongo.Collection("pools");
+Matches = new Mongo.Collection("matches");
 
 Router.configure({
 	    layoutTemplate: 'main'
@@ -8,13 +8,6 @@ Router.configure({
 
 if (Meteor.isClient) {
 	Session.set("searchDate", new Date());
-
-	//Suscribe to the collections
-	Meteor.subscribe("userData");
-	Meteor.subscribe("matches");
-	Meteor.subscribe("teams");
-	Meteor.subscribe("pools");
-	Meteor.subscribe("findOneMatch");
 }
 
 if (Meteor.isServer) {
@@ -23,28 +16,48 @@ if (Meteor.isServer) {
 	});
 
 	//Publish the public collections
-	Meteor.publish("matches", function () {
-		return Matches.find();
+	Meteor.publish("nextMatches", function () {
+		var nextMatches = Matches.find(
+			{date : { 
+				$gt : new Date()
+					}
+			},{limit : 5});
+		return nextMatches
+	});
+
+	Meteor.publish("matchesByDateRange", function (startDate,endDate) {
+		return Matches.find(
+				{date : { 
+							$gte : new Date(startDate),
+							$lte : new Date(endDate)
+						}
+				});
+	});
+
+	Meteor.publish("lastMatches", function () {
+		return Matches.find(
+			{date : { 
+				$lt : new Date()
+					}
+			},{ limit : 5, sort : { date: -1 }}
+		);
 	});
 
 	Meteor.publish("teams", function () {
 		return Teams.find();
 	});
 
-	Meteor.publish("pools", function () {
+	/*Meteor.publish("pools", function () {
 		return Pools.find();
-	});
-
-	Meteor.publish("findOneMatch", function (matchId) {
-		return Matches.find({_id : matchId});
-	});
+	});*/
 
 	// Extending the user model
 	Accounts.onCreateUser(function(options, user) {
 		user.tokens = 10;
 		// We still want the default hook's 'profile' behavior.
-		if (options.profile)
+		if (options.profile) {
 			user.profile = options.profile;
+		}
 		return user;
 	});
 

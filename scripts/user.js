@@ -10,8 +10,9 @@ if (Meteor.isClient) {
 	//helpers
 
 	Template.user.helpers({
-		tokens: function(){
-			return Meteor.user().tokens;
+		log: function(){
+			console.log(this);
+			return this;
 		}
 	});
 }

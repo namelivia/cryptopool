@@ -1,6 +1,14 @@
 Router.route('/', {
-		name: 'home',
-	    template: 'home'
+	name: 'home',
+	template: 'home',
+	waitOn: function() {
+		return [
+			Meteor.subscribe('teams')
+		]
+	},
+	onBeforeAction: function() {
+		this.next();
+	}
 });
 
 if (Meteor.isClient) {

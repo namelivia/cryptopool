@@ -12,4 +12,17 @@ template(name="calendar")
 							span(class="glyphicon glyphicon-calendar")
 			div(class="col-md-3")
 		div(class="row-fluid")
-			+resultsBoard(matches=matches)
+			div(class='col-md-8 col-md-offset-2')
+				table(class='table table-bordered')
+					thead
+						tr
+							td Time
+							td Local
+							td Local score
+							td Visitant score
+							td Visitant
+							td Referee
+							td
+					tbody
+						each matches
+							+match(showDate=false showScore=true showReferee=true)

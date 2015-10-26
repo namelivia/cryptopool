@@ -4,13 +4,10 @@ if (Meteor.isClient) {
 	//helpers
 	Template.match.helpers({
 		prettyTime : function() {
-			return moment(this.date).format("HH:mm");
+			return moment(Template.parentData(1).date).format("HH:mm");
 		},
 		prettyDateTime : function() {
-			return moment(this.date).format("DD-MM-YYYY HH:mm");
-		},
-		upcomingMatchesContext: function() {
-			return this.context === "upcomingMatches";
+			return moment(Template.parentData(1).date).format("DD-MM-YYYY HH:mm");
 		}
 	});
 }

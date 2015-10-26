@@ -5,8 +5,7 @@ template(name='home')
 				h1 Welcome to CryptoPool
 					h2 Where you can make pools using cryptocurrencies
 		div(class='row')
-			div(class='col-md-8 col-md-offset-2')
+			div(class='col-md-6')
+					+lastMatches
+			div(class='col-md-6')
 					+nextMatches
-		div(class='row')
-			div(class='col-md-8 col-md-offset-2 text-center')
-				a(href='{{pathFor route="calendar"}}') Go to the calendar

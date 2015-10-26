@@ -1,18 +1,19 @@
 template(name='match')
 	tr
-		if upcomingMatchesContext
+		if showDate 
 			td #{prettyDateTime}
 		else
 			td #{prettyTime}
 		td
 			+team(side='local')
-		unless upcomingMatchesContext
+		if showScore
 			td
-				h2(class='text-center') #{score1}
+				h2(class='text-center') #{../score1}
 			td
-				h2(class='text-center') #{score2}
+				h2(class='text-center') #{../score2}
 		td 
 			+team(side='visitant')
-		td #{arbitro}
+		if showReferee
+			td #{arbitro}
 		td
-			a(href='{{pathFor route="matchDetails" id=_id._str}}') Details
+			a(href='{{pathFor route="matchDetails" id=../_id._str}}') Details

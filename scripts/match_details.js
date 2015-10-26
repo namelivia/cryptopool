@@ -5,7 +5,17 @@ Router.route('/match/:id', function () {
 			return Matches.findOne({_id : oid});
 		}
 	});
-},{ name: 'matchDetails'});
+},{ 
+	name: 'matchDetails',
+	waitOn: function() {
+		return [
+			Meteor.subscribe('teams')
+		]
+	},
+	onBeforeAction: function() {
+		this.next();
+	}
+});
 
 if (Meteor.isClient) {
 	//init
