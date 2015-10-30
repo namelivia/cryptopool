@@ -10,7 +10,7 @@ if (Meteor.isClient) {
 		},
 		teamLogo : function () {
 			var teamData = Teams.findOne({_id : this.teamId});
-			return 'logos/'+teamData.tag+'.jpg';
+			return '/logos/'+teamData.tag+'.jpg';
 		},
 	});
 }
