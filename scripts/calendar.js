@@ -1,7 +1,15 @@
 Router.route('/calendar', { 
-		name: 'calendar',
-		template: 'calendar',
-	});
+	name: 'calendar',
+	template: 'calendar',
+	waitOn: function() {
+		return [
+			Meteor.subscribe('teams')
+		]
+	},
+	onBeforeAction: function() {
+		this.next();
+	}
+});
 
 if (Meteor.isClient) {
 

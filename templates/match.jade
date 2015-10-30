@@ -5,14 +5,14 @@ template(name='match')
 		else
 			td #{prettyTime}
 		td
-			+team(side='local')
+			+team(teamId=../player1)
 		if showScore
 			td
 				h2(class='text-center') #{../score1}
 			td
 				h2(class='text-center') #{../score2}
 		td 
-			+team(side='visitant')
+			+team(teamId=../player2)
 		if showReferee
 			td #{arbitro}
 		td
