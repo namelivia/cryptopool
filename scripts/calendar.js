@@ -41,6 +41,7 @@ if (Meteor.isClient) {
 	//helpers
 
 	Template.calendar.helpers({
+
 		searchDate : function (){
 			var date = Session.get('searchDate');
 			return moment(date).format('DD-MM-YYYY');
@@ -48,12 +49,25 @@ if (Meteor.isClient) {
 		matches : function(){
 			var startDate = Session.get('searchDate').setHours(0,0,0,0);
 			var endDate = Session.get('searchDate').setHours(23,59,59,999);
-			return Matches.find(
-					{date : { 
-								$gte : new Date(startDate),
-								$lte : new Date(endDate)
-							}
-					});
+			var matches = Matches.find(
+							{date : { 
+										$gte : new Date(startDate),
+										$lte : new Date(endDate)
+									}
+							});
+			return matches;
+		},
+		noMatches : function(){
+			var startDate = Session.get('searchDate').setHours(0,0,0,0);
+			var endDate = Session.get('searchDate').setHours(23,59,59,999);
+			var matches = Matches.find(
+							{date : { 
+										$gte : new Date(startDate),
+										$lte : new Date(endDate)
+									}
+							});
+			return matches.count() === 0;
 		}
+
 	});
 }

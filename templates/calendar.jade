@@ -13,16 +13,19 @@ template(name="calendar")
 			div(class="col-md-3")
 		div(class="row-fluid")
 			div(class='col-md-8 col-md-offset-2')
-				table(class='table table-bordered')
-					thead
-						tr
-							td Time
-							td Local
-							td Local score
-							td Visitant score
-							td Visitant
-							td Referee
-							td
-					tbody
-						each matches
-							+match(showDate=false showScore=true showReferee=true)
+				if noMatches
+					p There are no matches for the selected day
+				else
+					table(class='table table-bordered')
+						thead
+							tr
+								td Time
+								td Local
+								td Local score
+								td Visitant score
+								td Visitant
+								td Referee
+								td
+						tbody
+							each matches
+								+match(showDate=false showScore=true showReferee=true)

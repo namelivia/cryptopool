@@ -8,12 +8,12 @@ Router.route('/match/:id', function () {
 },{ 
 	name: 'matchDetails',
 	waitOn: function() {
+		var oid = new Meteor.Collection.ObjectID(this.params.id);
 		return [
-			Meteor.subscribe('teams')
+			Meteor.subscribe('teams'),
+			Meteor.subscribe('poolsByMatchId',oid),
+			Meteor.subscribe('matchById',oid)
 		]
-	},
-	onBeforeAction: function() {
-		this.next();
 	}
 });
 

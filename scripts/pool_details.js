@@ -5,7 +5,15 @@ Router.route('/match/:matchId/pool/:id', function () {
 			return Pools.findOne({_id : oid});
 		}
 	});
-},{ name: 'poolDetails'});
+},{ 
+	name: 'poolDetails',
+	waitOn: function() {
+		var oid = new Meteor.Collection.ObjectID(this.params.id);
+		return [
+			Meteor.subscribe('poolById',oid)
+		]
+	}
+});
 
 if (Meteor.isClient) {
 	//init

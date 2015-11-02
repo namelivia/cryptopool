@@ -34,6 +34,18 @@ if (Meteor.isServer) {
 				});
 	});
 
+	Meteor.publish("poolsByMatchId", function (matchId) {
+		return Pools.find({match_id : matchId});
+	});
+
+	Meteor.publish("matchById", function (matchId) {
+		return Matches.find({_id : matchId});
+	});
+
+	Meteor.publish("poolById", function (poolId) {
+		return Pools.find({_id : poolId});
+	});
+
 	Meteor.publish("lastMatches", function () {
 		return Matches.find(
 			{date : { 
@@ -46,10 +58,6 @@ if (Meteor.isServer) {
 	Meteor.publish("teams", function () {
 		return Teams.find();
 	});
-
-	/*Meteor.publish("pools", function () {
-		return Pools.find();
-	});*/
 
 	// Extending the user model
 	Accounts.onCreateUser(function(options, user) {
