@@ -28,6 +28,12 @@ if (Meteor.isClient) {
 		},
 		participants: function() {
 			return this.users;
+		},
+		userAlreadyIn: function() {
+			return _.includes(this.users,Meteor.user()._id);
+		},
+		bitcoinAddress: function() {
+			return Meteor.call(makeBitcoinAddress);
 		}
 	});
 

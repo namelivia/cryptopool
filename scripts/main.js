@@ -15,6 +15,17 @@ if (Meteor.isServer) {
 		// code to run on server at startup
 	});
 
+	Meteor.methods({
+		makeBitcoinAddress: function () {
+			try {
+				var privKey = bitcoinjs.ECKey.makeRandom();
+				return {privKey: privKey.toWIF()};
+			} catch (e) {
+				throw Meteor.Error('some-error', 'Bad things happened.');
+			}
+		}
+	});
+
 	//Publish the public collections
 	Meteor.publish("nextMatches", function () {
 		var nextMatches = Matches.find(
