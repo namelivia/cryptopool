@@ -3,16 +3,12 @@ if (Meteor.isClient) {
 	//events
 	//helpers
 	Template.confirmJoin.events({
-		"click .confirm": function (event) {
+		"submit .join-pool": function (event) {
 			event.preventDefault();
-			Modal.show('confirmJoin')
-			Pools.update(
-				{ _id: this._id },
-				{ $push: { users: Meteor.user()._id } }
-			);
-			var key = bitcoinjs.ECKey.makeRandom();
-			console.log(key.toWIF());    
-			console.log(key.pub.getAddress().toString());
+			var localScore = parseInt(event.target.localScore.value);
+			var visitantScore = parseInt(event.target.visitantScore.value);
+			Meteor.call('joinPool',this._id,localScore,visitantScore);
+			Modal.hide();
 			Flash.success("__default__",'You have joined the pool',3000,true);
 		}
 	});

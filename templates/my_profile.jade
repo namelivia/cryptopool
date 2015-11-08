@@ -1,0 +1,23 @@
+template(name='myProfile')
+	h3(class='text-center') My profile
+	h2 User info
+	table(class='table table-bordered')
+		thead
+			tr
+				td Username 
+				td Email 
+				td Tokens
+		tbody
+			tr
+				td #{userUsername}
+				td #{userEmail}
+				td #{userTokens}
+	h2 Pool history
+	table(class='table table-bordered')
+		thead
+			tr
+				td poolId
+		tbody
+			each poolHistory
+				tr
+					td #{_str}

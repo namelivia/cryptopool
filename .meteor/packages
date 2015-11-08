@@ -4,7 +4,6 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-insecure
 mizzao:bootstrap-3
 fortawesome:fontawesome
 reactive-var
@@ -26,7 +25,6 @@ ejson
 spacebars
 check
 accounts-password
-ian:accounts-ui-bootstrap-3
 underscore
 mquandalle:jade
 naxio:flash
@@ -35,3 +33,6 @@ peerlibrary:reactive-publish
 erasaur:meteor-lodash
 ca333:bitcoinjs
 steeve:jquery-qrcode
+useraccounts:core
+useraccounts:bootstrap
+useraccounts:iron-routing

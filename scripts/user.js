@@ -1,8 +1,3 @@
-Router.route('/user', { 
-		name: 'user',
-		template: 'user',
-	});
-
 if (Meteor.isClient) {
 
 	//init
@@ -10,9 +5,14 @@ if (Meteor.isClient) {
 	//helpers
 
 	Template.user.helpers({
-		log: function(){
-			console.log(this);
-			return this;
+		userId: function(){
+			return this._id;
+		},
+		localScore: function(){
+			return this.localScore;
+		},
+		visitantScore: function(){
+			return this.visitantScore;
 		}
 	});
 }

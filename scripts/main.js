@@ -1,9 +1,15 @@
+/*
+==GENERATE A WALLET, I'M NOT USING THIS ATM==
+var keyPair = bitcoinjs.ECKey.makeRandom();
+var privKey = keyPair.toWIF();
+var pubKey = keyPair.pub.getAddress();
+*/
 Teams = new Mongo.Collection("teams");
 Pools = new Mongo.Collection("pools");
 Matches = new Mongo.Collection("matches");
 
 Router.configure({
-	    layoutTemplate: 'main'
+	layoutTemplate: 'main',
 });
 
 if (Meteor.isClient) {
@@ -16,14 +22,38 @@ if (Meteor.isServer) {
 	});
 
 	Meteor.methods({
-		makeBitcoinAddress: function () {
-			try {
-				var privKey = bitcoinjs.ECKey.makeRandom();
-				return {privKey: privKey.toWIF()};
-			} catch (e) {
-				throw Meteor.Error('some-error', 'Bad things happened.');
+		'joinPool': function (poolId,localScore,visitantScore) {
+			var pool = Pools.findOne({
+				_id: poolId
+			});
+			if (Meteor.user().tokens >= pool.amount) {
+				var userTokensLeft = Meteor.user().tokens - pool.amount;
+				var user = {
+					'_id' : Meteor.user()._id,
+					'localScore' : localScore,
+					'visitantScore' : visitantScore,
+				}
+				Pools.update(
+					{ _id: poolId },
+					{ $push: { users: user} });
+				Meteor.users.update(
+					{ _id: Meteor.user()._id },
+					{ $set: { tokens: userTokensLeft}, $push: {poolHistory: poolId} });
 			}
-		}
+		},
+		'createPool': function(amount,matchId){
+			Pools.insert({
+				_id: new Mongo.ObjectID(),
+				amount: amount,
+				match_id: matchId,
+				status_id : 3,
+				users : [],
+				createdAt: new Date() // current time
+			});
+		},
+		'userExists': function(username){
+			return !!Meteor.users.findOne({username : username});
+		},
 	});
 
 	//Publish the public collections
@@ -70,22 +100,18 @@ if (Meteor.isServer) {
 		return Teams.find();
 	});
 
-	// Extending the user model
+	Meteor.publish("userData", function () {
+		return Meteor.users.find({_id: this.userId},
+			{fields: {'tokens': 1, 'poolHistory': 1}});
+	});
+
 	Accounts.onCreateUser(function(options, user) {
 		user.tokens = 10;
+		user.poolHistory = [];
 		// We still want the default hook's 'profile' behavior.
 		if (options.profile) {
 			user.profile = options.profile;
 		}
 		return user;
-	});
-
-	Meteor.publish("userData", function () {
-		if (this.userId) {
-			return Meteor.users.find({_id: this.userId},
-					{fields: {'tokens': 1}});
-		} else {
-			this.ready();
-		}
 	});
 }

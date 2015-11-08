@@ -4,8 +4,23 @@ template(name='confirmJoin')
 			div(class='modal-content')
 				div(class='modal-header')
 					h4(class='modal-title') Participate in the pool
-				div(class='modal-body')
-					span You are about to participate in this pool, are you sure?
-				div(class='modal-footer')
-					button(type='button' class='btn btn-default' data-dismiss='modal') Cancel
-					button(type='button' class='btn btn-success confirm' data-dismiss='modal') Participate
+				form(class="join-pool" role="form")
+					div(class='modal-body')
+						div(class='row')
+							div(class='col-md-3')
+								label Local score
+							div(class='col-md-3')
+								input(type='number' name='localScore')
+						div(class='row')
+							div(class='col-md-3')
+								label Visitant score
+							div(class='col-md-3')
+								input(type='number' name='visitantScore')
+						div(class='row')
+							div(class='col-md-12')
+								span You are about to participate in this pool, are you sure?
+					div(class='modal-footer')
+						button(type='button' class='btn btn-default' data-dismiss='modal') Cancel
+						button(type='submit' class='btn btn-success test'
+						value='Participate')
+							i(class='fa fa-plus') Participate

@@ -16,7 +16,7 @@ template(name='navbar')
 					li(class='active')
 						a(href='{{pathFor route="calendar"}}') Calendar
 					li
-						a(href='{{pathFor route="user"}}') Profile
+						a(href='{{pathFor route="myProfile"}}') Profile
 				ul(class='nav navbar-nav navbar-right')
-					+loginButtons
+					+atNavButton
 	{{flash}}

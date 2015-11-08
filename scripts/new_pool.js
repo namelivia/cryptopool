@@ -14,16 +14,7 @@ if (Meteor.isClient) {
 		"submit .new-pool": function (event) {
 			event.preventDefault();
 			var amount = parseInt(event.target.amount.value);
-
-			Pools.insert({
-				_id: new Mongo.ObjectID(),
-				amount: amount,
-				match_id: this._id,
-				status_id : 3,
-				users : [],
-				createdAt: new Date() // current time
-			});
-			
+			Meteor.call('createPool',amount,this._id);
 			event.target.amount.value = "";
 			Flash.success("__default__",'Pool successfully created',3000,true);
 			Router.go('matchDetails', {id : this._id._str});
