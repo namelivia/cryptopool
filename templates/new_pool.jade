@@ -1,13 +1,17 @@
 template(name='newPool')
-	div(class='container-fluid')
-		div(class='row')
-			div(class='col-md-6 col-md-offset-3 text-center')
-				h1 Create a new pool
-		div(class='row')
-			div(class='col-md-6 col-md-offset-3 text-center')
-				form(class='new-pool form-inline' role='form')
-					div(class="form-group")
-						label Amount
-						input(type="number" name="amount")
-					button(class='btn btn-primary' type='submit' value='Create')
-						i(class='fa fa-plus') Create
+	div(class='modal fade')
+		div(class='modal-dialog')
+			form(class='new-pool form-inline' role='form')
+				div(class='modal-content')
+					div(class='modal-header')
+						h4(class='modal-title') Create a new pool
+					div(class='modal-body')
+						div(class='container-fluid')
+							div(class='row')
+								div(class='col-md-6 col-md-offset-3 text-center')
+									div(class="form-group")
+										label Amount
+										input(type="number" name="amount")
+					div(class='modal-footer')
+						button(class='btn btn-primary' type='submit' value='Create')
+							i(class='fa fa-plus') Create

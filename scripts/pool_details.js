@@ -18,6 +18,12 @@ Router.route('/match/:matchId/pool/:id', function () {
 if (Meteor.isClient) {
 	//init
 	//events
+	Template.poolDetails.events({
+		"click .join": function (event) {
+			event.preventDefault();
+			Modal.show('confirmJoin',{ _id : this._id })
+		}
+	});
 	//helpers
 	Template.poolDetails.helpers({
 		userCount : function() {
@@ -34,12 +40,5 @@ if (Meteor.isClient) {
 				return user._id;
 			}),Meteor.user()._id);
 		},
-	});
-
-	Template.poolDetails.events({
-		"click .join": function (event) {
-			event.preventDefault();
-			Modal.show('confirmJoin',{ _id : this._id })
-		}
 	});
 }
