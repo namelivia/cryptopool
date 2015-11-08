@@ -36,3 +36,4 @@ steeve:jquery-qrcode
 useraccounts:core
 useraccounts:bootstrap
 useraccounts:iron-routing
+dburles:collection-helpers

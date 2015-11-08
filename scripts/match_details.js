@@ -27,6 +27,12 @@ if (Meteor.isClient) {
 		},
 		pools : function(){
 			return Pools.find({match_id : this._id});
+		},
+		local : function(){
+			return this.local();
+		},
+		visitant : function(){
+			return this.visitant();
 		}
 	});
 }

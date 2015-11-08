@@ -5,12 +5,10 @@ if (Meteor.isClient) {
 	//helpers
 	Template.team.helpers({
 		teamName : function () {
-			var teamData = Teams.findOne({_id : this.teamId});
-			return teamData.name;
+			return this.team.name;
 		},
 		teamLogo : function () {
-			var teamData = Teams.findOne({_id : this.teamId});
-			return '/logos/'+teamData.tag+'.jpg';
+			return '/logos/'+this.team.tag+'.jpg';
 		},
 	});
 }

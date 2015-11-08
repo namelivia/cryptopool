@@ -4,9 +4,9 @@ var keyPair = bitcoinjs.ECKey.makeRandom();
 var privKey = keyPair.toWIF();
 var pubKey = keyPair.pub.getAddress();
 */
-Teams = new Mongo.Collection("teams");
+//Teams = new Mongo.Collection("teams");
 Pools = new Mongo.Collection("pools");
-Matches = new Mongo.Collection("matches");
+//Matches = new Mongo.Collection("matches");
 
 Router.configure({
 	layoutTemplate: 'main',
