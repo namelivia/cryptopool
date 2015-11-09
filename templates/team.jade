@@ -1,4 +1,5 @@
 template(name='team')
 	div(class='thumbnail')
-		img(src='#{teamLogo}' width='#{imageSize}' height='#{imageSize}' alt='#{teamName}')
-		p(class='text-center') #{teamName}
+		a(href='{{pathFor route="teamDetails" id=this.team._id._str}}')
+			img(src='#{teamLogo}' width='#{imageSize}' height='#{imageSize}' alt='#{teamName}')
+			p(class='text-center') #{teamName}
