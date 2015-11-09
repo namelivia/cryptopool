@@ -13,9 +13,7 @@ template(name="calendar")
 			div(class="col-md-3")
 		div(class="row-fluid")
 			div(class='col-md-8 col-md-offset-2')
-				if noMatches
-					p There are no matches for the selected day
-				else
+				if matches.count
 					table(class='table table-bordered')
 						thead
 							tr
@@ -28,4 +26,6 @@ template(name="calendar")
 								td
 						tbody
 							each matches
-								+match(showDate=false showScore=true showReferee=true)
+								+match(match=this showDate=false showScore=true showReferee=true)
+				else
+					p There are no matches for the selected day

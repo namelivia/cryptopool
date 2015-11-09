@@ -4,8 +4,8 @@ template(name='poolDetails')
 			h3(class='text-center') Pool details
 		div(class='row')
 			div(class='col-md-3 col-md-offset-1')
-				h3 Amount: #{amount}
-				h3 Status id: #{status_id}
+				h3 Amount: #{pool.amount}
+				h3 Status id: #{pool.status_id}
 				h3 User count: #{userCount}
 				h3 Total amount: #{totalAmount}
 				if userAlreadyIn
@@ -14,4 +14,7 @@ template(name='poolDetails')
 				else
 					button(class='btn btn-primary btn-success join' value='Participate') Participate
 		div(class='row')
-			+userList(users=participants)
+			if participants.length
+				+userList(users=participants)
+			else
+				p There are no participants in this pool yet

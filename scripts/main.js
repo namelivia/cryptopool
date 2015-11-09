@@ -89,7 +89,7 @@ if (Meteor.isServer) {
 		var userIds = _.map(pool.users,function(user){
 			return user._id;
 		});
-		return Meteor.users.find({ _id: {$in: userIds } });
+		return Meteor.users.find({ _id: {$in: userIds }},{fields: {'username': 1}});
 	});
 
 	Meteor.publish("lastMatches", function () {

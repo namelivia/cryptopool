@@ -56,17 +56,6 @@ if (Meteor.isClient) {
 									}
 							});
 			return matches;
-		},
-		noMatches : function(){
-			var startDate = Session.get('searchDate').setHours(0,0,0,0);
-			var endDate = Session.get('searchDate').setHours(23,59,59,999);
-			var matches = Matches.find(
-							{date : { 
-										$gte : new Date(startDate),
-										$lte : new Date(endDate)
-									}
-							});
-			return matches.count() === 0;
 		}
 
 	});

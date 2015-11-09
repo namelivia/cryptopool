@@ -20,6 +20,12 @@ Router.route('/match/:id', function () {
 if (Meteor.isClient) {
 	//init
 	//events
+	Template.matchDetails.events({
+		"click .new_pool": function (event) {
+			event.preventDefault();
+			Modal.show('newPool',{ matchId : this._id})
+		}
+	});
 	//helpers
 	Template.matchDetails.helpers({
 		prettyDateTime : function() {

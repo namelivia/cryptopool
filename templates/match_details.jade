@@ -12,4 +12,9 @@ template(name='matchDetails')
 		div(class='row')
 			h4(class='text-center') #{arbitro}
 		div(class='row')
-			+poolList(pools=pools matchId=_id)
+			if pools.count
+				+poolList(pools=pools)
+			else
+				p There are no pools yet for this match
+		div(class='row text-right')
+			button(class='btn btn-primary btn-success new_pool' value='Create a new pool') Create a new pool

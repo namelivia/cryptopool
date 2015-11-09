@@ -1,14 +1,17 @@
 template(name='lastMatches')
 	h3(class='text-center') Last matches
-	table(class='table table-bordered')
-		thead
-			tr
-				td Time
-				td Local
-				td Local score
-				td Visitant score
-				td Visitant
-				td
-		tbody
-			each matches
-				+match(match=this showDate=true showScore=true showReferee=false)
+	if matches.count
+		table(class='table table-bordered')
+			thead
+				tr
+					td Time
+					td Local
+					td Local score
+					td Visitant score
+					td Visitant
+					td
+			tbody
+				each matches
+					+match(match=this showDate=true showScore=true showReferee=false)
+	else
+		p There are no last matches

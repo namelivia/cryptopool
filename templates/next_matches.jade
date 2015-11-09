@@ -1,12 +1,15 @@
 template(name='nextMatches')
 	h3(class='text-center') Upcoming matches
-	table(class='table table-bordered')
-		thead
-			tr
-				td Time
-				td Local
-				td Visitant
-				td
-		tbody
-			each matches
-				+match(match=this showDate=true showScore=false showReferee=false)
+	if matches.count
+		table(class='table table-bordered')
+			thead
+				tr
+					td Time
+					td Local
+					td Visitant
+					td
+			tbody
+				each matches
+					+match(match=this showDate=true showScore=false showReferee=false)
+	else
+		p There are no upcoming matches
