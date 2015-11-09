@@ -80,6 +80,10 @@ if (Meteor.isServer) {
 		return Matches.find({_id : matchId});
 	});
 
+	Meteor.publish("teamById", function (teamId) {
+		return Teams.find({_id : teamId});
+	});
+
 	Meteor.publish("poolById", function (poolId) {
 		return Pools.find({_id : poolId});
 	});

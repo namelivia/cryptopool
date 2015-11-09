@@ -1,5 +1,6 @@
 template(name='teamDetails')
 	div(class='container-fluid')
 		div(class='row')
-			h1(class='text-center') Team Details
-			#{log}
+			h1(class='text-center') #{teamName}
+		div(class='row text-center')
+			img(src='#{teamLogo}' width='#{imageSize}' height='#{imageSize}' alt='#{teamName}')

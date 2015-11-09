@@ -8,12 +8,10 @@ Router.route('/team/:id', function () {
 },{ 
 	name: 'teamDetails',
 	waitOn: function() {
-		/*var oid = new Meteor.Collection.ObjectID(this.params.id);
+		var oid = new Meteor.Collection.ObjectID(this.params.id);
 		return [
-			Meteor.subscribe('teams'),
-			Meteor.subscribe('poolsByMatchId',oid),
-			Meteor.subscribe('matchById',oid)
-		]*/
+			Meteor.subscribe('teamById',oid)
+		]
 	}
 });
 
@@ -22,9 +20,11 @@ if (Meteor.isClient) {
 	//events
 	//helpers
 	Template.teamDetails.helpers({
-		log : function() {
-			console.log(this);
-			return 'foo';
-		}
+		teamName : function() {
+			return this.name;
+		},
+		teamLogo : function () {
+			return '/logos/'+this.tag+'.jpg';
+		},
 	});
 }
