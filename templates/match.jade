@@ -5,15 +5,15 @@ template(name='match')
 		else
 			td #{prettyTime}
 		td
-			+team(teamId=../player1 imageSize=50)
+			+team(team=local imageSize=50)
 		if showScore
 			td
-				h2(class='text-center') #{../score1}
+				h2(class='text-center') #{score1}
 			td
-				h2(class='text-center') #{../score2}
+				h2(class='text-center') #{score2}
 		td 
-			+team(teamId=../player2 imageSize=50)
+			+team(team=visitant imageSize=50)
 		if showReferee
 			td #{arbitro}
 		td
-			a(href='{{pathFor route="matchDetails" id=../_id._str}}') Details
+			a(href='{{pathFor route="matchDetails" id=match._id._str}}') Details

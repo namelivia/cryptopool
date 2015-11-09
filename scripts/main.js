@@ -19,6 +19,7 @@ if (Meteor.isServer) {
 
 	Meteor.methods({
 		'joinPool': function (poolId,localScore,visitantScore) {
+			console.log(poolId);
 			var pool = Pools.findOne({
 				_id: poolId
 			});

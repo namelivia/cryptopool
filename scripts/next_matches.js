@@ -5,13 +5,12 @@ if (Meteor.isClient) {
 	//helpers
 	Template.nextMatches.helpers({
 		matches: function() {
-			var test = Matches.find(
+			return Matches.find(
 				{date : { 
 					$gte : new Date()
 						}
 				},{limit : 5}
-			);
-			return test;
+			)
 		}
 	});
 }

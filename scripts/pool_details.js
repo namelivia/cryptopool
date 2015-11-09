@@ -27,7 +27,7 @@ if (Meteor.isClient) {
 	Template.poolDetails.events({
 		"click .join": function (event) {
 			event.preventDefault();
-			Modal.show('confirmJoin',{ _id : this._id })
+			Modal.show('confirmJoin',{ _id : this.pool._id })
 		}
 	});
 	//helpers
