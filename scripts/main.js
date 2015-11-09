@@ -4,10 +4,6 @@ var keyPair = bitcoinjs.ECKey.makeRandom();
 var privKey = keyPair.toWIF();
 var pubKey = keyPair.pub.getAddress();
 */
-//Teams = new Mongo.Collection("teams");
-Pools = new Mongo.Collection("pools");
-//Matches = new Mongo.Collection("matches");
-
 Router.configure({
 	layoutTemplate: 'main',
 });
@@ -85,6 +81,14 @@ if (Meteor.isServer) {
 
 	Meteor.publish("poolById", function (poolId) {
 		return Pools.find({_id : poolId});
+	});
+
+	Meteor.publish('usersByPoolId', function (poolId) {
+		var pool = Pools.findOne({ _id : poolId });
+		var userIds = _.map(pool.users,function(user){
+			return user._id;
+		});
+		return Meteor.users.find({ _id: {$in: userIds } });
 	});
 
 	Meteor.publish("lastMatches", function () {

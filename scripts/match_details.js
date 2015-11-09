@@ -26,7 +26,7 @@ if (Meteor.isClient) {
 			return moment(this.date).format("DD-MM-YYYY HH:mm");
 		},
 		pools : function(){
-			return Pools.find({match_id : this._id});
+			return this.pools();
 		},
 		local : function(){
 			return this.local();

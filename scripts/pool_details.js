@@ -2,7 +2,12 @@ Router.route('/match/:matchId/pool/:id', function () {
 	this.render('poolDetails', {
 		data: function () {
 			var oid = new Meteor.Collection.ObjectID(this.params.id);
-			return Pools.findOne({_id : oid});
+			var pool = Pools.findOne({_id : oid});
+			var users = Meteor.users.find();
+			return {
+				pool : pool,
+				users : users
+			};
 		}
 	});
 },{ 
@@ -10,7 +15,8 @@ Router.route('/match/:matchId/pool/:id', function () {
 	waitOn: function() {
 		var oid = new Meteor.Collection.ObjectID(this.params.id);
 		return [
-			Meteor.subscribe('poolById',oid)
+			Meteor.subscribe('poolById',oid),
+			Meteor.subscribe('usersByPoolId',oid)
 		]
 	}
 });
@@ -27,16 +33,21 @@ if (Meteor.isClient) {
 	//helpers
 	Template.poolDetails.helpers({
 		userCount : function() {
-			return this.users.length;
+			return this.pool.users.length;
 		},
 		totalAmount: function() {
-			return this.users.length*this.amount;
+			return this.pool.users.length*this.pool.amount;
 		},
 		participants: function() {
-			return this.users;
+			return _.map(this.pool.users, function(user){
+				var userData = Meteor.users.findOne({
+					_id : user._id
+				});
+				return _.merge(user,userData);
+			});
 		},
 		userAlreadyIn: function() {
-			return _.includes(_.map(this.users,function(user){
+			return _.includes(_.map(this.pool.users,function(user){
 				return user._id;
 			}),Meteor.user()._id);
 		},
