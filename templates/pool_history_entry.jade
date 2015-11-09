@@ -1,0 +1,6 @@
+template(name='poolHistoryEntry')
+	tr
+		td #{poolId}
+		td #{matchId}
+		td
+			a(href='{{pathFor route="poolDetails" matchId=matchId id=poolId}}') Details

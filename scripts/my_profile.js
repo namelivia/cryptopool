@@ -2,7 +2,8 @@ Router.route('/my_profile', {
 	name: 'myProfile',
 	waitOn: function() {
 		return [
-			Meteor.subscribe('userData')
+			Meteor.subscribe('userData'),
+			Meteor.subscribe('poolsByUserId')
 		]
 	}
 });
@@ -24,7 +25,7 @@ if (Meteor.isClient) {
 			return Meteor.user().username;
 		},
 		poolHistory: function(){
-			return Meteor.user().poolHistory;
+			return Pools.find();
 		},
 	});
 }

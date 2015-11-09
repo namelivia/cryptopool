@@ -13,14 +13,14 @@ template(name='myProfile')
 				td #{userEmail}
 				td #{userTokens}
 	h2 Pool history
-	if poolHistory.length
+	if poolHistory.count
 		table(class='table table-bordered')
 			thead
 				tr
 					td poolId
+					td matchId
 			tbody
 				each poolHistory
-					tr
-						td #{_str}
+					+poolHistoryEntry(pool=this)
 	else
 		p The user has not participated in any pool yet

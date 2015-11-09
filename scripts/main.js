@@ -92,6 +92,11 @@ if (Meteor.isServer) {
 		return Meteor.users.find({ _id: {$in: userIds }},{fields: {'username': 1}});
 	});
 
+	Meteor.publish('poolsByUserId', function () {
+		var user = Meteor.users.findOne({ _id : this.userId });
+		return Pools.find({ _id: {$in: user.poolHistory}});
+	});
+
 	Meteor.publish("lastMatches", function () {
 		return Matches.find(
 			{date : { 
