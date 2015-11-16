@@ -20,7 +20,7 @@ db = client.meteor
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("requests").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
-handler = logging.FileHandler(execPath+"/logs/scrapper-{0}.log".format(int(time.time())))
+handler = logging.FileHandler(execPath+"/logs/scrapperLaLigaOficial-{0}.log".format(int(time.time())))
 handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
@@ -28,26 +28,10 @@ logger.addHandler(handler)
 
 
 #start scrapping
-logger.info('Scrapping the official La Liga page')
+logger.info('Scrapping the 20 minutos page')
 logger.info('Loading existing teams')
-'''
-try:
-	with open(execPath+'/../data/teams.json') as teamsFile:    
-		teams = json.load(teamsFile)
-except:
-	logger.warning('Could not get the contents of teams.json')
-	teams = []
-'''
 teams = db.teams
 logger.info('Loading exsiting matches')
-'''
-try:
-	with open(execPath+'/../data/matches.json') as matchesFile:    
-		matches = json.load(matchesFile)
-except:
-	logger.warning('Could not get the contents of teams.json')
-	matches = []
-'''
 matches = db.matches
 logger.info('Fetching information')
 logger.debug('Fetching the calendar')
@@ -83,7 +67,7 @@ for event in parsedData :
 		foundTeam = teams.find_one({"name" : local[0].text})
 		if foundTeam is None:
 			logger.debug('Inserting a new team')
-			snake_case = unidecode(unicode(local[0].text).lower().replace(' ','_').replace('r.','real'))
+			snake_case = unidecode(unicode(local[0].text).lower().replace(' ','_').replace('.',''))
 			newTeam = {'name' : local[0].text, 'tag' : snake_case}
 			newTeamId = teams.insert(newTeam)
 			newTeamsCounter += 1
@@ -94,7 +78,7 @@ for event in parsedData :
 		foundTeam = teams.find_one({"name" : visitante[0].text})
 		if foundTeam is None:
 			logger.debug('Inserting a new team')
-			snake_case = unidecode(unicode(visitante[0].text).lower().replace(' ','_').replace('r.','real'))
+			snake_case = unidecode(unicode(visitante[0].text).lower().replace(' ','_').replace('.',''))
 			newTeam = {'name' : visitante[0].text, 'tag' : snake_case}
 			newTeamId = teams.insert(newTeam)
 			newTeamsCounter += 1
