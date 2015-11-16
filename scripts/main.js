@@ -40,15 +40,22 @@ if (Meteor.isServer) {
 			}
 		},
 		'createPool': function(amount,matchId){
-			Pools.insert({
-				_id: new Mongo.ObjectID(),
-				amount: amount,
-				match_id: matchId,
-				status_id : 0,
-				user_id : Meteor.user()._id,
-				users : [],
-				createdAt: new Date() // current time
+			var match = Matches.findOne({
+				_id: matchId
 			});
+			if (match.status === 0){
+				Pools.insert({
+					_id: new Mongo.ObjectID(),
+					amount: amount,
+					match_id: matchId,
+					status_id : 0,
+					user_id : Meteor.user()._id,
+					users : [],
+					createdAt: new Date() // current time
+				});
+			} else {
+				throw new Meteor.Error('match-already-finished', 'Match already finished', 'You can\'t create a pool for a finished match');
+			}
 		},
 		'userExists': function(username){
 			return !!Meteor.users.findOne({username : username});

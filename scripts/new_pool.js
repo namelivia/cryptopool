@@ -5,9 +5,14 @@ if (Meteor.isClient) {
 		"submit .new-pool": function (event) {
 			event.preventDefault();
 			var amount = parseInt(event.target.amount.value);
-			Meteor.call('createPool',amount,this.matchId);
+			Meteor.call('createPool',amount,this.matchId,function(error,response){
+				if (error){
+					toastr.error(error.details, error.reason);
+				} else {
+					toastr.success('You have successfully created a '+amount+' token pool', 'Pool created');
+				}
+			});
 			Modal.hide();
-			Flash.success("__default__",'Pool successfully created',3000,true);
 		}
 	});
 	//helpers

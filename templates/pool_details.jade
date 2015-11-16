@@ -3,9 +3,10 @@ template(name='poolDetails')
 		div(class='row')
 			h3(class='text-center') Pool details
 		div(class='row')
+			h4(class='text-center') Status: #{displayStatus}
+		div(class='row')
 			div(class='col-md-3 col-md-offset-1')
 				h3 Amount: #{pool.amount}
-				h3 Status id: #{pool.status_id}
 				h3 User count: #{userCount}
 				h3 Total amount: #{totalAmount}
 				if userAlreadyIn

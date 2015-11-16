@@ -26,5 +26,8 @@ if (Meteor.isClient) {
 		teamLogo : function () {
 			return '/logos/'+this.tag+'.jpg';
 		},
+		someId: function() {
+			return this._id;
+		},
 	});
 }

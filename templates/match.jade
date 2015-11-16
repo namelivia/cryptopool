@@ -13,7 +13,5 @@ template(name='match')
 				h2(class='text-center') #{score2}
 		td 
 			+team(team=visitant imageSize=50)
-		if showReferee
-			td #{arbitro}
 		td
 			a(href='{{pathFor route="matchDetails" id=match._id._str}}') Details

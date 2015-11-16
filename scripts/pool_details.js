@@ -46,11 +46,11 @@ if (Meteor.isClient) {
 				return _.merge(user,userData);
 			});
 		},
-		displaystatus : function() {
-			if (this.status === 0) {
+		displayStatus : function() {
+			if (this.pool.status_id === 0) {
 				return 'Opened';
 			} else {
-				return 'finished';
+				return 'Finished';
 			}
 		},
 		userAlreadyIn: function() {

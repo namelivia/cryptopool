@@ -37,3 +37,4 @@ useraccounts:core
 useraccounts:bootstrap
 useraccounts:iron-routing
 dburles:collection-helpers
+chrismbeckett:toastr
