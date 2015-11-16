@@ -19,7 +19,6 @@ if (Meteor.isServer) {
 
 	Meteor.methods({
 		'joinPool': function (poolId,localScore,visitantScore) {
-			console.log(poolId);
 			var pool = Pools.findOne({
 				_id: poolId
 			});
@@ -36,6 +35,8 @@ if (Meteor.isServer) {
 				Meteor.users.update(
 					{ _id: Meteor.user()._id },
 					{ $set: { tokens: userTokensLeft}, $push: {poolHistory: poolId} });
+			} else {
+				throw new Meteor.Error('not-enough-tokens', 'Not enough tokens', 'You don\'t have enough tokens to join the pool');
 			}
 		},
 		'createPool': function(amount,matchId){
@@ -43,7 +44,7 @@ if (Meteor.isServer) {
 				_id: new Mongo.ObjectID(),
 				amount: amount,
 				match_id: matchId,
-				status_id : 3,
+				status_id : 0,
 				user_id : Meteor.user()._id,
 				users : [],
 				createdAt: new Date() // current time

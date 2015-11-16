@@ -46,6 +46,13 @@ if (Meteor.isClient) {
 				return _.merge(user,userData);
 			});
 		},
+		displaystatus : function() {
+			if (this.status === 0) {
+				return 'Opened';
+			} else {
+				return 'finished';
+			}
+		},
 		userAlreadyIn: function() {
 			return _.includes(_.map(this.pool.users,function(user){
 				return user._id;
