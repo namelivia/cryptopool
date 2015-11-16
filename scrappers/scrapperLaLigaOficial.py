@@ -115,6 +115,10 @@ for event in parsedData :
 		match['resultadohora'] = horaResultado[0].text
 		match['score1'] = horaResultado[0].text.split("-")[0]
 		match['score2'] = horaResultado[0].text.split("-")[1]
+		if match['resultadohora'] == "-":
+			match['status'] = 0
+		else:
+			match['status'] = 1
 		foundMatch = matches.find_one({
 			"player1" : match['player1'],
 			"player2" : match['player2'],

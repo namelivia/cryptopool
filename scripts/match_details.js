@@ -31,6 +31,16 @@ if (Meteor.isClient) {
 		prettyDateTime : function() {
 			return moment(this.date).format("DD-MM-YYYY HH:mm");
 		},
+		displayStatus : function() {
+			if (this.status === 0) {
+				return 'To be played';
+			} else {
+				return 'Finished';
+			}
+		},
+		newPoolsAllowed : function() {
+			return this.status === 0;
+		},
 		pools : function(){
 			return this.pools();
 		},

@@ -10,13 +10,16 @@ template(name='matchDetails')
 			div(class='col-md-3')
 				+team(team=visitant imageSize=150)
 		div(class='row')
-			h4(class='text-center') #{arbitro}
+			h4(class='text-center') Referee: #{arbitro}
+		div(class='row')
+			h4(class='text-center') Status: #{displayStatus}
 		div(class='row')
 			if pools.count
 				+poolList(pools=pools)
 			else
 				div(class='col-md-8 col-md-offset-2')
-					p There are no pools yet for this match
-		div(class='col-md-8 col-md-offset-2')
-			div(class='row text-right')
-				button(class='btn btn-primary btn-success new_pool' value='Create a new pool') Create a new pool
+					p There are no pools for this match
+		if newPoolsAllowed
+			div(class='col-md-8 col-md-offset-2')
+				div(class='row text-right')
+					button(class='btn btn-primary btn-success new_pool' value='Create a new pool') Create a new pool

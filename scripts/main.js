@@ -44,6 +44,7 @@ if (Meteor.isServer) {
 				amount: amount,
 				match_id: matchId,
 				status_id : 3,
+				user_id : Meteor.user()._id,
 				users : [],
 				createdAt: new Date() // current time
 			});
