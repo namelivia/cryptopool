@@ -42,6 +42,7 @@ logger.addHandler(handler)
 logger.info('Scrapping the 20 minutos page')
 logger.info('Loading existing teams')
 dbTeams = db.teams
+players = db.players
 logger.info('Fetching information')
 page = requests.get('http://www.20minutos.es/deportes/estadisticas/liga/teams.asp')
 tree = html.fromstring(page.text)
@@ -68,7 +69,7 @@ for team in teams:
 		exit()
 	else :
 		#If not split and try again
-		print("Found team with tag: "+foundTeam['name'])
+		print("Found team with tag: "+snake_case+" => "+foundTeam['name']+"|"+foundTeam["tag"])
 		teamId = foundTeam['_id']
 
 	rooster = roosterTree.xpath('.//table[@class="shsTable shsBorderTable"]/tr[not(@valign="bottom")]')
@@ -89,17 +90,16 @@ for team in teams:
 		if len(birthCity) > 0:
 			birthCity = birthCity[0].text[:-2];
 			birthCountry = attributes[6].xpath('.//span/following::node()')[0];
-		print ("Number:");
-		print (number);
-		print ("Name:"+name);
-		print ("Position:"+position);
-		print ("Height:"+height);
-		print ("Weight:")
-		print (weight);
-		print ("birthDate:"+birthDate);
-		print ("birthCity:");
-		print (birthCity);
-		print ("birthCountry:"+birthCountry);
-		print ("teamId:");
-		print (teamId);
+		newPlayer = {
+			'name' : name,
+			'number' : number,
+			'position' : position,
+			'height' : height,
+			'weight' : weight,
+			'birthDate' : birthDate,
+			'birthCity' : birthCity,
+			'birthCountry' : birthCountry,
+			'teamId' : teamId
+		}
+		players.insert(newPlayer)
 logger.info("Done")

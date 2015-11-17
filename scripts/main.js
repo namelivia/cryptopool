@@ -128,6 +128,10 @@ if (Meteor.isServer) {
 			{fields: {'tokens': 1, 'poolHistory': 1}});
 	});
 
+	Meteor.publish("playersByTeamId", function (teamId) {
+		return Players.find({teamId : teamId});
+	});
+
 	Accounts.onCreateUser(function(options, user) {
 		user.tokens = 10;
 		user.poolHistory = [];

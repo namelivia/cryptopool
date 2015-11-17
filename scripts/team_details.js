@@ -10,7 +10,8 @@ Router.route('/team/:id', function () {
 	waitOn: function() {
 		var oid = new Meteor.Collection.ObjectID(this.params.id);
 		return [
-			Meteor.subscribe('teamById',oid)
+			Meteor.subscribe('teamById',oid),
+			Meteor.subscribe('playersByTeamId',oid),
 		]
 	}
 });
@@ -28,6 +29,9 @@ if (Meteor.isClient) {
 		},
 		someId: function() {
 			return this._id;
+		},
+		players : function(){
+			return this.players();
 		},
 	});
 }
