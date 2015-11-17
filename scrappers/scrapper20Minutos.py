@@ -10,6 +10,17 @@ import time
 import os
 from pymongo import MongoClient
 
+def searchForTag(tag):
+	foundTeam = dbTeams.find_one({'tag' : {'$regex' : '.*'+tag+'.*'}})
+	if foundTeam is None:
+		splitted = snake_case.split('_')
+		for word in splitted:
+			foundTeam = dbTeams.find_one({'tag' : {'$regex' : '.*'+word+'.*'}})
+			if foundTeam is not None:
+				return foundTeam
+	else:
+		return foundTeam
+
 #set the root path
 execPath = os.path.dirname(os.path.realpath(__file__))
 
@@ -29,14 +40,9 @@ logger.addHandler(handler)
 
 #start scrapping
 logger.info('Scrapping the 20 minutos page')
-logger.info('Loading the teams map')
-teamsMap = json.load(open('teamsMap.json'))
 logger.info('Loading existing teams')
-teams = db.teams
-logger.info('Loading exsiting matches')
-matches = db.matches
+dbTeams = db.teams
 logger.info('Fetching information')
-logger.debug('Fetching the team list')
 page = requests.get('http://www.20minutos.es/deportes/estadisticas/liga/teams.asp')
 tree = html.fromstring(page.text)
 teams = tree.xpath('.//table[@class="shsTable shsBorderTable"]/tr')[1:]
@@ -51,25 +57,49 @@ for team in teams:
 	roosterPage = requests.get('http://www.20minutos.es/deportes/estadisticas/liga/rosters.asp?team='+teamId)
 	roosterTree = html.fromstring(roosterPage.text)
 	teamName = roosterTree.xpath('.//span[@class="countryText"]')[0].text
+
+	#Try to find the name in the database
+	logger.info('Trying to find team in the database')
+	#Try the find the whole name
 	snake_case = unidecode(unicode(teamName).lower().replace(' ','_').replace('.',''))
+	foundTeam = searchForTag(snake_case)
+	if foundTeam is None:
+		print("ERROR:Team with tag: "+snake_case+" not found")
+		exit()
+	else :
+		#If not split and try again
+		print("Found team with tag: "+foundTeam['name'])
+		teamId = foundTeam['_id']
+
 	rooster = roosterTree.xpath('.//table[@class="shsTable shsBorderTable"]/tr[not(@valign="bottom")]')
+	logger.info('Fetching players')
 	for player in rooster:
 		attributes = player.xpath('.//td')
 		number = attributes[0].text;
 		name = attributes[1].xpath('.//a')[0].text;
 		position = attributes[2].text;
-		height = attributes[3].xpath('.//span')[0].text[:-3];
-		weight = attributes[4].xpath('.//span')[0].text[:-2];
+		height = attributes[3].xpath('.//span')[0].text
+		if height is not None:
+			height = height[:-3];
+		weight = attributes[4].xpath('.//span')[0].text;
+		if weight is not None:
+			weight = weight[:-2]	
 		birthDate = attributes[5].text;
-		birthCity = attributes[6].xpath('.//span')[0].text[:-2];
-		birthCountry = attributes[6].xpath('.//span/following::node()')[0];
-		print ("Number:"+number);
+		birthCity = attributes[6].xpath('.//span')
+		if len(birthCity) > 0:
+			birthCity = birthCity[0].text[:-2];
+			birthCountry = attributes[6].xpath('.//span/following::node()')[0];
+		print ("Number:");
+		print (number);
 		print ("Name:"+name);
 		print ("Position:"+position);
 		print ("Height:"+height);
-		print ("Weight:"+weight);
+		print ("Weight:")
+		print (weight);
 		print ("birthDate:"+birthDate);
-		print ("birthCity:"+birthCity);
+		print ("birthCity:");
+		print (birthCity);
 		print ("birthCountry:"+birthCountry);
-	exit()
+		print ("teamId:");
+		print (teamId);
 logger.info("Done")
