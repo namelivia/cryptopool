@@ -21,14 +21,8 @@ if (Meteor.isClient) {
 	//events
 	//helpers
 	Template.teamDetails.helpers({
-		teamName : function() {
-			return this.name;
-		},
 		teamLogo : function () {
 			return '/logos/'+this.tag+'.jpg';
-		},
-		someId: function() {
-			return this._id;
 		},
 		players : function(){
 			return this.players();

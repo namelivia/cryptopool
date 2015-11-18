@@ -1,20 +1,41 @@
 template(name='teamDetails')
 	div(class='container-fluid')
 		div(class='row')
-			h1(class='text-center') #{teamName}
+			h1(class='text-center') #{name}
 		div(class='row text-center')
 			img(src='#{teamLogo}' width='#{imageSize}' height='#{imageSize}' alt='#{teamName}')
+		div(class='row text-center')
+			if twitter
+				a(href='#{website}')
+					i(class="fa fa-globe fa-2x")
+			if twitter
+				a(href='#{twitter}')
+					i(class="fa fa-twitter fa-2x")
+			if facebook
+				a(href='#{facebook}')
+					i(class="fa fa-facebook fa-2x")
+			if email
+				a(href='#{email}')
+					i(class="fa fa-envelope fa-2x")
+		div(class='row text-center')
+			span #{stadium}
+		div(class='row text-center')
+			span #{address}
+		div(class='row text-center')
+			span #{contact}
 		div(class='row')
-			table(class='table table-bordered')
-				thead
-					tr
-						td Number
-						td Name
-						td Position
-						td Weight
-						td Height
-						td Birth date
-						td Birth place
-				tbody
-					each players
-						+player
+			div(class='col-md-8')
+				h3(class='text-center') Rooster
+				table(class='table table-bordered')
+					thead
+						tr
+							td Number
+							td Name
+							td Position
+							td Weight
+							td Height
+							td Birth date
+							td Birth place
+					tbody
+						each players
+							+player
