@@ -67,7 +67,7 @@ for event in parsedData :
 		foundTeam = teams.find_one({"name" : local[0].text})
 		if foundTeam is None:
 			logger.debug('Inserting a new team')
-			snake_case = unidecode(unicode(local[0].text).lower().replace(' ','_').replace('.',''))
+			snake_case = unidecode(unicode(local[0].text).lower().replace('r. ','real ').replace(' ','_').replace('.',''))
 			newTeam = {'name' : local[0].text, 'tag' : snake_case}
 			newTeamId = teams.insert(newTeam)
 			newTeamsCounter += 1
@@ -78,7 +78,7 @@ for event in parsedData :
 		foundTeam = teams.find_one({"name" : visitante[0].text})
 		if foundTeam is None:
 			logger.debug('Inserting a new team')
-			snake_case = unidecode(unicode(visitante[0].text).lower().replace(' ','_').replace('.',''))
+			snake_case = unidecode(unicode(visitante[0].text).lower().replace('r. ','real ').replace(' ','_').replace('.',''))
 			newTeam = {'name' : visitante[0].text, 'tag' : snake_case}
 			newTeamId = teams.insert(newTeam)
 			newTeamsCounter += 1
