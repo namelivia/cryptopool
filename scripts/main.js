@@ -17,6 +17,15 @@ if (Meteor.isServer) {
 		// code to run on server at startup
 	});
 
+	//TODO:Configure twitter
+	/*
+	var T = new Twit({
+		consumer_key: '...',
+		consumer_secret: '...',
+		access_token: '...',
+		access_token_secret: '...'
+	});*/
+
 	Meteor.methods({
 		'joinPool': function (poolId,localScore,visitantScore) {
 			var pool = Pools.findOne({

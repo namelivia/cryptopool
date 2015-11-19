@@ -55,6 +55,10 @@ for event in parsedData :
 	for idx,partido in enumerate(partidos):
 		logger.debug('Fetching a match')
 		match = {}
+		link = partido.xpath('.//a')[0].get('href')
+		detailsPage = requests.post(link)
+		detailsTree = html.fromstring(detailsPage.text)
+		hashtag = detailsTree.xpath('.//div[@id="hashtag"]')[0].text
 		fecha = partido.xpath('.//span[@class="fecha left"]')
 		arbitro = partido.xpath('.//span[@class="arbitro last"]')
 		localDiv = partido.xpath('.//span[@class="equipo left local"]')
@@ -99,6 +103,7 @@ for event in parsedData :
 		match['resultadohora'] = horaResultado[0].text
 		match['score1'] = horaResultado[0].text.split("-")[0]
 		match['score2'] = horaResultado[0].text.split("-")[1]
+		match['hashtag'] = hashtag
 		if match['resultadohora'] == "-":
 			match['status'] = 0
 		else:
