@@ -49,6 +49,14 @@ if (Meteor.isClient) {
 		},
 		visitant : function(){
 			return this.visitant();
+		},
+		tweets: function(){
+			console.log("Llega");
+			var stream = T.stream('statuses/filter', { track: '#apple', language: 'en' })
+			stream.on('tweet', function (tweet) {
+			  console.log(tweet)
+			});
+			console.log("No llega");
 		}
 	});
 }
