@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from lxml import html
 from lxml import etree
+from lxml.etree import tostring
 from unidecode import unidecode
 import requests
 import json
@@ -10,6 +11,9 @@ import time
 import os
 from pymongo import MongoClient
 
+#if something breaks try changing this
+#ANNOYING_LENGTH = -2
+ANNOYING_LENGTH = -1
 #set the root path
 execPath = os.path.dirname(os.path.realpath(__file__))
 
@@ -38,7 +42,14 @@ logger.debug('Fetching the calendar')
 page = requests.get('http://www.laliga.es/calendario-horario/')
 tree = html.fromstring(page.text)
 scripts = tree.xpath('//script')
-data = scripts[8].text.split('\n')[20][20:-2]
+longestScriptIndex = 8
+for key,script in enumerate(scripts):
+	if script.text is not None and len(script.text) > 1000:
+		longestScriptIndex = key
+for key,content in enumerate(scripts[longestScriptIndex].text.split('\n')):
+	if content is not None and len(content) > 10000:
+		longestContentIndex = key
+data = scripts[longestScriptIndex].text.split('\n')[longestContentIndex][20:ANNOYING_LENGTH]
 parsedData = json.loads(data)
 newMatchesCounter = 0
 newTeamsCounter = 0
@@ -59,14 +70,15 @@ for event in parsedData :
 		detailsPage = requests.post(link)
 		detailsTree = html.fromstring(detailsPage.text)
 		hashtag = detailsTree.xpath('.//div[@id="hashtag"]')[0].text
-		fecha = partido.xpath('.//span[@class="fecha left"]')
+		hora = partido.xpath('.//span[@class="fecha left"]//span[@class="hora"]')[0].text[2:].strip(' ')
+		dia = partido.xpath('.//span[@class="fecha left"]//span[@class="dia"]')[0].text.strip(' ')
 		arbitro = partido.xpath('.//span[@class="arbitro last"]')
 		localDiv = partido.xpath('.//span[@class="equipo left local"]')
 		local = localDiv[0].xpath('.//span[@class="team"]')
 		visitanteDiv = partido.xpath('.//span[@class="equipo left visitante"]')
 		visitante = visitanteDiv[0].xpath('.//span[@class="team"]')
-		horaResultadoDiv = partido.xpath('.//span[@class="hora_resultado left"]')
-		horaResultado = horaResultadoDiv[0].xpath('.//span[@class="horario_partido hora"]')
+		horaResultadoDiv = partido.xpath('.//span[@class="hora-resultado left"]')
+		horaResultado = horaResultadoDiv[0].xpath('.//span[@class="horario-partido hora"]')
 		
 		foundTeam = teams.find_one({"name" : local[0].text})
 		if foundTeam is None:
@@ -92,12 +104,8 @@ for event in parsedData :
 
 		if (len(arbitro) > 0) :
 			match['arbitro'] = arbitro[0].text
-		if (len(fecha) > 0) :
-			splittedDateTime = fecha[0].text[1:].split(" ")
-			splittedDate = splittedDateTime[0].split("-")
-			match['date'] = splittedDate[2]+"-"+splittedDate[1]+"-"+splittedDate[0]
-			if len(splittedDateTime) > 1 :
-				match['date'] += " "+splittedDateTime[2]+":00"
+		splittedDate = dia.split("-")
+		match['date'] = splittedDate[2]+"-"+splittedDate[1]+"-"+splittedDate[0]+"T"+hora
 		match['player1'] = local
 		match['player2'] = visitant
 		match['resultadohora'] = horaResultado[0].text
