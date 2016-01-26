@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from lxml import html
 from lxml import etree
+from lxml.etree import tostring
 from unidecode import unidecode
 import requests
 import json
@@ -38,7 +39,7 @@ logger.debug('Fetching the calendar')
 page = requests.get('http://www.laliga.es/calendario-horario/')
 tree = html.fromstring(page.text)
 scripts = tree.xpath('//script')
-data = scripts[8].text.split('\n')[20][20:-2]
+data = scripts[7].text.split('\n')[21][20:-1]
 parsedData = json.loads(data)
 newMatchesCounter = 0
 newTeamsCounter = 0
@@ -65,8 +66,8 @@ for event in parsedData :
 		local = localDiv[0].xpath('.//span[@class="team"]')
 		visitanteDiv = partido.xpath('.//span[@class="equipo left visitante"]')
 		visitante = visitanteDiv[0].xpath('.//span[@class="team"]')
-		horaResultadoDiv = partido.xpath('.//span[@class="hora_resultado left"]')
-		horaResultado = horaResultadoDiv[0].xpath('.//span[@class="horario_partido hora"]')
+		horaResultadoDiv = partido.xpath('.//span[@class="hora-resultado left"]')
+		horaResultado = horaResultadoDiv[0].xpath('.//span[@class="horario-partido hora"]')
 		
 		foundTeam = teams.find_one({"name" : local[0].text})
 		if foundTeam is None:
@@ -93,11 +94,12 @@ for event in parsedData :
 		if (len(arbitro) > 0) :
 			match['arbitro'] = arbitro[0].text
 		if (len(fecha) > 0) :
-			splittedDateTime = fecha[0].text[1:].split(" ")
-			splittedDate = splittedDateTime[0].split("-")
-			match['date'] = splittedDate[2]+"-"+splittedDate[1]+"-"+splittedDate[0]
-			if len(splittedDateTime) > 1 :
-				match['date'] += " "+splittedDateTime[2]+":00"
+			dia = fecha[0].xpath('.//span[@class="dia"]')
+			hora = fecha[0].xpath('.//span[@class="hora"]')
+			splittedDate = dia[0].text.split("-")
+			match['date'] = splittedDate[2]+"-"+splittedDate[1]+"-"+splittedDate[0][1:]
+			if len(hora) > 0 :
+				match['date'] += "T"+hora[0].text[3:]
 		match['player1'] = local
 		match['player2'] = visitant
 		match['resultadohora'] = horaResultado[0].text
