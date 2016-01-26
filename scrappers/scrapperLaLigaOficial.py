@@ -11,6 +11,9 @@ import time
 import os
 from pymongo import MongoClient
 
+#if something breaks try changing this
+#ANNOYING_LENGTH = -2
+ANNOYING_LENGTH = -1
 #set the root path
 execPath = os.path.dirname(os.path.realpath(__file__))
 
@@ -39,7 +42,14 @@ logger.debug('Fetching the calendar')
 page = requests.get('http://www.laliga.es/calendario-horario/')
 tree = html.fromstring(page.text)
 scripts = tree.xpath('//script')
-data = scripts[7].text.split('\n')[21][20:-1]
+longestScriptIndex = 8
+for key,script in enumerate(scripts):
+	if script.text is not None and len(script.text) > 1000:
+		longestScriptIndex = key
+for key,content in enumerate(scripts[longestScriptIndex].text.split('\n')):
+	if content is not None and len(content) > 10000:
+		longestContentIndex = key
+data = scripts[longestScriptIndex].text.split('\n')[longestContentIndex][20:ANNOYING_LENGTH]
 parsedData = json.loads(data)
 newMatchesCounter = 0
 newTeamsCounter = 0
@@ -60,7 +70,8 @@ for event in parsedData :
 		detailsPage = requests.post(link)
 		detailsTree = html.fromstring(detailsPage.text)
 		hashtag = detailsTree.xpath('.//div[@id="hashtag"]')[0].text
-		fecha = partido.xpath('.//span[@class="fecha left"]')
+		hora = partido.xpath('.//span[@class="fecha left"]//span[@class="hora"]')[0].text[2:].strip(' ')
+		dia = partido.xpath('.//span[@class="fecha left"]//span[@class="dia"]')[0].text.strip(' ')
 		arbitro = partido.xpath('.//span[@class="arbitro last"]')
 		localDiv = partido.xpath('.//span[@class="equipo left local"]')
 		local = localDiv[0].xpath('.//span[@class="team"]')
