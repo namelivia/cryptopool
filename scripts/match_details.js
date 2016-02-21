@@ -19,6 +19,13 @@ Router.route('/match/:id', function () {
 
 if (Meteor.isClient) {
 	//init
+	Template.matchDetails.created = function() {
+		var self = this;
+		self.tweets = new ReactiveVar([]);
+		Meteor.call('getTweets',Template.currentData().hashtag,function(error,result){
+			self.tweets.set(result.statuses);
+		});
+	}
 	//events
 	Template.matchDetails.events({
 		"click .new_pool": function (event) {
@@ -51,12 +58,8 @@ if (Meteor.isClient) {
 			return this.visitant();
 		},
 		tweets: function(){
-			console.log("Llega");
-			var stream = T.stream('statuses/filter', { track: '#apple', language: 'en' })
-			stream.on('tweet', function (tweet) {
-			  console.log(tweet)
-			});
-			console.log("No llega");
+			console.log(Template.instance().tweets.get().length);
+			return Template.instance().tweets.get();
 		}
 	});
 }

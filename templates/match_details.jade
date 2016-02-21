@@ -24,5 +24,8 @@ template(name='matchDetails')
 				div(class='row text-right')
 					button(class='btn btn-primary btn-success new_pool' value='Create a new pool') Create a new pool
 		div(class='row')
-			span Tweets del partido
-			span #{tweets}
+			if tweets.length
+				+tweetList(tweets=tweets)
+			else
+				div(class='col-md-8 col-md-offset-2')
+					p There are no tweets for this match

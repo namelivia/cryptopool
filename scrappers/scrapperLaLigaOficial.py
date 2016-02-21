@@ -12,8 +12,8 @@ import os
 from pymongo import MongoClient
 
 #if something breaks try changing this
-#ANNOYING_LENGTH = -2
-ANNOYING_LENGTH = -1
+ANNOYING_LENGTH = -2
+#ANNOYING_LENGTH = -1
 #set the root path
 execPath = os.path.dirname(os.path.realpath(__file__))
 
@@ -70,7 +70,9 @@ for event in parsedData :
 		detailsPage = requests.post(link)
 		detailsTree = html.fromstring(detailsPage.text)
 		hashtag = detailsTree.xpath('.//div[@id="hashtag"]')[0].text
-		hora = partido.xpath('.//span[@class="fecha left"]//span[@class="hora"]')[0].text[2:].strip(' ')
+		hora = partido.xpath('.//span[@class="fecha left"]//span[@class="hora"]')[0].text
+		if hora is not None:
+			hora = hora[2:].strip(' ')
 		dia = partido.xpath('.//span[@class="fecha left"]//span[@class="dia"]')[0].text.strip(' ')
 		arbitro = partido.xpath('.//span[@class="arbitro last"]')
 		localDiv = partido.xpath('.//span[@class="equipo left local"]')
@@ -104,13 +106,10 @@ for event in parsedData :
 
 		if (len(arbitro) > 0) :
 			match['arbitro'] = arbitro[0].text
-		if (len(fecha) > 0) :
-			dia = fecha[0].xpath('.//span[@class="dia"]')
-			hora = fecha[0].xpath('.//span[@class="hora"]')
-			splittedDate = dia[0].text.split("-")
-			match['date'] = splittedDate[2]+"-"+splittedDate[1]+"-"+splittedDate[0][1:]
-			if len(hora) > 0 :
-				match['date'] += "T"+hora[0].text[3:]
+		splittedDate = dia.split("-")
+		match['date'] = splittedDate[2]+"-"+splittedDate[1]+"-"+splittedDate[0]
+		if hora is not None:
+			match['date'] = match['date']+"T"+hora
 		match['player1'] = local
 		match['player2'] = visitant
 		match['resultadohora'] = horaResultado[0].text
