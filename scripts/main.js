@@ -70,7 +70,7 @@ if (Meteor.isServer) {
 		},
 		'getTweets': function(hashtag){
 			var fut = new Future();
-			Twit.get('search/tweets', {q: hashtag, count: 10},
+			Twit.get('search/tweets', {q: hashtag+"-filter:retweets", count: 10},
 			function(err, data, response) {
 				fut['return'](data);
 			});

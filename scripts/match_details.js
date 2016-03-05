@@ -58,7 +58,6 @@ if (Meteor.isClient) {
 			return this.visitant();
 		},
 		tweets: function(){
-			console.log(Template.instance().tweets.get().length);
 			return Template.instance().tweets.get();
 		}
 	});
