@@ -54,6 +54,8 @@ parsedData = json.loads(data)
 newMatchesCounter = 0
 newTeamsCounter = 0
 updatedMatchesCounter = 0
+lines = tuple(open('fetchedLinks', 'r'))
+lines = [line[:-1] for line in lines]
 logger.info('Fetching events')
 for event in parsedData :
 	logger.debug('Fetching an event')
@@ -63,10 +65,14 @@ for event in parsedData :
 	tree = html.fromstring(page.text)
 	partidos = tree.xpath('//div[contains(@class,"partido")]')[2:]
 	logger.debug('Fetching the matches')
+	fh = open('fetchedLinks', 'a')
 	for idx,partido in enumerate(partidos):
 		logger.debug('Fetching a match')
 		match = {}
 		link = partido.xpath('.//a')[0].get('href')
+		if link in lines:
+			logger.debug('I already have the '+link+' match')
+			continue
 		detailsPage = requests.post(link)
 		detailsTree = html.fromstring(detailsPage.text)
 		hashtag = detailsTree.xpath('.//div[@id="hashtag"]')[0].text
@@ -136,6 +142,9 @@ for event in parsedData :
 				foundMatch['score2'] = horaResultado[0].text.split("-")[1]
 				matches.update({'_id' : foundMatch['_id']}, {"$set" : foundMatch})
 				updatedMatchesCounter += 1
+		
+		fh.write(link+'\n')
+	fh.close()
 
 logger.info("{0} new teams added".format(newTeamsCounter))
 logger.info("{0} new matches added".format(newMatchesCounter))
