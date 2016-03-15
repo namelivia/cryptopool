@@ -7,7 +7,7 @@ if (Meteor.isClient) {
 			return moment(this.match.date).format("HH:mm");
 		},
 		prettyDateTime : function() {
-			return moment(this.match.date).format("DD-MM-YYYY HH:mm");
+			return moment(this.match.date).format("LLLL");
 		},
 		score1: function(){
 			return this.match.score1;

@@ -36,7 +36,8 @@ if (Meteor.isClient) {
 	//helpers
 	Template.matchDetails.helpers({
 		prettyDateTime : function() {
-			return moment(this.date).format("DD-MM-YYYY HH:mm");
+			return
+				moment(this.date).format("LLLL");
 		},
 		displayStatus : function() {
 			if (this.status === 0) {
