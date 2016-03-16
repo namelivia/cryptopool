@@ -19,7 +19,7 @@ def print_results(newTeamsCounter,newMatchesCounter,updatedMatchesCounter,matche
 	logger = logging.getLogger("scrapperLaLigaOficial")
 	logger.info("{0} new teams added".format(newTeamsCounter))
 	logger.info("{0} new matches added".format(newMatchesCounter))
-	logger.info("{0} new matches updated".format(updatedMatchesCounter))
+	logger.info("{0} existing matches updated".format(updatedMatchesCounter))
 	logger.info("{0} matches had no link".format(matchesWithoutLink))
 	logger.info("{0} matches had no hashtag".format(matchesWithoutHashtag))
 
