@@ -15,13 +15,13 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 
 #Prints the global results of the execution
-def print_results(newTeamsCounter,newMatchesCounter,updatedMatchesCounter,matchesWithoutLink,matchesWithoutHashtag):
+def print_results(counters):
 	logger = logging.getLogger("scrapperLaLigaOficial")
-	logger.info("{0} new teams added".format(newTeamsCounter))
-	logger.info("{0} new matches added".format(newMatchesCounter))
-	logger.info("{0} existing matches updated".format(updatedMatchesCounter))
-	logger.info("{0} matches had no link".format(matchesWithoutLink))
-	logger.info("{0} matches had no hashtag".format(matchesWithoutHashtag))
+	logger.info("{0} new teams added".format(counters['newTeamsCounter']))
+	logger.info("{0} new matches added".format(counters['newMatchesCounter']))
+	logger.info("{0} existing matches updated".format(counters['updatedMatchesCounter']))
+	logger.info("{0} matches had no link".format(counters['matchesWithoutLink']))
+	logger.info("{0} matches had no hashtag".format(counters['matchesWithoutHashtag']))
 
 #Initializes the loggers
 def init_logger():
@@ -39,17 +39,17 @@ def init_logger():
 	return logger
 
 #Insert a new match in the database
-def insert_a_new_match(matches,match,newMatchesCounter):
-	matches.insert(match)
+def insert_a_new_match(matchesCollection,match,newMatchesCounter):
+	matchesCollection.insert(match)
 	return newMatchesCounter + 1
 
 #Update the match if needed
-def update_match_if_needed(matches,foundMatch,match,updatedMatchesCounter,horaResultado):
+def update_match_if_needed(matchesCollection,foundMatch,match,updatedMatchesCounter,horaResultado):
 	if (foundMatch['score1'] == match['score1'] and foundMatch['score2'] == match['score2']) :
 		return updatedMatchesCounter
 	foundMatch['score1'] = horaResultado[0].text.split("-")[0]
 	foundMatch['score2'] = horaResultado[0].text.split("-")[1]
-	matches.update({'_id' : foundMatch['_id']}, {"$set" : foundMatch})
+	matchesCollection.update({'_id' : foundMatch['_id']}, {"$set" : foundMatch})
 	return updatedMatchesCounter + 1
 
 #Extracts the match date
@@ -65,10 +65,28 @@ def extract_match_date(match):
 	return dateutil.parser.parse(result)
 
 #Extracts the referee
-def extract_the_referee(match):
+def extract_referee(match):
 	referee = match.xpath('.//span[@class="arbitro last"]')
 	if (len(referee) > 0) :
 		return referee[0].text
+
+#Extracts a team
+def extract_team(match,isLocal,teamsCollection,newTeamsCounter):
+	divKey = 'local' if isLocal else 'visitante'
+	teamDiv = match.xpath('.//span[@class="equipo left '+divKey+'"]')
+	team = teamDiv[0].xpath('.//span[@class="team"]')
+	foundTeam = teamsCollection.find_one({"name" : team[0].text})
+	if foundTeam is None:
+		#Insert a new team
+		logger = logging.getLogger("scrapperLaLigaOficial")
+		logger.debug('Inserting a new team')
+		snake_case = unidecode(unicode(team[0].text).lower().replace('r. ','real ').replace(' ','_').replace('.',''))
+		newTeam = {'name' : team[0].text, 'tag' : snake_case}
+		newTeamId = teamsCollection.insert(newTeam)
+		result = (newTeamsCounter+1,newTeamId)
+	else:
+		result = (newTeamsCounter,foundTeam['_id'])
+	return result
 
 #main
 def main():
@@ -85,18 +103,21 @@ def main():
 
 #load existing data
 	logger.debug('Loading existing teams')
-	teams = db.teams
+	teamsCollection = db.teams
 	logger.debug('Loading exsiting matches')
-	matches = db.matches
+	matchesCollection = db.matches
 	logger.debug('Loading already feched links')
 	lines = tuple(open('fetchedLinks', 'r'))
 	lines = [line[:-1] for line in lines]
+
 #Initializing counters
-	newMatchesCounter = 0
-	newTeamsCounter = 0
-	updatedMatchesCounter = 0
-	matchesWithoutHashtag = 0
-	matchesWithoutLink = 0;
+	counters = {
+		'newMatchesCounter' : 0,
+		'newTeamsCounter' : 0,
+		'updatedMatchesCounter' : 0,
+		'matchesWithoutHashtag' : 0,
+		'matchesWithoutLink' : 0
+	}
 
 #Start fetching information
 	logger.debug('Fetching information')
@@ -122,32 +143,33 @@ def main():
 
 	for event in parsedData :
 		#check if I've already have it
+		#TODO: Check the updating range time
 		if event['url'] in lines and int(event['url'].split('_')[5]) != datetime.now().year:
 			logger.debug('I already have the '+event['url']+' event')
 			continue
 
 		#Fetch one event
 		logger.debug('Fetching an event')
-		urlEvento = 'http://www.laliga.es/includes/ajax.php?action=ver_evento_calendario'
-		datosPeticion = {'filtro': event['url']}
-		page = requests.post(urlEvento, data=datosPeticion)
+		eventUrl = 'http://www.laliga.es/includes/ajax.php?action=ver_evento_calendario'
+		queryData = {'filtro': event['url']}
+		page = requests.post(eventUrl, data=queryData)
 		tree = html.fromstring(page.text)
 
 		#Find the matches in the event
 		logger.debug('Fetching the matches')
-		partidos = tree.xpath('//div[contains(@class,"partido")]')[2:]
+		matches = tree.xpath('//div[contains(@class,"partido")]')[2:]
 
-		for idx,partido in enumerate(partidos):
+		for idx,match in enumerate(matches):
 			#Fetch one match
 			logger.debug('Fetching a match')
-			prelink = partido.xpath('.//a')
+			prelink = match.xpath('.//a')
 			#Check if the match does not have a link
 			if len(prelink) == 0:
-				matchesWithoutLink += 1;
+				counters['matchesWithoutLink'] += 1;
 				continue
 
 			#start retrieving a match info
-			match = {}
+			newMatch = {}
 			link = prelink[0].get('href')
 			detailsPage = requests.post(link)
 			detailsTree = html.fromstring(detailsPage.text)
@@ -157,77 +179,50 @@ def main():
 			if len(prehashtag) > 0:
 				hashtag = prehashtag[0].text
 			else: 
-				matchesWithoutHashtag += 1;
-			match['hashtag'] = hashtag
+				counters['matchesWithoutHashtag'] += 1;
+			newMatch['hashtag'] = hashtag
 
 			#set the referee
-			match['arbitro'] = extract_the_referee(partido)
+			newMatch['arbitro'] = extract_referee(match)
 			
 			#try to locate the local team
-			localDiv = partido.xpath('.//span[@class="equipo left local"]')
-			local = localDiv[0].xpath('.//span[@class="team"]')
-			foundTeam = teams.find_one({"name" : local[0].text})
-			if foundTeam is None:
-				#Insert a new team
-				logger.debug('Inserting a new team')
-				snake_case = unidecode(unicode(local[0].text).lower().replace('r. ','real ').replace(' ','_').replace('.',''))
-				newTeam = {'name' : local[0].text, 'tag' : snake_case}
-				newTeamId = teams.insert(newTeam)
-				newTeamsCounter += 1
-				local = newTeamId
-			else:
-				local = foundTeam['_id']
-			match['player1'] = local
+			(counters['newTeamsCounter'],newMatch['player1']) = extract_team(match,True,teamsCollection,counters['newTeamsCounter'])
 
 			#try to locate the visitant team
-			visitanteDiv = partido.xpath('.//span[@class="equipo left visitante"]')
-			visitante = visitanteDiv[0].xpath('.//span[@class="team"]')
-			foundTeam = teams.find_one({"name" : visitante[0].text})
-			if foundTeam is None:
-				#Insert a new team
-				logger.debug('Inserting a new team')
-				snake_case = unidecode(unicode(visitante[0].text).lower().replace('r. ','real ').replace(' ','_').replace('.',''))
-				newTeam = {'name' : visitante[0].text, 'tag' : snake_case}
-				newTeamId = teams.insert(newTeam)
-				newTeamsCounter += 1
-				visitant = newTeamId
-			else:
-				visitant = foundTeam['_id']
-			match['player2'] = visitant
+			(counters['newTeamsCounter'],newMatch['player2']) = extract_team(match,False,teamsCollection,counters['newTeamsCounter'])
 
 			#process the date
-			match['date'] = extract_match_date(partido)
+			newMatch['date'] = extract_match_date(match)
 
 			#process the score
-			horaResultadoDiv = partido.xpath('.//span[@class="hora-resultado left"]')
+			horaResultadoDiv = match.xpath('.//span[@class="hora-resultado left"]')
 			horaResultado = horaResultadoDiv[0].xpath('.//span[@class="horario-partido hora"]')
-			match['score1'] = horaResultado[0].text.split("-")[0]
-			match['score2'] = horaResultado[0].text.split("-")[1]
-			if match['score1'] == "" and match['score2'] == "":
-				match['status'] = 0
+			newMatch['score1'] = horaResultado[0].text.split("-")[0]
+			newMatch['score2'] = horaResultado[0].text.split("-")[1]
+			if newMatch['score1'] == "" and newMatch['score2'] == "":
+				newMatch['status'] = 0
 			else:
-				match['status'] = 1
+				newMatch['status'] = 1
 
 			#Try to find if the match is already in the database, and has to be updated or inserted	
-			foundMatch = matches.find_one({
-				"player1" : ObjectId(match['player1']),
-				"player2" : ObjectId(match['player2']),
-				"date" : match['date'],
+			foundMatch = matchesCollection.find_one({
+				"player1" : ObjectId(newMatch['player1']),
+				"player2" : ObjectId(newMatch['player2']),
+				"date" : newMatch['date'],
 			})
 			if foundMatch is None:
 				logger.debug('Inserting a new match')
-				logger.debug(match)
-				newMatchesCounter = insert_a_new_match(matches,match,newMatchesCounter)
+				counters['newMatchesCounter'] = insert_a_new_match(matchesCollection,newMatch,counters['newMatchesCounter'])
 			else : 
 				logger.debug('Updating an existing match if needed')
-				updatedMatchesCounter = update_match_if_needed(matches,foundMatch,match,updatedMatchesCounter,horaResultado)
+				counters['updatedMatchesCounter'] = update_match_if_needed(matchesCollection,foundMatch,newMatch,counters['updatedMatchesCounter'],horaResultado)
 			
 		#write it in the already fetched links
 		fh.write(event['url']+'\n')
 	fh.close()
 
 	#print the results and exit
-	print_results(newTeamsCounter,newMatchesCounter,updatedMatchesCounter,matchesWithoutLink,matchesWithoutHashtag)
+	print_results(counters)
 	logger.info("Done")
 
 
