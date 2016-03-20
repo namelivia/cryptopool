@@ -2,7 +2,7 @@
 cd /root/cryptoporra
 echo "=====[UPDATING DATA]====="
 cd scrappers
-python2.7 scrapperLaLigaOficial.py
+python2.7 scrapperLaLigaOficial.py 5
 python2.7 scrapperLogos.py
 python2.7 scrapper20Minutos.py
 cd ..

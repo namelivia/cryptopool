@@ -13,6 +13,7 @@ from datetime import datetime
 import dateutil.parser
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+import sys
 
 #Prints the global results of the execution
 def print_results(counters):
@@ -90,6 +91,9 @@ def extract_team(match,isLocal,teamsCollection,newTeamsCounter):
 
 #main
 def main():
+#if the date range is introduced use it
+	if (len(sys.argv) == 2) :
+		dateRange = int(sys.argv[1])
 
 #if something breaks try changing this
 	ANNOYING_LENGTH = -2
@@ -144,7 +148,10 @@ def main():
 	for event in parsedData :
 		#check if I've already have it
 		#TODO: Check the updating range time
-		if event['url'] in lines and int(event['url'].split('_')[5]) != datetime.now().year:
+		splittedEvents = event['url'].split('_');
+		eventDate = dateutil.parser.parse(splittedEvents[5]+'-'+splittedEvents[4]+'-'+splittedEvents[3])
+		delta = datetime.now() - eventDate
+		if event['url'] in lines and dateRange is not None and abs(delta).days > dateRange:
 			logger.debug('I already have the '+event['url']+' event')
 			continue
 
@@ -224,7 +231,6 @@ def main():
 	#print the results and exit
 	print_results(counters)
 	logger.info("Done")
-
 
 if __name__ == "__main__":
 	main()
