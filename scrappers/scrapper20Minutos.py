@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from lxml import html
 from lxml import etree
+from lxml.etree import tostring
 from unidecode import unidecode
 import requests
 import json
@@ -52,16 +53,16 @@ players = db.players
 logger.info('Fetching information')
 urls = ['http://www.20minutos.es/deportes/estadisticas/liga','http://www.20minutos.es/deportes/estadisticas/liga2']
 for url in urls:
-	page = requests.get(url+'/teams.asp')
+	page = requests.get(url+'/standings.asp')
 	tree = html.fromstring(page.text)
-	teams = tree.xpath('.//table[@class="shsTable shsBorderTable"]/tr')[1:]
+	teams = tree.xpath('.//td[@class="shsNamD"]')[1:-19]
 	newTeamsCounter = 0
 	newPlayersCounter = 0
 	updatedTeamsCounter = 0
 	updatedPlayersCounter = 0
 	logger.info('Fetching teams')
 	for team in teams:
-		teamId = team.xpath('.//td')[0].xpath('.//span')[0].get('class')[7:].replace('sm shs_teamLogo','')
+		teamId = team.xpath('.//a')[0].get('href').replace(url+'/schedules.asp?team=','')
 		logger.info('Trying team id '+teamId)
 		roosterPage = requests.get(url+'/rosters.asp?team='+teamId)
 		roosterTree = html.fromstring(roosterPage.text)
