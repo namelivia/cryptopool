@@ -104,6 +104,7 @@ def main():
 
 #start scrapping
 	logger.info('Scrapping the official La Liga page')
+	startTime = time.time()
 
 #load existing data
 	logger.debug('Loading existing teams')
@@ -230,6 +231,9 @@ def main():
 
 	#print the results and exit
 	print_results(counters)
+	endTime = time.time()
+	executionTime = endTime - startTime
+	logger.info("The execution took "+str(executionTime)+" seconds")
 	logger.info("Done")
 
 if __name__ == "__main__":
