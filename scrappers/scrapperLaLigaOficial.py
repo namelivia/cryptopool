@@ -45,11 +45,12 @@ def insert_a_new_match(matchesCollection,match,newMatchesCounter):
 	return newMatchesCounter + 1
 
 #Update the match if needed
-def update_match_if_needed(matchesCollection,foundMatch,match,updatedMatchesCounter,horaResultado):
-	if (foundMatch['score1'] == match['score1'] and foundMatch['score2'] == match['score2']) :
+def update_match_if_needed(matchesCollection,foundMatch,match,updatedMatchesCounter):
+	if (foundMatch['score1'] == match['score1'] and foundMatch['score2'] == match['score2'] and foundMatch['status'] == match['status']) :
 		return updatedMatchesCounter
-	foundMatch['score1'] = horaResultado[0].text.split("-")[0]
-	foundMatch['score2'] = horaResultado[0].text.split("-")[1]
+	foundMatch['score1'] = match['score1']
+	foundMatch['score2'] = match['score2']
+	foundMatch['status'] = match['status']
 	matchesCollection.update({'_id' : foundMatch['_id']}, {"$set" : foundMatch})
 	return updatedMatchesCounter + 1
 
@@ -223,7 +224,7 @@ def main():
 				counters['newMatchesCounter'] = insert_a_new_match(matchesCollection,newMatch,counters['newMatchesCounter'])
 			else : 
 				logger.debug('Updating an existing match if needed')
-				counters['updatedMatchesCounter'] = update_match_if_needed(matchesCollection,foundMatch,newMatch,counters['updatedMatchesCounter'],horaResultado)
+				counters['updatedMatchesCounter'] = update_match_if_needed(matchesCollection,foundMatch,newMatch,counters['updatedMatchesCounter'])
 			
 		#write it in the already fetched links
 		fh.write(event['url']+'\n')

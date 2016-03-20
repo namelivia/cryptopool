@@ -46,6 +46,9 @@ if (Meteor.isClient) {
 				return 'Finished';
 			}
 		},
+		isMatchFinished : function(){
+			return this.status === 1;
+		},
 		newPoolsAllowed : function() {
 			return this.status === 0;
 		},

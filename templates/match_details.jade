@@ -9,6 +9,13 @@ template(name='matchDetails')
 				h1(class='text-center') VS
 			div(class='col-md-3')
 				+team(team=visitant imageSize=150)
+		if isMatchFinished
+			div(class='row')
+				div(class='col-md-3 col-md-offset-1')
+					h1(class='text-center') #{score1}
+				div(class='col-md-3')
+				div(class='col-md-3')
+					h1(class='text-center') #{score2}
 		div(class='row')
 			h4(class='text-center') Referee: #{arbitro}
 		div(class='row')
