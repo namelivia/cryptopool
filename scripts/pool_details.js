@@ -1,3 +1,4 @@
+'use strict';
 Router.route('/match/:matchId/pool/:id', function () {
 	this.render('poolDetails', {
 		data: function () {
@@ -17,7 +18,15 @@ Router.route('/match/:matchId/pool/:id', function () {
 		return [
 			Meteor.subscribe('poolById',oid),
 			Meteor.subscribe('usersByPoolId',oid)
-		]
+		];
+	},
+	onBeforeAction: function() {
+		if (!Meteor.user()) {
+			this.render('landing');
+		}
+		else {
+			this.next();
+		}
 	}
 });
 
@@ -27,7 +36,7 @@ if (Meteor.isClient) {
 	Template.poolDetails.events({
 		"click .join": function (event) {
 			event.preventDefault();
-			Modal.show('confirmJoin',{ _id : this.pool._id })
+			Modal.show('confirmJoin',{ _id : this.pool._id });
 		}
 	});
 	//helpers

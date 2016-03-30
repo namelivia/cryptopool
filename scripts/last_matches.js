@@ -1,5 +1,6 @@
+'use strict';
 if (Meteor.isClient) {
-	Meteor.subscribe("lastMatches");
+	Meteor.subscribe('lastMatches');
 	//init
 	//events
 	//helpers
@@ -9,8 +10,9 @@ if (Meteor.isClient) {
 				{date : { 
 					$lte : new Date()
 						}
+				},{ 
+					limit : 5, sort : { date: -1 }
 				}
-				,{ limit : 5, sort : { date: -1 }}
 			);
 		}
 	});

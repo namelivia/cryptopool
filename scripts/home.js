@@ -1,13 +1,20 @@
+'use strict';
 Router.route('/', {
 	name: 'home',
 	template: 'home',
 	waitOn: function() {
 		return [
-			Meteor.subscribe('teams')
-		]
+			Meteor.subscribe('teams')/*,
+			Meteor.subscribe('poolsByUserId')*/
+		];
 	},
 	onBeforeAction: function() {
-		this.next();
+		if (!Meteor.user()) {
+			this.render('landing');
+		}
+		else {
+			this.next();
+		}
 	}
 });
 
@@ -20,5 +27,8 @@ if (Meteor.isClient) {
 	//helpers
 
 	Template.home.helpers({
+		/*poolHistory: function(){
+			return Pools.find();
+		}*/
 	});
 }

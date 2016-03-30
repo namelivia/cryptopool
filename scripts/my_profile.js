@@ -1,10 +1,11 @@
+'use strict';
 Router.route('/my_profile', { 
 	name: 'myProfile',
 	waitOn: function() {
 		return [
 			Meteor.subscribe('userData'),
 			Meteor.subscribe('poolsByUserId')
-		]
+		];
 	}
 });
 

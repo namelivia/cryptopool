@@ -128,6 +128,16 @@
       "Random": false,
       "_": false,               // Underscore.js
       "$": false,               // jQuery
-      "Router": false           // iron-router
+      "Router": false,          // iron-router
+
+	  // packages I'm using for this project
+      "Future": false,
+      "TwitMaker": false,
+
+	  // collections I'm using for this project
+	  "Pools": false,
+	  "Matches": false,
+	  "Teams": false,
+	  "Players": false
     }
 }

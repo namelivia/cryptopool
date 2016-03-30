@@ -1,0 +1,13 @@
+template(name='lastPools')
+	h3(class='text-center') Last pools
+	if pools.count
+		table(class='table table-bordered')
+			thead
+				tr
+					td poolId
+					td matchId
+			tbody
+				each pools
+					+poolHistoryEntry(pool=this)
+	else
+		p There are no last pools

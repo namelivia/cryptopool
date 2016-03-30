@@ -1,3 +1,4 @@
+'use strict';
 /*
 ==GENERATE A WALLET, I'M NOT USING THIS ATM==
 var keyPair = bitcoinjs.ECKey.makeRandom();
@@ -15,7 +16,7 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
 	Meteor.startup(function () {
 		// code to run on server at startup
-		Future = Npm.require('fibers/future');
+		var Future = Npm.require('fibers/future');
 	});
 	//Configure Twit
 	var Twit = new TwitMaker({
@@ -36,7 +37,7 @@ if (Meteor.isServer) {
 					'_id' : Meteor.user()._id,
 					'localScore' : localScore,
 					'visitantScore' : visitantScore,
-				}
+				};
 				Pools.update(
 					{ _id: poolId },
 					{ $push: { users: user} });
@@ -44,7 +45,11 @@ if (Meteor.isServer) {
 					{ _id: Meteor.user()._id },
 					{ $set: { tokens: userTokensLeft}, $push: {poolHistory: poolId} });
 			} else {
-				throw new Meteor.Error('not-enough-tokens', 'Not enough tokens', 'You don\'t have enough tokens to join the pool');
+				throw new Meteor.Error (
+					'not-enough-tokens',
+					'Not enough tokens', 
+					'You don\'t have enough tokens to join the pool'
+				);
 			}
 		},
 		'createPool': function(amount,matchId){
@@ -62,7 +67,11 @@ if (Meteor.isServer) {
 					createdAt: new Date() // current time
 				});
 			} else {
-				throw new Meteor.Error('match-already-finished', 'Match already finished', 'You can\'t create a pool for a finished match');
+				throw new Meteor.Error(
+					'match-already-finished',
+					'Match already finished',
+					'You can\'t create a pool for a finished match'
+				);
 			}
 		},
 		'userExists': function(username){
@@ -71,7 +80,7 @@ if (Meteor.isServer) {
 		'getTweets': function(hashtag){
 			var fut = new Future();
 			Twit.get('search/tweets', {q: hashtag+"-filter:retweets", count: 10},
-			function(err, data, response) {
+			function(err, data) {
 				fut['return'](data);
 			});
 			return fut.wait();
@@ -84,8 +93,10 @@ if (Meteor.isServer) {
 			{date : { 
 				$gt : new Date()
 					}
-			},{limit : 5});
-		return nextMatches
+			},{
+				limit : 5
+			});
+		return nextMatches;
 	});
 
 	Meteor.publish("matchesByDateRange", function (startDate,endDate) {

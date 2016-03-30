@@ -1,16 +1,19 @@
+'use strict';
 if (Meteor.isClient) {
 	//init
+
 	//events
 	//helpers
 	Template.tweet.helpers({
 		tweetPhoto: function() {
 			var imageString = '<a href="https://twitter.com/'+
-				this.user.screen_name+'"><img src="'+this.user.profile_image_url+'"></img></a>';
+				this.user.screen_name+'"><img src="'+
+				this.user.profile_image_url+'"></img></a>';
 			return new Handlebars.SafeString(imageString);
 		},
 		tweetContent: function() {
 			var replaceIndex = [];
-			var append = []
+			var append = [];
 			_.forEach(this.entities,function(value,key){
 				var prefix = '';
 				var display = false;
@@ -62,8 +65,11 @@ if (Meteor.isClient) {
 				});
 			});
 			var replacedText = this.text;
-			for (j=0;j<replaceIndex.length;j++) {
-				replacedText = replacedText.replace(replaceIndex[j].orig,replaceIndex[j].dest);
+			for (var j=0;j<replaceIndex.length;j++) {
+				replacedText = replacedText.replace(
+					replaceIndex[j].orig,
+					replaceIndex[j].dest
+				);
 			}
 			//Only If im displaying images
 			//foreach ($append as $add) $tweet['text'] .= $add;
@@ -73,7 +79,7 @@ if (Meteor.isClient) {
 				'</a> @'+this.user.screen_name+' &#183; '+
 				'<a href="http://twitter.com/'+this.user.screen_name+
 				'/status/'+this.id+'">'+createdAt.fromNow()+'</a><br />';
-			return new Handlebars.SafeString(tweetInfo+replacedText);
+				return new Handlebars.SafeString(tweetInfo+replacedText);
 		}
 	});
 }

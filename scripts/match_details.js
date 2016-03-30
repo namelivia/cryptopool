@@ -1,3 +1,4 @@
+'use strict';
 Router.route('/match/:id', function () {
 	this.render('matchDetails', {
 		data: function () {
@@ -13,7 +14,15 @@ Router.route('/match/:id', function () {
 			Meteor.subscribe('teams'),
 			Meteor.subscribe('poolsByMatchId',oid),
 			Meteor.subscribe('matchById',oid)
-		]
+		];
+	},
+	onBeforeAction: function() {
+		if (!Meteor.user()) {
+			this.render('landing');
+		}
+		else {
+			this.next();
+		}
 	}
 });
 
@@ -22,22 +31,25 @@ if (Meteor.isClient) {
 	Template.matchDetails.created = function() {
 		var self = this;
 		self.tweets = new ReactiveVar([]);
-		Meteor.call('getTweets',Template.currentData().hashtag,function(error,result){
-			self.tweets.set(result.statuses);
-		});
-	}
+		Meteor.call(
+			'getTweets',
+			Template.currentData().hashtag,
+			function(error,result){
+				self.tweets.set(result.statuses);
+			}
+		);
+	};
 	//events
 	Template.matchDetails.events({
 		"click .new_pool": function (event) {
 			event.preventDefault();
-			Modal.show('newPool',{ matchId : this._id})
+			Modal.show('newPool',{ matchId : this._id});
 		}
 	});
 	//helpers
 	Template.matchDetails.helpers({
 		prettyDateTime : function() {
-			return
-				moment(this.date).format("LLLL");
+			return moment(this.date).format("LLLL");
 		},
 		displayStatus : function() {
 			if (this.status === 0) {

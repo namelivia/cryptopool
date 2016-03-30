@@ -1,13 +1,19 @@
+'use strict';
 Router.route('/calendar', { 
 	name: 'calendar',
 	template: 'calendar',
 	waitOn: function() {
 		return [
 			Meteor.subscribe('teams')
-		]
+		];
 	},
 	onBeforeAction: function() {
-		this.next();
+		if (!Meteor.user()) {
+			this.render('landing');
+		}
+		else {
+			this.next();
+		}
 	}
 });
 
@@ -25,14 +31,14 @@ if (Meteor.isClient) {
 	//events
 
 	Template.calendar.events({
-		"dp.change #datetimepicker" : function (event,template) {
+		"dp.change #datetimepicker" : function (event) {
 			var newValue = event.date.toDate();
 			var oldValue = Session.get('searchDate');
 			if (newValue !== oldValue) {
 				Session.set("searchDate", newValue);
 				//TODO: I would like to set this just once in the template
-				startDate = Session.get('searchDate').setHours(0,0,0,0);
-				endDate = Session.get('searchDate').setHours(23,59,59,999);
+				var startDate = Session.get('searchDate').setHours(0,0,0,0);
+				var endDate = Session.get('searchDate').setHours(23,59,59,999);
 				Meteor.subscribe('matchesByDateRange',startDate,endDate);
 			}
 		}

@@ -10,7 +10,6 @@ reactive-var
 iron:router
 momentjs:moment
 tsega:bootstrap3-datetimepicker
-standard-minifiers
 meteor-base
 mobile-experience
 mongo
@@ -39,3 +38,5 @@ useraccounts:iron-routing
 dburles:collection-helpers
 chrismbeckett:toastr
 mrt:twit
+standard-minifier-css
+standard-minifier-js

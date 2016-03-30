@@ -1,16 +1,18 @@
 'use strict';
 if (Meteor.isClient) {
-	Meteor.subscribe('nextMatches');
+	Meteor.subscribe('nextPools');
 	//init
 	//events
 	//helpers
-	Template.nextMatches.helpers({
+	Template.nextPools.helpers({
 		matches: function() {
-			return Matches.find(
-				{date : { 
+			return Pools.find(
+				{ date : { 
 					$gte : new Date()
 						}
-				},{limit : 5}
+				},{
+					limit : 5
+				}
 			);
 		}
 	});

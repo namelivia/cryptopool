@@ -1,8 +1,9 @@
+'use strict';
 if (Meteor.isClient) {
 	//init
 	//events
 	Template.newPool.events({
-		"submit .new-pool": function (event) {
+		'submit .new-pool': function (event) {
 			event.preventDefault();
 			var amount = parseInt(event.target.amount.value);
 			Meteor.call('createPool',amount,this.matchId,function(error,response){

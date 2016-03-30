@@ -1,3 +1,4 @@
+'use strict';
 Router.route('/team/:id', function () {
 	this.render('teamDetails', {
 		data: function () {
@@ -12,7 +13,15 @@ Router.route('/team/:id', function () {
 		return [
 			Meteor.subscribe('teamById',oid),
 			Meteor.subscribe('playersByTeamId',oid),
-		]
+		];
+	},
+	onBeforeAction: function() {
+		if (!Meteor.user()) {
+			this.render('landing');
+		}
+		else {
+			this.next();
+		}
 	}
 });
 
