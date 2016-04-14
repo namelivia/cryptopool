@@ -15,6 +15,8 @@ template(name='navbar')
 				ul(class='nav navbar-nav')
 					li(class='active')
 						a(href='{{pathFor route="calendar"}}') Calendar
+					li(class='active')
+						a(href='{{pathFor route="teams"}}') Teams
 				ul(class='nav navbar-nav navbar-right')
 					+currentUserInfo
 					+atNavButton
