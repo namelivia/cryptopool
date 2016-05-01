@@ -4,8 +4,9 @@ template(name='lastPools')
 		table(class='table table-bordered')
 			thead
 				tr
-					td poolId
-					td matchId
+					td Match date
+					td Match
+					td Pool details
 			tbody
 				each pools
 					+poolHistoryEntry(pool=this)

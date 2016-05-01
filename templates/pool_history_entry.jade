@@ -1,6 +1,7 @@
 template(name='poolHistoryEntry')
 	tr
-		td #{poolId}
-		td #{matchId}
+		td #{prettyMatchDateTime}
+		td 
+			+matchTextLink(match=poolMatch)
 		td
 			a(href='{{pathFor route="poolDetails" matchId=matchId id=poolId}}') Details

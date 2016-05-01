@@ -6,9 +6,7 @@ if (Meteor.isClient) {
 	//helpers
 	Template.nextPools.helpers({
 		pools : function() {
-			var pools = Pools.find();
-			console.log(pools);
-			return pools;
+			return Pools.find();
 		}
 	});
 }
