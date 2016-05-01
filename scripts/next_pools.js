@@ -1,19 +1,14 @@
 'use strict';
 if (Meteor.isClient) {
-	Meteor.subscribe('nextPools');
+	Meteor.subscribe('nextPlayingPoolsByUserId');
 	//init
 	//events
 	//helpers
 	Template.nextPools.helpers({
-		matches: function() {
-			return Pools.find(
-				{ date : { 
-					$gte : new Date()
-						}
-				},{
-					limit : 5
-				}
-			);
+		pools : function() {
+			var pools = Pools.find();
+			console.log(pools);
+			return pools;
 		}
 	});
 }

@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /root/cryptoporra
+cd /home/nacho/cryptoporra
 echo "=====[UPDATING DATA]====="
 cd scrappers
 python2.7 scrapperLaLigaOficial.py 5

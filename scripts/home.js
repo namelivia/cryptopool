@@ -4,8 +4,7 @@ Router.route('/', {
 	template: 'home',
 	waitOn: function() {
 		return [
-			Meteor.subscribe('teams')/*,
-			Meteor.subscribe('poolsByUserId')*/
+			Meteor.subscribe('teams')
 		];
 	},
 	onBeforeAction: function() {
@@ -25,10 +24,4 @@ if (Meteor.isClient) {
 	//events
 
 	//helpers
-
-	Template.home.helpers({
-		/*poolHistory: function(){
-			return Pools.find();
-		}*/
-	});
 }

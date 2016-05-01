@@ -13,10 +13,12 @@ if (Meteor.isClient) {
 	Session.set("searchDate", new Date());
 }
 
+var Future; 
+
 if (Meteor.isServer) {
 	Meteor.startup(function () {
 		// code to run on server at startup
-		var Future = Npm.require('fibers/future');
+		Future = Npm.require('fibers/future');
 	});
 	//Configure Twit
 	var Twit = new TwitMaker({
@@ -64,7 +66,8 @@ if (Meteor.isServer) {
 					status_id : 0,
 					user_id : Meteor.user()._id,
 					users : [],
-					createdAt: new Date() // current time
+					matchDate : match.date,
+					createdAt: new Date()
 				});
 			} else {
 				throw new Meteor.Error(
@@ -97,6 +100,34 @@ if (Meteor.isServer) {
 				limit : 5
 			});
 		return nextMatches;
+	});
+
+	Meteor.publish("nextPlayingPoolsByUserId", function () {
+		var user = Meteor.users.findOne({ _id : this.userId });
+		var nextPools = Pools.find(
+			{_id: {$in: user.poolHistory},
+			matchDate: { 
+				$gte : new Date()
+					}
+			},{
+				limit : 5
+			});
+		return nextPools;
+	});
+
+	Meteor.publish("lastPlayedPoolsByUserId", function () {
+		var user = Meteor.users.findOne({ _id : this.userId });
+		var lastPools = Pools.find(
+			{_id: {$in: user.poolHistory},
+			matchDate: { 
+				$lte : new Date()
+					}
+			},{
+				limit:5, sort: {
+					date:-1
+				}
+			});
+		return lastPools;
 	});
 
 	Meteor.publish("matchesByDateRange", function (startDate,endDate) {
