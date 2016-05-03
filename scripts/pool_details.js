@@ -63,9 +63,13 @@ if (Meteor.isClient) {
 			}
 		},
 		userAlreadyIn: function() {
-			return _.includes(_.map(this.pool.users,function(user){
-				return user._id;
-			}),Meteor.user()._id);
+			var result = _.find(this.pool.users,function(user){
+				return user._id == Meteor.user()._id;
+			});
+			return result;
 		},
+		timeLeft: function() {
+			return moment.duration(moment(this.pool.matchDate).diff(moment())).humanize();
+		}
 	});
 }

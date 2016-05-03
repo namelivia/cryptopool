@@ -6,12 +6,12 @@ template(name='poolDetails')
 			h4(class='text-center') Status: #{displayStatus}
 		div(class='row')
 			div(class='col-md-3 col-md-offset-1')
-				h3 Amount: #{pool.amount}
-				h3 User count: #{userCount}
-				h3 Total amount: #{totalAmount}
+				h3 Participation amount: #{pool.amount}
+				h3 Number of participants: #{userCount}
+				h3 Total prize amount: #{totalAmount}
 				if userAlreadyIn
-					h3 Your current score:
-					h3 X days left for the match
+					h3 Your current score: #{userAlreadyIn.localScore} - #{userAlreadyIn.visitantScore}
+					h3 #{timeLeft} left for the match
 				else
 					button(class='btn btn-primary btn-success join' value='Participate') Participate
 		div(class='row')
