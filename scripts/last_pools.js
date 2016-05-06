@@ -6,7 +6,11 @@ if (Meteor.isClient) {
 	//helpers
 	Template.lastPools.helpers({
 		pools: function() {
-			return Pools.find();
+			return Pools.find({
+				matchDate: {
+					$lte : new Date()
+				}
+			});
 		}
 	});
 }

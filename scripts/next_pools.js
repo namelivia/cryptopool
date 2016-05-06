@@ -5,8 +5,12 @@ if (Meteor.isClient) {
 	//events
 	//helpers
 	Template.nextPools.helpers({
-		pools : function() {
-			return Pools.find();
+		pools: function() {
+			return Pools.find({
+				matchDate: {
+					$gte : new Date()
+				}
+			});
 		}
 	});
 }
