@@ -55,6 +55,13 @@ if (Meteor.isServer) {
 			}
 		},
 		'createPool': function(amount,matchId){
+			if (isNaN(amount) || amount < 1) {
+				throw new Meteor.Error(
+					'invalid-token-amount',
+					'Invalid token amount',
+					'The amount of tokens for the pool is not valid'
+				);
+			}
 			var match = Matches.findOne({
 				_id: matchId
 			});
