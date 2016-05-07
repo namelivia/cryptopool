@@ -121,7 +121,8 @@ class ScrapperLaLigaOficial:
 		logger.debug('Loading exsiting pools')
 		poolsCollection = db.pools
 		logger.debug('Loading already feched links')
-		lines = tuple(open('fetchedLinks', 'r'))
+		execPath = os.path.dirname(os.path.realpath(__file__))
+		lines = tuple(open(execPath+'/../fetchedLinks', 'r'))
 		lines = [line[:-1] for line in lines]
 
 #Initializing counters
