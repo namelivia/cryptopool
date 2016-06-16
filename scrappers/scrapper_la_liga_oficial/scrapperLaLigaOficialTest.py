@@ -204,24 +204,50 @@ class scrapperLaLigaOficialTest(unittest.TestCase):
 		data = self.scrapper.data_find(page)
 		self.assertEqual('script3longestline',data)
 
-	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.time.time')
-	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.requests.get')
-	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.requests.post')
-	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.ScrapperLaLigaOficial.data_find')
 	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.ScrapperLaLigaOficial.extract_hashtag')
 	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.ScrapperLaLigaOficial.extract_referee')
 	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.ScrapperLaLigaOficial.extract_team')
 	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.ScrapperLaLigaOficial.extract_match_date')
 	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.ScrapperLaLigaOficial.extract_score_and_status')
+	def test_extracting_a_match_info(
+		self,
+		mock_extract_score_and_status,
+		mock_extract_match_date,
+		mock_extract_team,
+		mock_extract_referee,
+		mock_extract_hashtag
+	):
+		mock_extract_score_and_status.return_value = (1,2,1)
+		mock_extract_match_date.return_value = datetime(2015, 10, 4, 2, 20, 19)
+		mock_extract_team.return_value = (1,ObjectId('57109b1cc12fe22e66bfc09d'));
+		mock_extract_referee.return_value = ('RefereeName RefereeSurname')
+		mock_extract_hashtag.return_value = (0,'#hashtag')
+		htmlString = """
+		fooBarfooBar
+			<span class="arbitro last">Referee1</span>
+		fooBarfooBar
+		""";
+		match = html.fromstring(htmlString)
+		counters = {
+			'newMatchesCounter' : 0,
+			'newTeamsCounter' : 0,
+			'updatedMatchesCounter' : 0,
+			'matchesWithoutHashtag' : 0,
+			'matchesWithoutLink' : 0
+		}
+		test = self.scrapper.fetch_match_info(match,counters, 'teamsCollection')
+		#TODO: private functions called_with expectations (referee, hashtag, etc..)
+
+	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.time.time')
+	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.requests.get')
+	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.requests.post')
+	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.ScrapperLaLigaOficial.data_find')
+	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.ScrapperLaLigaOficial.fetch_match_info')
 	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.ScrapperLaLigaOficial.create_or_update_the_match')
 	def test_scrapping(
 			self,
 			mock_create_or_update_the_match,
-			mock_extract_score_and_status,
-			mock_extract_match_date,
-			mock_extract_team,
-			mock_extract_referee,
-			mock_extract_hashtag,
+			mock_fetch_match_info,
 			mock_data_find,
 			mock_requests_post,
 			mock_requests_get,
@@ -231,13 +257,19 @@ class scrapperLaLigaOficialTest(unittest.TestCase):
 		calendarUrl = 'http://www.laliga.es/calendario-horario/';
 		eventId = u'#1_1_1_10_8_2016';
 		eventUrl = 'http://www.laliga.es/includes/ajax.php?action=ver_evento_calendario';
+		matchInfo = {
+				'foo' : 'bar'
+		}
+		counters = {
+			'newMatchesCounter' : 0,
+			'newTeamsCounter' : 0,
+			'updatedMatchesCounter' : 0,
+			'matchesWithoutHashtag' : 0,
+			'matchesWithoutLink' : 0
+		}
 
 		mock_create_or_update_the_match.return_value = (10,3)
-		mock_extract_score_and_status.return_value = (1,2,1)
-		mock_extract_match_date.return_value = datetime(2015, 10, 4, 2, 20, 19)
-		mock_extract_team.return_value = (1,ObjectId('57109b1cc12fe22e66bfc09d'));
-		mock_extract_referee.return_value = ('RefereeName RefereeSurname')
-		mock_extract_hashtag.return_value = (0,'#hashtag')
+		mock_fetch_match_info.return_value = (matchInfo, counters)
 		mock_data_find.return_value = '[{"url" : "'+eventId+'"}]'
 		mock_requests_get.return_value.text = self.get_html_example(calendarUrl)
 		mock_requests_post.return_value.text = self.get_html_example(eventUrl)

@@ -167,6 +167,42 @@ class ScrapperLaLigaOficial:
 		#Returns the longest line of the longest script
 		return scripts[longestScriptIndex].text.split('\n')[longestContentIndex][20:ANNOYING_LENGTH]
 
+	def fetch_match_info(self, match, counters, teamsCollection):
+		logger = logging.getLogger("scrapperLaLigaOficial")
+		#Fetch one match
+		logger.debug('Fetching a match')
+		newMatch = {}
+
+		#TODO: From here this should be moved to extract_details
+		prelink = match.xpath('.//a')
+		#Check if the match does not have a link
+		if len(prelink) == 0:
+			counters['matchesWithoutLink'] += 1;
+			#continue
+			return
+
+		#start retrieving a match info
+		link = prelink[0].get('href')
+
+		#extract the hashtag TODO: Extract details
+		(counters['matchesWithoutHashtag'], newMatch['hashtag']) = self.extract_hashtag(link, counters['matchesWithoutHashtag'])
+
+		#extract the referee
+		newMatch['arbitro'] = self.extract_referee(match)
+		
+		#extract the local team
+		(counters['newTeamsCounter'],newMatch['player1']) = self.extract_team(match,True,teamsCollection,counters['newTeamsCounter'])
+
+		#extract the visitant team
+		(counters['newTeamsCounter'],newMatch['player2']) = self.extract_team(match,False,teamsCollection,counters['newTeamsCounter'])
+
+		#extract the date
+		newMatch['date'] = self.extract_match_date(match)
+
+		#extract the score and the status
+		(newMatch['score1'], newMatch['score2'], newMatch['status']) = self.extract_score_and_status(match)
+		return (newMatch, counters)
+
 #main
 	def start_scrapping(self,dateRange):
 
@@ -232,41 +268,11 @@ class ScrapperLaLigaOficial:
 			logger.debug('Fetching the matches')
 			matches = tree.xpath('//div[contains(@class,"partido")]')[2:]
 
-			for idx,match in enumerate(matches):
-				#Fetch one match
-				logger.debug('Fetching a match')
-				newMatch = {}
-
-				#TODO: From here this should be moved to extract_details
-				prelink = match.xpath('.//a')
-				#Check if the match does not have a link
-				if len(prelink) == 0:
-					counters['matchesWithoutLink'] += 1;
-					continue
-
-				#start retrieving a match info
-				link = prelink[0].get('href')
-
-				#extract the hashtag TODO: Extract details
-				(counters['matchesWithoutHashtag'], newMatch['hashtag']) = self.extract_hashtag(link, counters['matchesWithoutHashtag'])
-
-				#extract the referee
-				newMatch['arbitro'] = self.extract_referee(match)
-				
-				#extract the local team
-				(counters['newTeamsCounter'],newMatch['player1']) = self.extract_team(match,True,teamsCollection,counters['newTeamsCounter'])
-
-				#extract the visitant team
-				(counters['newTeamsCounter'],newMatch['player2']) = self.extract_team(match,False,teamsCollection,counters['newTeamsCounter'])
-
-				#extract the date
-				newMatch['date'] = self.extract_match_date(match)
-
-				#extract the score and the status
-				(newMatch['score1'], newMatch['score2'], newMatch['status']) = self.extract_score_and_status(match)
+			for idx, match in enumerate(matches):
+				(matchInfo, counters) = self.fetch_match_info(match, counters, teamsCollection)
 
 				#create or update the match
-				(counters['newMatchesCounter'], counters['updatedMatchesCounter']) = self.create_or_update_the_match(matchesCollection, newMatch, counters['newMatchesCounter'], counters['updatedMatchesCounter'])
+				(counters['newMatchesCounter'], counters['updatedMatchesCounter']) = self.create_or_update_the_match(matchesCollection, matchInfo, counters['newMatchesCounter'], counters['updatedMatchesCounter'])
 				
 			#write it in the already fetched links
 			fh.write(event['url']+'\n')
