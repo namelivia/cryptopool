@@ -57,6 +57,7 @@ class ScrapperLaLigaOficial:
 		self.update_match_pools(foundMatch['_id'], match['score1'], match['score2']);
 		return updatedMatchesCounter + 1
 
+#TODO: This is not even done!
 #Updates the pending pools for the updated match
 	def update_match_pools(self,matchId, score1, score2):
 		pools = poolsCollection.find({'match_id' : matchId});
@@ -99,12 +100,34 @@ class ScrapperLaLigaOficial:
 			result = (newTeamsCounter,foundTeam['_id'])
 		return result
 
+#Finds the data in the page
+	def data_find(self, page):
+		#if something breaks try changing this
+		ANNOYING_LENGTH = -2
+		#ANNOYING_LENGTH = -1
+		tree = html.fromstring(page)
+		scripts = tree.xpath('//script')
+		#This is pretty ugly
+		longestScriptIndex = 1
+		longestScriptLength = 0
+		#finds the longest script in scripts
+		for key,script in enumerate(scripts):
+			if script.text is not None and len(script.text) > longestScriptLength:
+				longestScriptIndex = key
+				longestScriptLength = len(script.text)
+		#Splits the scrip in lines and finds the longest line
+		longestContentIndex = 1
+		longestContentLength = 0
+		for key,content in enumerate(scripts[longestScriptIndex].text.split('\n')):
+			if content is not None and len(content) > longestContentLength:
+				longestContentIndex = key
+				longestContentLength = len(content)
+		#Returns the longest line of the longest script
+		return scripts[longestScriptIndex].text.split('\n')[longestContentIndex][20:ANNOYING_LENGTH]
+
 #main
 	def start_scrapping(self,dateRange):
 
-#if something breaks try changing this
-		ANNOYING_LENGTH = -2
-#ANNOYING_LENGTH = -1
 		db = MongoClient('localhost',3001).meteor
 #init logging
 		logger = self.init_logger()
@@ -139,17 +162,7 @@ class ScrapperLaLigaOficial:
 #Fecthing the calendar
 		logger.debug('Fetching the calendar')
 		page = requests.get('http://www.laliga.es/calendario-horario/')
-		tree = html.fromstring(page.text)
-		scripts = tree.xpath('//script')
-		#Ugly!
-		longestScriptIndex = 8
-		for key,script in enumerate(scripts):
-			if script.text is not None and len(script.text) > 1000:
-				longestScriptIndex = key
-		for key,content in enumerate(scripts[longestScriptIndex].text.split('\n')):
-			if content is not None and len(content) > 10000:
-				longestContentIndex = key
-		data = scripts[longestScriptIndex].text.split('\n')[longestContentIndex][20:ANNOYING_LENGTH]
+		data = self.data_find(page.text)
 		parsedData = json.loads(data)
 
 #Start fetching the events
@@ -161,7 +174,7 @@ class ScrapperLaLigaOficial:
 			#TODO: Check the updating range time
 			splittedEvents = event['url'].split('_');
 			eventDate = dateutil.parser.parse(splittedEvents[5]+'-'+splittedEvents[4]+'-'+splittedEvents[3])
-			delta = datetime.now() - eventDate
+			delta = datetime.fromtimestamp(startTime) - eventDate
 			if event['url'] in lines and dateRange is not None and abs(delta).days > dateRange:
 				logger.debug('I already have the '+event['url']+' event')
 				continue
@@ -196,9 +209,9 @@ class ScrapperLaLigaOficial:
 				prehashtag = detailsTree.xpath('.//div[@id="hashtag"]')
 				if len(prehashtag) > 0:
 					hashtag = prehashtag[0].text
+					newMatch['hashtag'] = hashtag
 				else: 
 					counters['matchesWithoutHashtag'] += 1;
-				newMatch['hashtag'] = hashtag
 
 				#set the referee
 				newMatch['arbitro'] = self.extract_referee(match)
