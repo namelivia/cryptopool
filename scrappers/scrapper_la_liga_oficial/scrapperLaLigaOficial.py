@@ -47,22 +47,36 @@ class ScrapperLaLigaOficial:
 		return newMatchesCounter + 1
 
 #Update the match if needed
-	def update_match_if_needed(self,matchesCollection,foundMatch,match,updatedMatchesCounter,poolsCollection):
+	def update_match_if_needed(self,matchesCollection,foundMatch,match,updatedMatchesCounter):
 		if (foundMatch['score1'] == match['score1'] and foundMatch['score2'] == match['score2'] and foundMatch['status'] == match['status']) :
 			return updatedMatchesCounter
 		foundMatch['score1'] = match['score1']
 		foundMatch['score2'] = match['score2']
 		foundMatch['status'] = match['status']
 		matchesCollection.update({'_id' : foundMatch['_id']}, {"$set" : foundMatch})
-		self.update_match_pools(foundMatch['_id'], match['score1'], match['score2']);
+		#TODO
+		#self.update_match_pools(foundMatch['_id'], match['score1'], match['score2']);
 		return updatedMatchesCounter + 1
 
 #TODO: This is not even done!
 #Updates the pending pools for the updated match
-	def update_match_pools(self,matchId, score1, score2):
-		pools = poolsCollection.find({'match_id' : matchId});
-		print(pools);
-		exit();
+#	def update_match_pools(self,matchId, score1, score2):
+#		pools = poolsCollection.find({'match_id' : matchId});
+#		print(pools);
+#		exit();
+
+#Extract the match score and sets its status
+	def extract_score_and_status(self,match):
+		result = {}
+		horaResultadoDiv = match.xpath('.//span[@class="hora-resultado left"]')
+		horaResultado = horaResultadoDiv[0].xpath('.//span[@class="horario-partido hora"]')
+		result['score1'] = horaResultado[0].text.split("-")[0]
+		result['score2'] = horaResultado[0].text.split("-")[1]
+		if result['score1'] == "" and result['score2'] == "":
+			result['status'] = 0
+		else:
+			result['status'] = 1
+		return (result['score1'], result['score2'], result['status'])
 
 #Extracts the match date
 	def extract_match_date(self,match):
@@ -99,6 +113,34 @@ class ScrapperLaLigaOficial:
 		else:
 			result = (newTeamsCounter,foundTeam['_id'])
 		return result
+
+#Extracts a match hashtag
+	def extract_hashtag(self,link,matchesWithoutHashtagCounter):
+		detailsPage = requests.post(link)
+		detailsTree = html.fromstring(detailsPage.text)
+		prehashtag = detailsTree.xpath('.//div[@id="hashtag"]')
+		if len(prehashtag) > 0:
+			hashtag = prehashtag[0].text
+			result = (matchesWithoutHashtagCounter,hashtag)
+		else: 
+			result = (matchesWithoutHashtagCounter+1,None)
+		return result
+
+#Creates or updates a match on the database
+	def create_or_update_the_match(self, matchesCollection, match, newMatchesCounter, updatedMatchesCounter):
+		logger = logging.getLogger("scrapperLaLigaOficial")
+		foundMatch = matchesCollection.find_one({
+			"player1" : ObjectId(match['player1']),
+			"player2" : ObjectId(match['player2']),
+			"date" : match['date']
+		})
+		if foundMatch is None:
+			logger.debug('Inserting a new match')
+			newMatchesCounter = self.insert_a_new_match(matchesCollection,match,newMatchesCounter)
+		else : 
+			logger.debug('Updating an existing match if needed')
+			updatedMatchesCounter = self.update_match_if_needed(matchesCollection,foundMatch,match,updatedMatchesCounter)
+		return (newMatchesCounter, updatedMatchesCounter)
 
 #Finds the data in the page
 	def data_find(self, page):
@@ -141,8 +183,8 @@ class ScrapperLaLigaOficial:
 		teamsCollection = db.teams
 		logger.debug('Loading exsiting matches')
 		matchesCollection = db.matches
-		logger.debug('Loading exsiting pools')
-		poolsCollection = db.pools
+		#logger.debug('Loading exsiting pools')
+		#poolsCollection = db.pools
 		logger.debug('Loading already feched links')
 		execPath = os.path.dirname(os.path.realpath(__file__))
 		lines = tuple(open(execPath+'/../fetchedLinks', 'r'))
@@ -193,6 +235,9 @@ class ScrapperLaLigaOficial:
 			for idx,match in enumerate(matches):
 				#Fetch one match
 				logger.debug('Fetching a match')
+				newMatch = {}
+
+				#TODO: From here this should be moved to extract_details
 				prelink = match.xpath('.//a')
 				#Check if the match does not have a link
 				if len(prelink) == 0:
@@ -200,53 +245,28 @@ class ScrapperLaLigaOficial:
 					continue
 
 				#start retrieving a match info
-				newMatch = {}
 				link = prelink[0].get('href')
-				detailsPage = requests.post(link)
-				detailsTree = html.fromstring(detailsPage.text)
 
-				#get the hastag
-				prehashtag = detailsTree.xpath('.//div[@id="hashtag"]')
-				if len(prehashtag) > 0:
-					hashtag = prehashtag[0].text
-					newMatch['hashtag'] = hashtag
-				else: 
-					counters['matchesWithoutHashtag'] += 1;
+				#extract the hashtag TODO: Extract details
+				(counters['matchesWithoutHashtag'], newMatch['hashtag']) = self.extract_hashtag(link, counters['matchesWithoutHashtag'])
 
-				#set the referee
+				#extract the referee
 				newMatch['arbitro'] = self.extract_referee(match)
 				
-				#try to locate the local team
+				#extract the local team
 				(counters['newTeamsCounter'],newMatch['player1']) = self.extract_team(match,True,teamsCollection,counters['newTeamsCounter'])
 
-				#try to locate the visitant team
+				#extract the visitant team
 				(counters['newTeamsCounter'],newMatch['player2']) = self.extract_team(match,False,teamsCollection,counters['newTeamsCounter'])
 
-				#process the date
+				#extract the date
 				newMatch['date'] = self.extract_match_date(match)
 
-				#process the score
-				horaResultadoDiv = match.xpath('.//span[@class="hora-resultado left"]')
-				horaResultado = horaResultadoDiv[0].xpath('.//span[@class="horario-partido hora"]')
-				newMatch['score1'] = horaResultado[0].text.split("-")[0]
-				newMatch['score2'] = horaResultado[0].text.split("-")[1]
-				if newMatch['score1'] == "" and newMatch['score2'] == "":
-					newMatch['status'] = 0
-				else:
-					newMatch['status'] = 1
+				#extract the score and the status
+				(newMatch['score1'], newMatch['score2'], newMatch['status']) = self.extract_score_and_status(match)
 
-				#Try to find if the match is already in the database, and has to be updated or inserted	
-				foundMatch = matchesCollection.find_one({
-					"player1" : ObjectId(newMatch['player1']),
-					"player2" : ObjectId(newMatch['player2']),
-					"date" : newMatch['date'],
-				})
-				if foundMatch is None:
-					logger.debug('Inserting a new match')
-					counters['newMatchesCounter'] = self.insert_a_new_match(matchesCollection,newMatch,counters['newMatchesCounter'])
-				else : 
-					logger.debug('Updating an existing match if needed')
-					counters['updatedMatchesCounter'] = self.update_match_if_needed(matchesCollection,foundMatch,newMatch,counters['updatedMatchesCounter'],poolsCollection)
+				#create or update the match
+				(counters['newMatchesCounter'], counters['updatedMatchesCounter']) = self.create_or_update_the_match(matchesCollection, newMatch, counters['newMatchesCounter'], counters['updatedMatchesCounter'])
 				
 			#write it in the already fetched links
 			fh.write(event['url']+'\n')
