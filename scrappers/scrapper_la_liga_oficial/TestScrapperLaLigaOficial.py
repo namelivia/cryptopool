@@ -10,7 +10,7 @@ from bson.objectid import ObjectId
 import time
 import io
 
-class scrapperLaLigaOficialTest(unittest.TestCase):
+class TestScrapperLaLigaOficial(unittest.TestCase):
 
 	def setUp(self):
 		self.scrapper = ScrapperLaLigaOficial()
