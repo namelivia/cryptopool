@@ -90,11 +90,9 @@ class ScrapperLaLigaOficial:
 		prelink = match.xpath('.//a')
 		#Check if the match does not have a link
 		if len(prelink) == 0:
-			#TODO: Deal with this
-			print('TODO!')
+			#TODO: 
 			#counters['matchesWithoutLink'] += 1;
-			#continue?
-			#return?
+			return
 
 		#start retrieving a match info
 		link = prelink[0].get('href')
@@ -176,9 +174,8 @@ class ScrapperLaLigaOficial:
 			matchUpdater = MatchUpdater()
 			for idx, match in enumerate(matches):
 				matchInfo = self.fetch_match_info(match, teamsCollection)
-
-				#create or update the match
-				matchUpdater.create_or_update_the_match(matchesCollection, matchInfo)
+				if (matchInfo is not None) :
+					matchUpdater.create_or_update_the_match(matchesCollection, matchInfo)
 				
 			#write it in the already fetched links
 			fh.write(event['url']+'\n')

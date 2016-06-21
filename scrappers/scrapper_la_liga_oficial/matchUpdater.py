@@ -20,15 +20,15 @@ class MatchUpdater:
 			self.update_match_if_needed(matchesCollection,foundMatch,match)
 
 #Insert a new match in the database
-	def insert_a_new_match(self,matchesCollection,match,newMatchesCounter):
+	def insert_a_new_match(self,matchesCollection,match):
 		matchesCollection.insert(match)
 		executionCounters = ExecutionCounters()
 		executionCounters.increase_new_matches_counter()
 
 #Update the match if needed
-	def update_match_if_needed(self,matchesCollection,foundMatch,match,updatedMatchesCounter):
+	def update_match_if_needed(self,matchesCollection,foundMatch,match):
 		if (foundMatch['score1'] == match['score1'] and foundMatch['score2'] == match['score2'] and foundMatch['status'] == match['status']) :
-			return updatedMatchesCounter
+			return 
 		foundMatch['score1'] = match['score1']
 		foundMatch['score2'] = match['score2']
 		foundMatch['status'] = match['status']
