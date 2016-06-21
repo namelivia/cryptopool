@@ -4,6 +4,7 @@ import dateutil.parser
 import requests
 from lxml import html
 from executionCounters import ExecutionCounters
+from teamsCollectionManager import TeamsCollectionManager
 
 class MatchInfoExtractor:
 
@@ -50,18 +51,19 @@ class MatchInfoExtractor:
 			executionCounters.increase_matches_without_hashtag_counter()
 
 #Extracts a team
-	def extract_team(self,match,isLocal,teamsCollection):
+	def extract_team(self,match,isLocal):
 		divKey = 'local' if isLocal else 'visitante'
 		teamDiv = match.xpath('.//span[@class="equipo left '+divKey+'"]')
 		team = teamDiv[0].xpath('.//span[@class="team"]')
-		foundTeam = teamsCollection.find_one({"name" : team[0].text})
+		teamsCollectionManager = TeamsCollectionManager()
+		foundTeam = teamsCollectionManager.find_a_team_by_name(team[0].text)
 		if foundTeam is None:
 			#Insert a new team
 			logger = logging.getLogger("scrapperLaLigaOficial")
 			logger.debug('Inserting a new team')
 			snake_case = unidecode(unicode(team[0].text).lower().replace('r. ','real ').replace(' ','_').replace('.',''))
 			newTeam = {'name' : team[0].text, 'tag' : snake_case}
-			newTeamId = teamsCollection.insert(newTeam)
+			newTeamId = teamsCollectionManager.insert_a_new_team(newTeam)
 			executionCounters = ExecutionCounters() 
 			executionCounters.increase_new_teams_counter()
 			return newTeamId

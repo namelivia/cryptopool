@@ -46,14 +46,6 @@ class ScrapperLaLigaOficial:
 		logger.addHandler(handler)
 		return logger
 
-#TODO: This is not even done! And I think this scrapper should not do it
-#Updates the pending pools for the updated match
-#	def update_match_pools(self,matchId, score1, score2):
-#		pools = poolsCollection.find({'match_id' : matchId});
-#		print(pools);
-#		exit();
-
-
 #Finds the data in the page
 	def data_find(self, page):
 		#if something breaks try changing this
@@ -79,7 +71,7 @@ class ScrapperLaLigaOficial:
 		#Returns the longest line of the longest script
 		return scripts[longestScriptIndex].text.split('\n')[longestContentIndex][20:ANNOYING_LENGTH]
 
-	def fetch_match_info(self, match, teamsCollection):
+	def fetch_match_info(self, match):
 		matchInfoExtractor = MatchInfoExtractor()
 		logger = logging.getLogger("scrapperLaLigaOficial")
 		#Fetch one match
@@ -104,10 +96,10 @@ class ScrapperLaLigaOficial:
 		newMatch['arbitro'] = matchInfoExtractor.extract_referee(match)
 		
 		#extract the local team
-		newMatch['player1'] = matchInfoExtractor.extract_team(match,True,teamsCollection)
+		newMatch['player1'] = matchInfoExtractor.extract_team(match,True)
 
 		#extract the visitant team
-		newMatch['player2'] = matchInfoExtractor.extract_team(match,False,teamsCollection)
+		newMatch['player2'] = matchInfoExtractor.extract_team(match,False)
 
 		#extract the date
 		newMatch['date'] = matchInfoExtractor.extract_match_date(match)
@@ -127,12 +119,8 @@ class ScrapperLaLigaOficial:
 		startTime = time.time()
 
 #load existing data
-		logger.debug('Loading existing teams')
-		teamsCollection = db.teams
 		logger.debug('Loading exsiting matches')
 		matchesCollection = db.matches
-		#logger.debug('Loading exsiting pools')
-		#poolsCollection = db.pools
 		logger.debug('Loading already feched links')
 		execPath = os.path.dirname(os.path.realpath(__file__))
 		lines = tuple(open(execPath+'/../fetchedLinks', 'r'))
@@ -173,7 +161,7 @@ class ScrapperLaLigaOficial:
 
 			matchUpdater = MatchUpdater()
 			for idx, match in enumerate(matches):
-				matchInfo = self.fetch_match_info(match, teamsCollection)
+				matchInfo = self.fetch_match_info(match)
 				if (matchInfo is not None) :
 					matchUpdater.create_or_update_the_match(matchesCollection, matchInfo)
 				

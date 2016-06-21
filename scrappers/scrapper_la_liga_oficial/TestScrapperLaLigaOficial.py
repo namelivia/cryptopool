@@ -92,11 +92,11 @@ class TestScrapperLaLigaOficial(unittest.TestCase):
 			'matchesWithoutHashtag' : 0,
 			'matchesWithoutLink' : 0
 		}
-		result = self.scrapper.fetch_match_info(match, 'teamsCollection')
-		#mock_extract_hashtag.assert_called_with(match, counters, teamsCollection)
+		result = self.scrapper.fetch_match_info(match)
+		#mock_extract_hashtag.assert_called_with(match, counters)
 		mock_extract_referee.assert_called_with(match)
-		#mock_extract_team.assert_called_with(match, True, teamsCollection, counter['newTeamsCounter'])
-		#mock_extract_team.assert_called_with(match, False, teamsCollection, counter['newTeamsCounter'])
+		#mock_extract_team.assert_called_with(match, True)
+		#mock_extract_team.assert_called_with(match, False)
 		mock_extract_match_date.assert_called_with(match)
 		mock_extract_score_and_status.assert_called_with(match)
 		self.assertEqual(expectedMatchInfo, result)
@@ -116,7 +116,6 @@ class TestScrapperLaLigaOficial(unittest.TestCase):
 			mock_requests_get,
 			mock_time
 		):
-		teamsCollection = mongomock.MongoClient().db.collection
 		calendarUrl = 'http://www.laliga.es/calendario-horario/';
 		eventId = u'#1_1_1_10_8_2016';
 		eventUrl = 'http://www.laliga.es/includes/ajax.php?action=ver_evento_calendario';
@@ -144,7 +143,7 @@ class TestScrapperLaLigaOficial(unittest.TestCase):
 		mock_requests_post.assert_called_with(eventUrl, data={'filtro': eventId})
 		mock_requests_post.assert_called_with(eventUrl, data={'filtro': eventId})
 		#TODO
-		#mock_fetch_match_info.assert_called_with(match, counters, teamsCollection)
+		#mock_fetch_match_info.assert_called_with(match)
 
 	#Aux functions
 	def get_html_example(self, url):

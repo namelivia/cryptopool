@@ -6,6 +6,7 @@ class MatchUpdater:
 
 #Creates or updates a match on the database
 	def create_or_update_the_match(self, matchesCollection, match):
+		print('llega');
 		logger = logging.getLogger("scrapperLaLigaOficial")
 		foundMatch = matchesCollection.find_one({
 			"player1" : ObjectId(match['player1']),
