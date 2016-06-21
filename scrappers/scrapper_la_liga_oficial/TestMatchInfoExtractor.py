@@ -10,7 +10,7 @@ from bson.objectid import ObjectId
 import time
 import io
 
-class TestmatchInfoExtractor(unittest.TestCase):
+class TestMatchInfoExtractor(unittest.TestCase):
 
 	def setUp(self):
 		self.matchInfoExtractor = MatchInfoExtractor()
