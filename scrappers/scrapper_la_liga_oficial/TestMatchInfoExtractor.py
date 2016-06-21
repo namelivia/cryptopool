@@ -65,9 +65,8 @@ class TestMatchInfoExtractor(unittest.TestCase):
 		fooBarfooBar
 		""";
 		tree = html.fromstring(htmlString)
-		newTeam = self.matchInfoExtractor.extract_team(tree,True,teamsCollection,5)
-		self.assertEqual(5,newTeam[0])
-		self.assertEqual(teams[0]['_id'],newTeam[1])
+		newTeam = self.matchInfoExtractor.extract_team(tree,True,teamsCollection)
+		self.assertEqual(teams[0]['_id'],newTeam)
 
 	def test_extracting_the_local_team_from_a_match_when_the_team_is_not_present(self):
 		teamsCollection = mongomock.MongoClient().db.collection
@@ -79,23 +78,10 @@ class TestMatchInfoExtractor(unittest.TestCase):
 		fooBarfooBar
 		""";
 		tree = html.fromstring(htmlString)
-		newTeam = self.matchInfoExtractor.extract_team(tree,True,teamsCollection,5)
-		self.assertEqual(6,newTeam[0])
-		insertedTeam = teamsCollection.find_one({'_id' : newTeam[1]}) 
+		newTeam = self.matchInfoExtractor.extract_team(tree,True,teamsCollection)
+		insertedTeam = teamsCollection.find_one({'_id' : newTeam}) 
 		self.assertEqual('FooTeam',insertedTeam['name'])
 		self.assertEqual('footeam',insertedTeam['tag'])
-
-	def test_extracting_the_score_and_the_status(self):
-		htmlString = """
-		fooBarfooBar
-			<span class="hora-resultado left">
-				<span class="horario-partido hora">0-1</span>
-			</span>
-		fooBarfooBar
-		""";
-		tree = html.fromstring(htmlString)
-		result = self.matchInfoExtractor.extract_score_and_status(tree);
-		self.assertEqual(('0', '1', 1),result);
 
 	def test_tag_formation_for_spaces(self):
 		teamsCollection = mongomock.MongoClient().db.collection
@@ -107,9 +93,8 @@ class TestMatchInfoExtractor(unittest.TestCase):
 		fooBarfooBar
 		""";
 		tree = html.fromstring(htmlString)
-		newTeam = self.matchInfoExtractor.extract_team(tree,True,teamsCollection,5)
-		self.assertEqual(6,newTeam[0])
-		insertedTeam = teamsCollection.find_one({'_id' : newTeam[1]}) 
+		newTeam = self.matchInfoExtractor.extract_team(tree,True,teamsCollection)
+		insertedTeam = teamsCollection.find_one({'_id' : newTeam}) 
 		self.assertEqual('Foo Team',insertedTeam['name'])
 		self.assertEqual('foo_team',insertedTeam['tag'])
 
@@ -123,9 +108,8 @@ class TestMatchInfoExtractor(unittest.TestCase):
 		fooBarfooBar
 		""";
 		tree = html.fromstring(htmlString)
-		newTeam = self.matchInfoExtractor.extract_team(tree,True,teamsCollection,5)
-		self.assertEqual(6,newTeam[0])
-		insertedTeam = teamsCollection.find_one({'_id' : newTeam[1]}) 
+		newTeam = self.matchInfoExtractor.extract_team(tree,True,teamsCollection)
+		insertedTeam = teamsCollection.find_one({'_id' : newTeam}) 
 		self.assertEqual('Fc. Foo Team',insertedTeam['name'])
 		self.assertEqual('fc_foo_team',insertedTeam['tag'])
 
@@ -139,23 +123,33 @@ class TestMatchInfoExtractor(unittest.TestCase):
 		fooBarfooBar
 		""";
 		tree = html.fromstring(htmlString)
-		newTeam = self.matchInfoExtractor.extract_team(tree,True,teamsCollection,5)
-		self.assertEqual(6,newTeam[0])
-		insertedTeam = teamsCollection.find_one({'_id' : newTeam[1]}) 
+		newTeam = self.matchInfoExtractor.extract_team(tree,True,teamsCollection)
+		insertedTeam = teamsCollection.find_one({'_id' : newTeam}) 
 		self.assertEqual('R. Foo Team',insertedTeam['name'])
 		self.assertEqual('real_foo_team',insertedTeam['tag'])
 
 	@mock.patch('scrapper_la_liga_oficial.matchInfoExtractor.requests.post')
 	def test_extracting_the_match_hashtag(self, mock_requests_get):
 		link = 'http://match_details_url'
-		matchesWithoutHashtagCount = 0
 		mock_requests_get.return_value.text = """"
 		fooBar
 		<div id="hashtag">#hashtag</div>
 		fooBar
 		"""
-		hashtag = self.matchInfoExtractor.extract_hashtag(link,matchesWithoutHashtagCount)
-		self.assertEqual((matchesWithoutHashtagCount,'#hashtag'), hashtag)
+		hashtag = self.matchInfoExtractor.extract_hashtag(link)
+		self.assertEqual('#hashtag', hashtag)
+
+	def test_extracting_the_score_and_the_status(self):
+		htmlString = """
+		fooBarfooBar
+			<span class="hora-resultado left">
+				<span class="horario-partido hora">0-1</span>
+			</span>
+		fooBarfooBar
+		""";
+		tree = html.fromstring(htmlString)
+		result = self.matchInfoExtractor.extract_score_and_status(tree);
+		self.assertEqual(('0', '1', 1),result);
 
 if __name__ == '__main__':
 	unittest.main()

@@ -65,10 +65,10 @@ class TestScrapperLaLigaOficial(unittest.TestCase):
 				expectedMatchInfo['status']
 		)
 		mock_extract_match_date.return_value = expectedMatchInfo['date']
-		mock_extract_team.return_value = (1,expectedMatchInfo['player1']);
+		mock_extract_team.return_value = expectedMatchInfo['player1'];
 		#TODO: ¿Cómo que arbitro?
 		mock_extract_referee.return_value = expectedMatchInfo['arbitro']
-		mock_extract_hashtag.return_value = (0,expectedMatchInfo['hashtag'])
+		mock_extract_hashtag.return_value = expectedMatchInfo['hashtag']
 		htmlString = """
 			<div class="partido even destacado">
             	<a href="http://www.laliga.es/directo/temporada-2015-2016/liga-bbva/38/valencia_real-sociedad" class="clearfix link_partido">
@@ -92,21 +92,14 @@ class TestScrapperLaLigaOficial(unittest.TestCase):
 			'matchesWithoutHashtag' : 0,
 			'matchesWithoutLink' : 0
 		}
-		result = self.scrapper.fetch_match_info(match,counters, 'teamsCollection')
+		result = self.scrapper.fetch_match_info(match, 'teamsCollection')
 		#mock_extract_hashtag.assert_called_with(match, counters, teamsCollection)
 		mock_extract_referee.assert_called_with(match)
 		#mock_extract_team.assert_called_with(match, True, teamsCollection, counter['newTeamsCounter'])
 		#mock_extract_team.assert_called_with(match, False, teamsCollection, counter['newTeamsCounter'])
 		mock_extract_match_date.assert_called_with(match)
 		mock_extract_score_and_status.assert_called_with(match)
-		expectedCounters = {
-			'newMatchesCounter' : 0,
-			'newTeamsCounter' : 1,
-			'updatedMatchesCounter' : 0,
-			'matchesWithoutHashtag' : 0,
-			'matchesWithoutLink' : 0
-		}
-		self.assertEqual((expectedMatchInfo, expectedCounters), result)
+		self.assertEqual(expectedMatchInfo, result)
 
 	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.time.time')
 	@mock.patch('scrapper_la_liga_oficial.scrapperLaLigaOficial.requests.get')
@@ -139,8 +132,7 @@ class TestScrapperLaLigaOficial(unittest.TestCase):
 			'matchesWithoutLink' : 0
 		}
 
-		mock_create_or_update_the_match.return_value = (10,3)
-		mock_fetch_match_info.return_value = (matchInfo, counters)
+		mock_fetch_match_info.return_value = matchInfo
 		mock_data_find.return_value = '[{"url" : "'+eventId+'"}]'
 		mock_requests_get.return_value.text = self.get_html_example(calendarUrl)
 		mock_requests_post.return_value.text = self.get_html_example(eventUrl)

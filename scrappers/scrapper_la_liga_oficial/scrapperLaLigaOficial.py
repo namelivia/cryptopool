@@ -15,12 +15,15 @@ from bson.objectid import ObjectId
 from matchInfoExtractor import MatchInfoExtractor
 from mongoDataGenerator import MongoDataGenerator
 from matchUpdater import MatchUpdater
+from executionCounters import ExecutionCounters
 import sys
 
 class ScrapperLaLigaOficial:
 
 #Prints the global results of the execution
-	def print_results(self,counters):
+	def print_results(self):
+		executionCounters = ExecutionCounters()
+		counters = executionCounters.get_counters()
 		logger = logging.getLogger("scrapperLaLigaOficial")
 		logger.info("{0} new teams added".format(counters['newTeamsCounter']))
 		logger.info("{0} new matches added".format(counters['newMatchesCounter']))
@@ -76,7 +79,7 @@ class ScrapperLaLigaOficial:
 		#Returns the longest line of the longest script
 		return scripts[longestScriptIndex].text.split('\n')[longestContentIndex][20:ANNOYING_LENGTH]
 
-	def fetch_match_info(self, match, counters, teamsCollection):
+	def fetch_match_info(self, match, teamsCollection):
 		matchInfoExtractor = MatchInfoExtractor()
 		logger = logging.getLogger("scrapperLaLigaOficial")
 		#Fetch one match
@@ -87,32 +90,33 @@ class ScrapperLaLigaOficial:
 		prelink = match.xpath('.//a')
 		#Check if the match does not have a link
 		if len(prelink) == 0:
-			counters['matchesWithoutLink'] += 1;
-			#TODO: this continue now return?
-			#continue
-			#return
+			#TODO: Deal with this
+			print('TODO!')
+			#counters['matchesWithoutLink'] += 1;
+			#continue?
+			#return?
 
 		#start retrieving a match info
 		link = prelink[0].get('href')
 
 		#extract the hashtag TODO: Extract details
-		(counters['matchesWithoutHashtag'], newMatch['hashtag']) = matchInfoExtractor.extract_hashtag(link, counters['matchesWithoutHashtag'])
+		newMatch['hashtag'] = matchInfoExtractor.extract_hashtag(link)
 
 		#extract the referee
 		newMatch['arbitro'] = matchInfoExtractor.extract_referee(match)
 		
 		#extract the local team
-		(counters['newTeamsCounter'],newMatch['player1']) = matchInfoExtractor.extract_team(match,True,teamsCollection,counters['newTeamsCounter'])
+		newMatch['player1'] = matchInfoExtractor.extract_team(match,True,teamsCollection)
 
 		#extract the visitant team
-		(counters['newTeamsCounter'],newMatch['player2']) = matchInfoExtractor.extract_team(match,False,teamsCollection,counters['newTeamsCounter'])
+		newMatch['player2'] = matchInfoExtractor.extract_team(match,False,teamsCollection)
 
 		#extract the date
 		newMatch['date'] = matchInfoExtractor.extract_match_date(match)
 
 		#extract the score and the status
 		(newMatch['score1'], newMatch['score2'], newMatch['status']) = matchInfoExtractor.extract_score_and_status(match)
-		return (newMatch, counters)
+		return newMatch
 
 #main
 	def start_scrapping(self,dateRange):
@@ -135,8 +139,6 @@ class ScrapperLaLigaOficial:
 		execPath = os.path.dirname(os.path.realpath(__file__))
 		lines = tuple(open(execPath+'/../fetchedLinks', 'r'))
 		lines = [line[:-1] for line in lines]
-
-#Initializing counters
 
 #Start fetching information
 		logger.debug('Fetching information')
@@ -173,17 +175,17 @@ class ScrapperLaLigaOficial:
 
 			matchUpdater = MatchUpdater()
 			for idx, match in enumerate(matches):
-				(matchInfo, counters) = self.fetch_match_info(match, counters, teamsCollection)
+				matchInfo = self.fetch_match_info(match, teamsCollection)
 
 				#create or update the match
-				(counters['newMatchesCounter'], counters['updatedMatchesCounter']) = matchUpdater.create_or_update_the_match(matchesCollection, matchInfo, counters['newMatchesCounter'], counters['updatedMatchesCounter'])
+				matchUpdater.create_or_update_the_match(matchesCollection, matchInfo)
 				
 			#write it in the already fetched links
 			fh.write(event['url']+'\n')
 		fh.close()
 
 		#print the results and exit
-		self.print_results(counters)
+		self.print_results()
 		endTime = time.time()
 		executionTime = endTime - startTime
 		logger.info("The execution took "+str(executionTime)+" seconds")

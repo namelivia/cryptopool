@@ -3,6 +3,7 @@ from unidecode import unidecode
 import dateutil.parser
 import requests
 from lxml import html
+from executionCounters import ExecutionCounters
 
 class MatchInfoExtractor:
 
@@ -38,19 +39,18 @@ class MatchInfoExtractor:
 			return referee[0].text
 
 #Extracts a match hashtag
-	def extract_hashtag(self,link,matchesWithoutHashtagCounter):
+	def extract_hashtag(self,link):
 		detailsPage = requests.post(link)
 		detailsTree = html.fromstring(detailsPage.text)
 		prehashtag = detailsTree.xpath('.//div[@id="hashtag"]')
 		if len(prehashtag) > 0:
-			hashtag = prehashtag[0].text
-			result = (matchesWithoutHashtagCounter,hashtag)
+			return prehashtag[0].text
 		else: 
-			result = (matchesWithoutHashtagCounter+1,None)
-		return result
+			executionCounters = ExecutionCounters() 
+			executionCounters.increase_matches_without_hashtag_counter()
 
 #Extracts a team
-	def extract_team(self,match,isLocal,teamsCollection,newTeamsCounter):
+	def extract_team(self,match,isLocal,teamsCollection):
 		divKey = 'local' if isLocal else 'visitante'
 		teamDiv = match.xpath('.//span[@class="equipo left '+divKey+'"]')
 		team = teamDiv[0].xpath('.//span[@class="team"]')
@@ -62,7 +62,9 @@ class MatchInfoExtractor:
 			snake_case = unidecode(unicode(team[0].text).lower().replace('r. ','real ').replace(' ','_').replace('.',''))
 			newTeam = {'name' : team[0].text, 'tag' : snake_case}
 			newTeamId = teamsCollection.insert(newTeam)
-			result = (newTeamsCounter+1,newTeamId)
+			executionCounters = ExecutionCounters() 
+			executionCounters.increase_new_teams_counter()
+			return newTeamId
 		else:
-			result = (newTeamsCounter,foundTeam['_id'])
+			return foundTeam['_id']
 		return result
