@@ -15,6 +15,71 @@ class TestMatchInfoExtractor(unittest.TestCase):
 	def setUp(self):
 		self.matchInfoExtractor = MatchInfoExtractor()
 
+	@mock.patch('scrapper_la_liga_oficial.matchInfoExtractor.MatchInfoExtractor.extract_hashtag')
+	@mock.patch('scrapper_la_liga_oficial.matchInfoExtractor.MatchInfoExtractor.extract_referee')
+	@mock.patch('scrapper_la_liga_oficial.matchInfoExtractor.MatchInfoExtractor.extract_team')
+	@mock.patch('scrapper_la_liga_oficial.matchInfoExtractor.MatchInfoExtractor.extract_match_date')
+	@mock.patch('scrapper_la_liga_oficial.matchInfoExtractor.MatchInfoExtractor.extract_score_and_status')
+	def test_extracting_a_match_info(
+		self,
+		mock_extract_score_and_status,
+		mock_extract_match_date,
+		mock_extract_team,
+		mock_extract_referee,
+		mock_extract_hashtag
+	):
+		expectedMatchInfo = {
+			'status': 1, 
+			'player2': ObjectId('57109b1cc12fe22e66bfc09d'), 
+			'player1': ObjectId('57109b1cc12fe22e66bfc09d'), 
+			'score1': 1,
+			'score2': 2,
+			'hashtag': '#hashtag', 
+			'date': datetime(2015, 10, 4, 2, 20, 19),
+			'arbitro': 'RefereeName RefereeSurname'
+		}
+		mock_extract_score_and_status.return_value = (
+				expectedMatchInfo['score1'],
+				expectedMatchInfo['score2'],
+				expectedMatchInfo['status']
+		)
+		mock_extract_match_date.return_value = expectedMatchInfo['date']
+		mock_extract_team.return_value = expectedMatchInfo['player1'];
+		#TODO: ¿Cómo que arbitro?
+		mock_extract_referee.return_value = expectedMatchInfo['arbitro']
+		mock_extract_hashtag.return_value = expectedMatchInfo['hashtag']
+		htmlString = """
+			<div class="partido even destacado">
+            	<a href="http://www.laliga.es/directo/temporada-2015-2016/liga-bbva/38/valencia_real-sociedad" class="clearfix link_partido">
+					<span class="fecha left"><span class='letra'>V</span><span class='dia'> 13-05-2016</span><span class='hora'> · 20:30</span></span>
+					<span class="equipos clearfix left">
+						<span class="equipo left local"><div class="escudo_comun sprite-escudos-xs valencia"> </div><span class="team">Valencia</span></span>
+						<span class="hora-resultado left"><span class="horario-partido hora">0-1</span></span>
+						<span class="equipo left visitante"><div class="escudo_comun sprite-escudos-xs real-sociedad"> </div><span class="team">R. Sociedad</span></span>
+					 </span>
+					 <span class="tv left"> Canal+ Liga/Abono Fútbol</span>
+					 <span class="arbitro last">Velasco Carballo</span>
+                 </a>
+                 <div class="clear"></div>
+             </div>
+		""";
+		match = html.fromstring(htmlString)
+		counters = {
+			'newMatchesCounter' : 0,
+			'newTeamsCounter' : 0,
+			'updatedMatchesCounter' : 0,
+			'matchesWithoutHashtag' : 0,
+			'matchesWithoutLink' : 0
+		}
+		result = self.matchInfoExtractor.fetch_match_info(match)
+		#mock_extract_hashtag.assert_called_with(match, counters)
+		mock_extract_referee.assert_called_with(match)
+		#mock_extract_team.assert_called_with(match, True)
+		#mock_extract_team.assert_called_with(match, False)
+		mock_extract_match_date.assert_called_with(match)
+		mock_extract_score_and_status.assert_called_with(match)
+		self.assertEqual(expectedMatchInfo, result)
+
 	def test_extracting_the_referee_from_a_match(self):
 		htmlString = """
 		fooBarfooBar

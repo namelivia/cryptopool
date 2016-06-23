@@ -8,6 +8,42 @@ from teamsCollectionManager import TeamsCollectionManager
 
 class MatchInfoExtractor:
 
+	def fetch_match_info(self, match):
+		executionCounters = ExecutionCounters()
+		logger = logging.getLogger("scrapperLaLigaOficial")
+		#Fetch one match
+		logger.debug('Fetching a match')
+		newMatch = {}
+
+		#TODO: From here this should be moved to extract_details
+		prelink = match.xpath('.//a')
+		#Check if the match does not have a link
+		if len(prelink) == 0:
+			executionCounters.increase_matches_without_link_counter()
+			return
+
+		#start retrieving a match info
+		link = prelink[0].get('href')
+
+		#extract the hashtag TODO: Extract details
+		newMatch['hashtag'] = self.extract_hashtag(link)
+
+		#extract the referee
+		newMatch['arbitro'] = self.extract_referee(match)
+		
+		#extract the local team
+		newMatch['player1'] = self.extract_team(match,True)
+
+		#extract the visitant team
+		newMatch['player2'] = self.extract_team(match,False)
+
+		#extract the date
+		newMatch['date'] = self.extract_match_date(match)
+
+		#extract the score and the status
+		(newMatch['score1'], newMatch['score2'], newMatch['status']) = self.extract_score_and_status(match)
+		return newMatch
+
 #Extract the match score and sets its status
 	def extract_score_and_status(self,match):
 		result = {}

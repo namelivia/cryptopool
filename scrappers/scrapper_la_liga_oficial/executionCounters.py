@@ -20,5 +20,8 @@ class ExecutionCounters:
 	def increase_updated_matches_counter(self):
 		self.counters['updatedMatchesCounter'] += 1
 
+	def increase_matches_without_link_counter(self):
+		self.counters['matchesWithoutLink'] += 1
+
 	def get_counters(self):
 		return self.counters

@@ -2,21 +2,13 @@
 # -*- coding: utf-8 -*-
 from lxml import html
 from lxml import etree
-from lxml.etree import tostring
 import requests
 import json
 import logging
 import time
 import os
-from datetime import datetime 
-import dateutil.parser
-from pymongo import MongoClient
-from bson.objectid import ObjectId
-from matchInfoExtractor import MatchInfoExtractor
-from mongoDataGenerator import MongoDataGenerator
-from matchUpdater import MatchUpdater
 from executionCounters import ExecutionCounters
-import sys
+from eventsFetcher import EventsFetcher
 
 class ScrapperLaLigaOficial:
 
@@ -71,58 +63,15 @@ class ScrapperLaLigaOficial:
 		#Returns the longest line of the longest script
 		return scripts[longestScriptIndex].text.split('\n')[longestContentIndex][20:ANNOYING_LENGTH]
 
-	def fetch_match_info(self, match):
-		matchInfoExtractor = MatchInfoExtractor()
-		logger = logging.getLogger("scrapperLaLigaOficial")
-		#Fetch one match
-		logger.debug('Fetching a match')
-		newMatch = {}
-
-		#TODO: From here this should be moved to extract_details
-		prelink = match.xpath('.//a')
-		#Check if the match does not have a link
-		if len(prelink) == 0:
-			#TODO: 
-			#counters['matchesWithoutLink'] += 1;
-			return
-
-		#start retrieving a match info
-		link = prelink[0].get('href')
-
-		#extract the hashtag TODO: Extract details
-		newMatch['hashtag'] = matchInfoExtractor.extract_hashtag(link)
-
-		#extract the referee
-		newMatch['arbitro'] = matchInfoExtractor.extract_referee(match)
-		
-		#extract the local team
-		newMatch['player1'] = matchInfoExtractor.extract_team(match,True)
-
-		#extract the visitant team
-		newMatch['player2'] = matchInfoExtractor.extract_team(match,False)
-
-		#extract the date
-		newMatch['date'] = matchInfoExtractor.extract_match_date(match)
-
-		#extract the score and the status
-		(newMatch['score1'], newMatch['score2'], newMatch['status']) = matchInfoExtractor.extract_score_and_status(match)
-		return newMatch
-
 #main
 	def start_scrapping(self,dateRange):
-		db = MongoClient('localhost',3001).meteor
+
 #init logging
 		logger = self.init_logger()
 
 #start scrapping
 		logger.info('Scrapping the official La Liga page')
 		startTime = time.time()
-
-#load existing data
-		logger.debug('Loading already feched links')
-		execPath = os.path.dirname(os.path.realpath(__file__))
-		lines = tuple(open(execPath+'/../fetchedLinks', 'r'))
-		lines = [line[:-1] for line in lines]
 
 #Start fetching information
 		logger.debug('Fetching information')
@@ -134,38 +83,10 @@ class ScrapperLaLigaOficial:
 
 #Start fetching the events
 		logger.debug('Fetching events')
-		fh = open('fetchedLinks', 'a')
-
+		eventsFetcher = EventsFetcher()
 		for event in parsedData :
-			#check if I've already have it
-			#TODO: Check the updating range time
-			splittedEvents = event['url'].split('_');
-			eventDate = dateutil.parser.parse(splittedEvents[5]+'-'+splittedEvents[4]+'-'+splittedEvents[3])
-			delta = datetime.fromtimestamp(startTime) - eventDate
-			if event['url'] in lines and dateRange is not None and abs(delta).days > dateRange:
-				logger.debug('I already have the '+event['url']+' event')
-				continue
-
-			#Fetch one event
-			logger.debug('Fetching an event')
-			eventUrl = 'http://www.laliga.es/includes/ajax.php?action=ver_evento_calendario'
-			queryData = {'filtro': event['url']}
-			page = requests.post(eventUrl, data=queryData)
-			tree = html.fromstring(page.text)
-
-			#Find the matches in the event
-			logger.debug('Fetching the matches')
-			matches = tree.xpath('//div[contains(@class,"partido")]')[2:]
-
-			matchUpdater = MatchUpdater()
-			for idx, match in enumerate(matches):
-				matchInfo = self.fetch_match_info(match)
-				if (matchInfo is not None) :
-					matchUpdater.create_or_update_the_match(matchInfo)
-				
-			#write it in the already fetched links
-			fh.write(event['url']+'\n')
-		fh.close()
+			if(not eventsFetcher.check_if_an_event_has_already_been_fetched(event, dateRange)):
+				eventsFetcher.fetch_an_event(event)
 
 		#print the results and exit
 		self.print_results()

@@ -1,5 +1,4 @@
 import logging
-from bson.objectid import ObjectId
 from executionCounters import ExecutionCounters
 from matchesCollectionManager import MatchesCollectionManager
 
