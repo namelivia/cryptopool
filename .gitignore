@@ -3,3 +3,4 @@ scrappers/logs/*
 scrappers/fetchedLinks
 temp
 temp/*
+backups/*
