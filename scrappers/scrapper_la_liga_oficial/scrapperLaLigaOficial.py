@@ -11,11 +11,13 @@ from executionCounters import ExecutionCounters
 from eventsFetcher import EventsFetcher
 
 class ScrapperLaLigaOficial:
+	def __init__(self):
+		self.executionCounters = ExecutionCounters()
+		self.eventsFetcher = EventsFetcher()
 
 #Prints the global results of the execution
 	def print_results(self):
-		executionCounters = ExecutionCounters()
-		counters = executionCounters.get_counters()
+		counters = self.executionCounters.get_counters()
 		logger = logging.getLogger("scrapperLaLigaOficial")
 		logger.info("{0} new teams added".format(counters['newTeamsCounter']))
 		logger.info("{0} new matches added".format(counters['newMatchesCounter']))
@@ -83,10 +85,9 @@ class ScrapperLaLigaOficial:
 
 #Start fetching the events
 		logger.debug('Fetching events')
-		eventsFetcher = EventsFetcher()
 		for event in parsedData :
-			if(not eventsFetcher.check_if_an_event_has_already_been_fetched(event, dateRange)):
-				eventsFetcher.fetch_an_event(event)
+			if(not self.eventsFetcher.check_if_an_event_has_already_been_fetched(event, dateRange)):
+				self.eventsFetcher.fetch_an_event(event)
 
 		#print the results and exit
 		self.print_results()

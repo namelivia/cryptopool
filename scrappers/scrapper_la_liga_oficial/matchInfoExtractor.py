@@ -7,9 +7,11 @@ from executionCounters import ExecutionCounters
 from teamsCollectionManager import TeamsCollectionManager
 
 class MatchInfoExtractor:
+	def __init__(self):
+		self.executionCounters = ExecutionCounters()
+		self.teamsCollectionManager = TeamsCollectionManager()
 
 	def fetch_match_info(self, match):
-		executionCounters = ExecutionCounters()
 		logger = logging.getLogger("scrapperLaLigaOficial")
 		#Fetch one match
 		logger.debug('Fetching a match')
@@ -19,7 +21,7 @@ class MatchInfoExtractor:
 		prelink = match.xpath('.//a')
 		#Check if the match does not have a link
 		if len(prelink) == 0:
-			executionCounters.increase_matches_without_link_counter()
+			self.executionCounters.increase_matches_without_link_counter()
 			return
 
 		#start retrieving a match info
@@ -83,25 +85,22 @@ class MatchInfoExtractor:
 		if len(prehashtag) > 0:
 			return prehashtag[0].text
 		else: 
-			executionCounters = ExecutionCounters() 
-			executionCounters.increase_matches_without_hashtag_counter()
+			self.executionCounters.increase_matches_without_hashtag_counter()
 
 #Extracts a team
 	def extract_team(self,match,isLocal):
 		divKey = 'local' if isLocal else 'visitante'
 		teamDiv = match.xpath('.//span[@class="equipo left '+divKey+'"]')
 		team = teamDiv[0].xpath('.//span[@class="team"]')
-		teamsCollectionManager = TeamsCollectionManager()
-		foundTeam = teamsCollectionManager.find_a_team_by_name(team[0].text)
+		foundTeam = self.teamsCollectionManager.find_a_team_by_name(team[0].text)
 		if foundTeam is None:
 			#Insert a new team
 			logger = logging.getLogger("scrapperLaLigaOficial")
 			logger.debug('Inserting a new team')
 			snake_case = unidecode(unicode(team[0].text).lower().replace('r. ','real ').replace(' ','_').replace('.',''))
 			newTeam = {'name' : team[0].text, 'tag' : snake_case}
-			newTeamId = teamsCollectionManager.insert_a_new_team(newTeam)
-			executionCounters = ExecutionCounters() 
-			executionCounters.increase_new_teams_counter()
+			newTeamId = self.teamsCollectionManager.insert_a_new_team(newTeam)
+			self.executionCounters.increase_new_teams_counter()
 			return newTeamId
 		else:
 			return foundTeam['_id']

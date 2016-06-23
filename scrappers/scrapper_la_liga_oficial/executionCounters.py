@@ -1,5 +1,4 @@
 class ExecutionCounters:
-#Initializing counters
 	counters = {
 		'newMatchesCounter' : 0,
 		'newTeamsCounter' : 0,
