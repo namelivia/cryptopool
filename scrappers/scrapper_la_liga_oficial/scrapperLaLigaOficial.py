@@ -119,8 +119,6 @@ class ScrapperLaLigaOficial:
 		startTime = time.time()
 
 #load existing data
-		logger.debug('Loading exsiting matches')
-		matchesCollection = db.matches
 		logger.debug('Loading already feched links')
 		execPath = os.path.dirname(os.path.realpath(__file__))
 		lines = tuple(open(execPath+'/../fetchedLinks', 'r'))
@@ -163,7 +161,7 @@ class ScrapperLaLigaOficial:
 			for idx, match in enumerate(matches):
 				matchInfo = self.fetch_match_info(match)
 				if (matchInfo is not None) :
-					matchUpdater.create_or_update_the_match(matchesCollection, matchInfo)
+					matchUpdater.create_or_update_the_match(matchInfo)
 				
 			#write it in the already fetched links
 			fh.write(event['url']+'\n')
