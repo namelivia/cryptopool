@@ -64,7 +64,6 @@ class TestScrapperLaLigaOficial(unittest.TestCase):
 		dateRange = 5
 
 		mock_data_find.return_value = '[{"url" : "'+event['url']+'"}]'
-		mock_requests_get.return_value.text = self.get_html_example(calendarUrl)
 		mock_time.return_value = time.mktime(datetime(2016, 8, 15, 12, 00, 00).timetuple())
 		mock_check_if_an_event_has_already_been_fetched.return_value = False
 		self.scrapper = ScrapperLaLigaOficial()
@@ -73,16 +72,6 @@ class TestScrapperLaLigaOficial(unittest.TestCase):
 		mock_requests_get.assert_called_with(calendarUrl)
 		mock_check_if_an_event_has_already_been_fetched.assert_called_with(event, dateRange)
 		mock_fetch_an_event.assert_called_with(event)
-
-	#Aux functions
-	def get_html_example(self, url):
-		examples = {
-			'http://www.laliga.es/calendario-horario/' : 'calendario-horario.html',
-			'http://www.laliga.es/includes/ajax.php?action=ver_evento_calendario' : 'ver-evento-calendario.html',
-		}
-		with io.open('request_examples/'+examples[url], 'r', encoding='utf-8') as myfile:
-			data = myfile.read().replace('\n', '')
-		return data
 
 if __name__ == '__main__':
 	unittest.main()

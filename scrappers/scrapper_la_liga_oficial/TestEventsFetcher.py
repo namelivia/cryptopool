@@ -34,23 +34,13 @@ class TestEventsFetcher(unittest.TestCase):
 			mock_requests_post,
 	):
 		eventUrl = 'http://www.laliga.es/includes/ajax.php?action=ver_evento_calendario';
-		mock_requests_post.return_value.text = self.get_html_example(eventUrl)
+		mock_requests_post.return_value.text = '<html></html>'
 		event = {
 				'url': '#1_1_1_10_8_2016'
 		}
 		result = self.eventsFetcher.fetch_an_event(event)
 		mock_requests_post.assert_called_with(eventUrl, data={'filtro': event['url']})
 		mock_insert_a_new_record.assert_called_with(event['url'])
-
-	#Aux functions// TODO: DELETE THIS
-	def get_html_example(self, url):
-		examples = {
-			'http://www.laliga.es/calendario-horario/' : 'calendario-horario.html',
-			'http://www.laliga.es/includes/ajax.php?action=ver_evento_calendario' : 'ver-evento-calendario.html',
-		}
-		with io.open('request_examples/'+examples[url], 'r', encoding='utf-8') as myfile:
-			data = myfile.read().replace('\n', '')
-		return data
 
 if __name__ == '__main__':
 	unittest.main()
