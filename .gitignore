@@ -4,3 +4,4 @@ scrappers/fetchedLinks
 temp
 temp/*
 backups/*
+*.pyc
