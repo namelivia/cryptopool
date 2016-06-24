@@ -31,7 +31,7 @@ class MatchInfoExtractor:
 		newMatch['hashtag'] = self.extract_hashtag(link)
 
 		#extract the referee
-		newMatch['arbitro'] = self.extract_referee(match)
+		newMatch['referee'] = self.extract_referee(match)
 		
 		#extract the local team
 		newMatch['player1'] = self.extract_team(match,True)

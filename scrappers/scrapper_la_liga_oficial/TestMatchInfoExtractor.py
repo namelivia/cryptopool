@@ -36,7 +36,7 @@ class TestMatchInfoExtractor(unittest.TestCase):
 			'score2': 2,
 			'hashtag': '#hashtag', 
 			'date': datetime(2015, 10, 4, 2, 20, 19),
-			'arbitro': 'RefereeName RefereeSurname'
+			'referee': 'RefereeName RefereeSurname'
 		}
 		mock_extract_score_and_status.return_value = (
 				expectedMatchInfo['score1'],
@@ -45,8 +45,7 @@ class TestMatchInfoExtractor(unittest.TestCase):
 		)
 		mock_extract_match_date.return_value = expectedMatchInfo['date']
 		mock_extract_team.return_value = expectedMatchInfo['player1'];
-		#TODO: ¿Cómo que arbitro?
-		mock_extract_referee.return_value = expectedMatchInfo['arbitro']
+		mock_extract_referee.return_value = expectedMatchInfo['referee']
 		mock_extract_hashtag.return_value = expectedMatchInfo['hashtag']
 		htmlString = """
 			<div class="partido even destacado">
