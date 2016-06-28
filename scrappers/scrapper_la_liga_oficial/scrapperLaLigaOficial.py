@@ -15,8 +15,7 @@ class ScrapperLaLigaOficial:
 		self.executionCounters = ExecutionCounters()
 		self.eventsFetcher = EventsFetcher()
 
-#Prints the global results of the execution
-	def print_results(self):
+	def print_results(self, executionTime):
 		counters = self.executionCounters.get_counters()
 		logger = logging.getLogger("scrapperLaLigaOficial")
 		logger.info("{0} new teams added".format(counters['newTeamsCounter']))
@@ -24,8 +23,9 @@ class ScrapperLaLigaOficial:
 		logger.info("{0} existing matches updated".format(counters['updatedMatchesCounter']))
 		logger.info("{0} matches had no link".format(counters['matchesWithoutLink']))
 		logger.info("{0} matches had no hashtag".format(counters['matchesWithoutHashtag']))
+		logger.info("The execution took "+str(executionTime)+" seconds")
+		logger.info("Done")
 
-#Initializes the loggers
 	def init_logger(self):
 		stderrLogger=logging.StreamHandler()
 		logging.getLogger().addHandler(stderrLogger)
@@ -40,7 +40,6 @@ class ScrapperLaLigaOficial:
 		logger.addHandler(handler)
 		return logger
 
-#Finds the data in the page
 	def data_find(self, page):
 		#if something breaks try changing this
 		ANNOYING_LENGTH = -2
@@ -55,7 +54,7 @@ class ScrapperLaLigaOficial:
 			if script.text is not None and len(script.text) > longestScriptLength:
 				longestScriptIndex = key
 				longestScriptLength = len(script.text)
-		#Splits the scrip in lines and finds the longest line
+		#Splits the script in lines and finds the longest line
 		longestContentIndex = 1
 		longestContentLength = 0
 		for key,content in enumerate(scripts[longestScriptIndex].text.split('\n')):
@@ -65,34 +64,21 @@ class ScrapperLaLigaOficial:
 		#Returns the longest line of the longest script
 		return scripts[longestScriptIndex].text.split('\n')[longestContentIndex][20:ANNOYING_LENGTH]
 
-#main
 	def start_scrapping(self,dateRange):
 
-#init logging
 		logger = self.init_logger()
-
-#start scrapping
 		logger.info('Scrapping the official La Liga page')
 		startTime = time.time()
-
-#Start fetching information
 		logger.debug('Fetching information')
-#Fecthing the calendar
 		logger.debug('Fetching the calendar')
 		page = requests.get('http://www.laliga.es/calendario-horario/')
 		data = self.data_find(page.text)
 		parsedData = json.loads(data)
-
-#Start fetching the events
 		logger.debug('Fetching events')
 		for event in parsedData :
 			if(not self.eventsFetcher.check_if_an_event_has_already_been_fetched(event, dateRange)):
 				self.eventsFetcher.fetch_an_event(event)
 
-		#print the results and exit
-		self.print_results()
-		endTime = time.time()
-		executionTime = endTime - startTime
-		logger.info("The execution took "+str(executionTime)+" seconds")
-		logger.info("Done")
+		executionTime = time.time() - startTime
+		self.print_results(executionTime)
 

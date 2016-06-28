@@ -17,14 +17,16 @@ class TestMatchInfoExtractor(unittest.TestCase):
 
 	@mock.patch('scrapper_la_liga_oficial.matchInfoExtractor.MatchInfoExtractor.extract_hashtag')
 	@mock.patch('scrapper_la_liga_oficial.matchInfoExtractor.MatchInfoExtractor.extract_referee')
-	@mock.patch('scrapper_la_liga_oficial.matchInfoExtractor.MatchInfoExtractor.extract_team')
+	@mock.patch('scrapper_la_liga_oficial.matchInfoExtractor.MatchInfoExtractor.extract_local_team')
+	@mock.patch('scrapper_la_liga_oficial.matchInfoExtractor.MatchInfoExtractor.extract_visitant_team')
 	@mock.patch('scrapper_la_liga_oficial.matchInfoExtractor.MatchInfoExtractor.extract_match_date')
 	@mock.patch('scrapper_la_liga_oficial.matchInfoExtractor.MatchInfoExtractor.extract_score_and_status')
 	def test_extracting_a_match_info(
 		self,
 		mock_extract_score_and_status,
 		mock_extract_match_date,
-		mock_extract_team,
+		mock_extract_visitant_team,
+		mock_extract_local_team,
 		mock_extract_referee,
 		mock_extract_hashtag
 	):
@@ -44,7 +46,8 @@ class TestMatchInfoExtractor(unittest.TestCase):
 				expectedMatchInfo['status']
 		)
 		mock_extract_match_date.return_value = expectedMatchInfo['date']
-		mock_extract_team.return_value = expectedMatchInfo['player1'];
+		mock_extract_local_team.return_value = expectedMatchInfo['player1'];
+		mock_extract_visitant_team.return_value = expectedMatchInfo['player2'];
 		mock_extract_referee.return_value = expectedMatchInfo['referee']
 		mock_extract_hashtag.return_value = expectedMatchInfo['hashtag']
 		htmlString = """
@@ -71,10 +74,10 @@ class TestMatchInfoExtractor(unittest.TestCase):
 			'matchesWithoutLink' : 0
 		}
 		result = self.matchInfoExtractor.fetch_match_info(match)
-		#mock_extract_hashtag.assert_called_with(match, counters)
+		mock_extract_hashtag.assert_called_with("http://www.laliga.es/directo/temporada-2015-2016/liga-bbva/38/valencia_real-sociedad")
 		mock_extract_referee.assert_called_with(match)
-		#mock_extract_team.assert_called_with(match, True)
-		#mock_extract_team.assert_called_with(match, False)
+		mock_extract_local_team.assert_called_with(match)
+		mock_extract_visitant_team.assert_called_with(match)
 		mock_extract_match_date.assert_called_with(match)
 		mock_extract_score_and_status.assert_called_with(match)
 		self.assertEqual(expectedMatchInfo, result)
