@@ -1,4 +1,5 @@
 import logging
+import pprint
 from unidecode import unidecode
 import dateutil.parser
 import requests
@@ -13,12 +14,12 @@ class MatchInfoExtractor:
 		self.logger = logging.getLogger("scrapperLaLigaOficial")
 
 	def fetch_match_info(self, match):
-		self.logger.debug('Fetching a match')
 		newMatch = {}
 
 		#TODO: From here this should be moved to extract_details
 		prelink = match.xpath('.//a')
 		if len(prelink) == 0:
+			self.logger.debug('The match has no link and cant be fetched')
 			self.executionCounters.increase_matches_without_link_counter()
 			return
 
@@ -83,6 +84,7 @@ class MatchInfoExtractor:
 			self.logger.debug('Inserting a new team')
 			snake_case = unidecode(unicode(team[0].text).lower().replace('r. ','real ').replace(' ','_').replace('.',''))
 			newTeam = {'name' : team[0].text, 'tag' : snake_case}
+			self.logger.debug(pprint.pformat(newTeam))
 			newTeamId = self.teamsCollectionManager.insert_a_new_team(newTeam)
 			self.executionCounters.increase_new_teams_counter()
 			return newTeamId

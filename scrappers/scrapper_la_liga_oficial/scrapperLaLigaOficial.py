@@ -69,13 +69,11 @@ class ScrapperLaLigaOficial:
 		logger = self.init_logger()
 		logger.info('Scrapping the official La Liga page')
 		startTime = time.time()
-		logger.debug('Fetching information')
-		logger.debug('Fetching the calendar')
 		page = requests.get('http://www.laliga.es/calendario-horario/')
 		data = self.data_find(page.text)
 		parsedData = json.loads(data)
-		logger.debug('Fetching events')
 		for event in parsedData :
+			logger.debug('Fetching an event:'+event['url'])
 			if(not self.eventsFetcher.check_if_an_event_has_already_been_fetched(event, dateRange)):
 				self.eventsFetcher.fetch_an_event(event)
 

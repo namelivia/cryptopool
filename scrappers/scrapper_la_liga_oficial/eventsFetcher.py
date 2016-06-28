@@ -22,21 +22,21 @@ class EventsFetcher:
 		eventDate = dateutil.parser.parse(splittedEventUrl[5]+'-'+splittedEventUrl[4]+'-'+splittedEventUrl[3])
 		delta = datetime.fromtimestamp(time.time()) - eventDate
 		if self.fetchingHistoryManager.find_a_record(event['url']) is not None and dateRange is not None and abs(delta).days > dateRange:
-			self.logger.debug('I already have the '+event['url']+' event')
+			self.logger.debug('The event was already scrapped so it will be skipped')
 			return True
 		return False
 
 	def fetch_an_event(self, event):
-		self.logger.debug('Fetching an event')
 		eventUrl = 'http://www.laliga.es/includes/ajax.php?action=ver_evento_calendario'
 		queryData = {'filtro': event['url']}
 		page = requests.post(eventUrl, data=queryData)
 		tree = html.fromstring(page.text)
 
-		self.logger.debug('Fetching the matches')
+		self.logger.debug('Fetching the event content')
 		matches = tree.xpath('//div[contains(@class,"partido")]')[2:]
 
 		for idx, match in enumerate(matches):
+			self.logger.debug('Trying to fetch a match')
 			matchInfo = self.matchInfoExtractor.fetch_match_info(match)
 			if (matchInfo is not None) :
 				self.matchUpdater.create_or_update_the_match(matchInfo)

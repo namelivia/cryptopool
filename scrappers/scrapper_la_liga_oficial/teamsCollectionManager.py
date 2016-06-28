@@ -7,4 +7,6 @@ class TeamsCollectionManager:
 		return teamsCollection.find_one({"name" : name})
 
 	def insert_a_new_team(self, newTeam):
+		db = MongoClient('localhost',3001).meteor
+		teamsCollection = db.teams
 		return teamsCollection.insert(newTeam)
