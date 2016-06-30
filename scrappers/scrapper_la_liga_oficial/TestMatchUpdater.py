@@ -49,8 +49,10 @@ class TestMatchUpdater(unittest.TestCase):
 
 	@mock.patch('scrapper_la_liga_oficial.matchesCollectionManager.MatchesCollectionManager.update_an_existing_match')
 	@mock.patch('scrapper_la_liga_oficial.executionCounters.ExecutionCounters.increase_updated_matches_counter')
-	def test_inserting_a_new_match(self, mock_increase_updated_matches_counter, mock_update_an_existing_match):
+	@mock.patch('scrapper_la_liga_oficial.poolsUpdater.PoolsUpdater.update_pools_for_a_match')
+	def test_updating_an_existing_match_and_its_pools(self, mock_update_pools_for_a_match, mock_increase_updated_matches_counter, mock_update_an_existing_match):
 		match = {
+			'_id' : ObjectId('57109b1cc12fe22e66bfc09d'),
 			'player1' : '57109b1dc12fe22e66bfc0a7',
 			'player2' : '57109b1ec12fe22e66bfc0b2',
 			'date' : 'quix',
@@ -59,6 +61,7 @@ class TestMatchUpdater(unittest.TestCase):
 			'status' : '0'
 		}
 		updatedMatch = {
+			'_id' : ObjectId('57109b1cc12fe22e66bfc09d'),
 			'player1' : '57109b1dc12fe22e66bfc0a7',
 			'player2' : '57109b1ec12fe22e66bfc0b2',
 			'date' : 'quix',
@@ -69,6 +72,7 @@ class TestMatchUpdater(unittest.TestCase):
 		result = self.matchUpdater.update_match_if_needed(match,updatedMatch)
 		mock_update_an_existing_match.assert_called_with(updatedMatch)
 		mock_increase_updated_matches_counter.assert_called_with()
+		mock_update_pools_for_a_match.assert_called_with(match['_id'])
 
 if __name__ == '__main__':
 	unittest.main()

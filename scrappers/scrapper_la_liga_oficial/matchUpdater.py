@@ -2,12 +2,14 @@ import logging
 import pprint
 from executionCounters import ExecutionCounters
 from matchesCollectionManager import MatchesCollectionManager
+from poolsUpdater import PoolsUpdater
 
 class MatchUpdater:
 
 	def __init__(self):
 		self.matchesCollectionManager = MatchesCollectionManager()
 		self.executionCounters = ExecutionCounters()
+		self.poolsUpdater = PoolsUpdater()
 		self.logger = logging.getLogger("scrapperLaLigaOficial")
 
 	def create_or_update_the_match(self, match):
@@ -38,6 +40,10 @@ class MatchUpdater:
 		self.logger.debug(pprint.pformat(match))
 		foundMatch['score1'] = match['score1']
 		foundMatch['score2'] = match['score2']
+		oldMatchStatus = foundMatch['status']
 		foundMatch['status'] = match['status']
 		self.matchesCollectionManager.update_an_existing_match(foundMatch)
 		self.executionCounters.increase_updated_matches_counter()
+		if oldMatchStatus == '0' and foundMatch['status'] == '1':
+			self.logger.debug('The match has finished so I will update the pools')
+			self.poolsUpdater.update_pools_for_a_match(foundMatch['_id'])
