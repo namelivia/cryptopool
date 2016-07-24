@@ -1,14 +1,19 @@
 from scrapper_la_liga_oficial.usersCollectionManager import UsersCollectionManager
 from scrapper_la_liga_oficial.poolsCollectionManager import PoolsCollectionManager
+from scrapper_la_liga_oficial.matchesCollectionManager import MatchesCollectionManager
 from random import randint
 from faker import Faker
+from random import randint
 
 fake = Faker()
 usersCollectionManager = UsersCollectionManager()
 poolsCollectionManager = PoolsCollectionManager()
+poolsCollectionManager = PoolsCollectionManager()
+matchesCollectionManager = MatchesCollectionManager()
 
 def main():
 	make_a_random_user()
+	make_a_random_pool()
 	make_a_random_bet()
 
 def make_a_random_user():
@@ -27,6 +32,22 @@ def make_a_random_user():
 			"emails" : [ { "verified" : True, "address" : email} ],
 			"tokens" : 10, "poolHistory" : [] }
 	usersCollectionManager.insert_a_new_user(newUser)
+
+def make_a_random_pool():
+	#pick a random user
+	user = usersCollectionManager.get_a_random_user()
+	if user is not None :
+		match = matchesCollectionManager.get_a_random_unplayed_match()
+		if match is not None :
+			newPool = {
+				"amount" :randint(1, 9),
+				"match_id" : match['_id'],
+				"status_id" : 0,
+				"user_id" : user['_id'],
+				"users" : [],
+				"matchDate" : match['date']
+			}
+			poolsCollectionManager.insert_a_new_pool(newPool)
 
 def make_a_random_bet():
 	#pick a random user

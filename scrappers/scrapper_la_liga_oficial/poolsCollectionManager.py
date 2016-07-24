@@ -28,3 +28,8 @@ class PoolsCollectionManager:
 			return None
 		index = randint(0, poolsCount-1)
 		return poolsCollection.find(query).limit(-1).skip(index).next()
+
+	def insert_a_new_pool(self, newPool):
+		db = MongoClient('localhost',3001).meteor
+		poolsCollection = db.pools
+		return poolsCollection.insert(newPool)

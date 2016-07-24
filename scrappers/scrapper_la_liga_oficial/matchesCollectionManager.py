@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from random import randint
 
 class MatchesCollectionManager:
 
@@ -21,3 +22,15 @@ class MatchesCollectionManager:
 		db = MongoClient('localhost',3001).meteor
 		matchesCollection = db.matches
 		return matchesCollection.update({'_id' : match['_id']}, {"$set" : match})
+
+	def get_a_random_unplayed_match(self):
+		query = {
+			'status' : 0
+		}
+		db = MongoClient('localhost',3001).meteor
+		matchesCollection = db.matches
+		matchesCount = matchesCollection.find(query).count()
+		if matchesCount == 0 :
+			return None
+		index = randint(0, matchesCount-1)
+		return matchesCollection.find(query).limit(-1).skip(index).next()
