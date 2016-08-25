@@ -17,7 +17,11 @@ teamsCollectionManager = TeamsCollectionManager()
 matchUpdater = MatchUpdater()
 
 def main():
+	#scrapper operations
 	create_a_random_match()
+	random_update_a_match()
+
+	#user operations
 	make_a_random_user()
 	make_a_random_pool()
 	make_a_random_bet()
@@ -70,7 +74,7 @@ def create_a_random_match():
 		match = {
 			'player1' : player1Id,
 			'player2' : player2Id,
-			'date' : datetime.datetime.now(),
+			'date' : datetime.datetime.now() - datetime.timedelta(days=1),
 			'score1' : '',
 			'score2' : '',
 			'status' : 0,
@@ -80,6 +84,17 @@ def create_a_random_match():
 		matchUpdater.create_or_update_the_match(match)
 	else:
 		print("There are no teams")
+
+def random_update_a_match():
+	print("Random updating a match")
+	match = matchesCollectionManager.get_a_random_unplayed_match()
+	if match is not None :
+		match['score1'] = randint(0,9)
+		match['score2'] = randint(0,9)
+		match['status'] = 1
+		matchUpdater.create_or_update_the_match(match)
+	else:
+		print("There are no matches to update")
 
 def make_a_random_bet():
 	print("Making a random bet")
