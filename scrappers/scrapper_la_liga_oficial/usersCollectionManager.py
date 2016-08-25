@@ -11,6 +11,13 @@ class UsersCollectionManager:
 			"_id" : ObjectId(userId),
 		})
 
+	def find_user_by_username(self, username):
+		db = MongoClient('localhost',3001).meteor
+		usersCollection = db.users
+		return usersCollection.find_one({
+			"username" : username,
+		})
+
 	def update_an_existing_user(self, user):
 		db = MongoClient('localhost',3001).meteor
 		usersCollection = db.users

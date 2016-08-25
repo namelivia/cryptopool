@@ -19,30 +19,41 @@ matchUpdater = MatchUpdater()
 def main():
 	#scrapper operations
 	create_a_random_match()
-	random_update_a_match()
 
 	#user operations
 	make_a_random_user()
 	make_a_random_pool()
-	make_a_random_bet()
+
+	for i in xrange(100):
+		make_a_random_user()
+		make_a_random_bet()
+
+	#scrapper operations
+	random_update_a_match()
 
 def make_a_random_user():
 	print("Creating a random user")
 	email = fake.email()
-	newUser = {
-			"services" : { 
-				"password" : { "bcrypt" : "$2a$10$VxfCnQmcDKYcIGy0C3eecOehWuvQ3lWLWPga7peJKJY1hXf1qqhzu" },
-				"email" : { 
-					"verificationTokens" : []
+	username = fake.word()
+	foundUser = usersCollectionManager.find_user_by_username(username)
+	if foundUser is None :
+		newUser = {
+				"services" : { 
+					"password" : { "bcrypt" : "$2a$10$VxfCnQmcDKYcIGy0C3eecOehWuvQ3lWLWPga7peJKJY1hXf1qqhzu" },
+					"email" : { 
+						"verificationTokens" : []
+					},
+					"resume" : { 
+						"loginTokens" : [ ] 
+					} 
 				},
-				"resume" : { 
-					"loginTokens" : [ ] 
-				} 
-			},
-			"username" : fake.word(),
-			"emails" : [ { "verified" : True, "address" : email} ],
-			"tokens" : 10, "poolHistory" : [] }
-	usersCollectionManager.insert_a_new_user(newUser)
+				"username" : username,
+				"emails" : [ { "verified" : True, "address" : email} ],
+				"tokens" : 10, "poolHistory" : [] }
+		usersCollectionManager.insert_a_new_user(newUser)
+	else:
+		print("The username I wanted to use is already taken")
+
 
 def make_a_random_pool():
 	print("Creating a random pool")
@@ -89,8 +100,8 @@ def random_update_a_match():
 	print("Random updating a match")
 	match = matchesCollectionManager.get_a_random_unplayed_match()
 	if match is not None :
-		match['score1'] = randint(0,9)
-		match['score2'] = randint(0,9)
+		match['score1'] = randint(0,3)
+		match['score2'] = randint(0,3)
 		match['status'] = 1
 		matchUpdater.create_or_update_the_match(match)
 	else:

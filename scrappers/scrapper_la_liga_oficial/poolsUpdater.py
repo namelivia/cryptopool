@@ -20,7 +20,7 @@ class PoolsUpdater:
 		if foundPools is not None:
 			for pool in foundPools:
 				#decide the winner
-				self.update_pool(pool)
+				self.update_pool(pool, localScore, visitantScore)
 		else:
 			self.logger.debug('There are no pools for the match')
 	
@@ -37,18 +37,19 @@ class PoolsUpdater:
 		if len(winners) == 0:
 			self.logger.debug('No one guessed the score, everyone is a winner')
 			winners = pool['users']
-		#share the price with those users
-		prize = float(pool['amount'])/len(winners)
-		self.logger.debug('The total amount is :'+str(pool['amount']))
-		self.logger.debug('The number of winners is:'+str(len(winners)))
-		self.logger.debug('The prize is :'+str(prize))
-		for winner in winners:
-			foundUser = self.usersCollectionManager.find_user_by_id(winner['_id'])
-			self.logger.debug('The user '+str(winner['_id'])+' is a winner.')
-			self.logger.debug('Has '+str(foundUser['tokens'])+' tokens.')
-			foundUser['tokens'] += prize
-			self.logger.debug('Now has '+str(foundUser['tokens'])+' tokens.')
-			self.usersCollectionManager.update_an_existing_user(foundUser)
+		if len(pool['users']) > 0:
+			#share the price with those users
+			prize = float(pool['amount'])*len(pool['users'])/len(winners)
+			self.logger.debug('The total amount is :'+str(pool['amount']*len(pool['users'])))
+			self.logger.debug('The number of winners is:'+str(len(winners)))
+			self.logger.debug('The prize is :'+str(prize))
+			for winner in winners:
+				foundUser = self.usersCollectionManager.find_user_by_id(winner['_id'])
+				self.logger.debug('The user '+str(winner['_id'])+' is a winner.')
+				self.logger.debug('Has '+str(foundUser['tokens'])+' tokens.')
+				foundUser['tokens'] += prize
+				self.logger.debug('Now has '+str(foundUser['tokens'])+' tokens.')
+				self.usersCollectionManager.update_an_existing_user(foundUser)
 		#update the pool
 		pool['status_id'] = 1
 		self.poolsCollectionManager.update_an_existing_pool(pool)

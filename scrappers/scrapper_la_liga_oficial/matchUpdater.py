@@ -44,6 +44,10 @@ class MatchUpdater:
 		foundMatch['status'] = match['status']
 		self.matchesCollectionManager.update_an_existing_match(foundMatch)
 		self.executionCounters.increase_updated_matches_counter()
-		if oldMatchStatus == '0' and foundMatch['status'] == '1':
+		if oldMatchStatus == 0 and foundMatch['status'] == 1:
 			self.logger.debug('The match has finished so I will update the pools')
-			self.poolsUpdater.update_pools_for_a_match(foundMatch['_id'])
+			self.poolsUpdater.update_pools_for_a_match(
+					foundMatch['_id'],
+					foundMatch['score1'],
+					foundMatch['score2']
+			)

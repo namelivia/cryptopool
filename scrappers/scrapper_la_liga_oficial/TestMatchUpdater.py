@@ -58,7 +58,7 @@ class TestMatchUpdater(unittest.TestCase):
 			'date' : 'quix',
 			'score1' : '',
 			'score2' : '',
-			'status' : '0'
+			'status' : 0
 		}
 		updatedMatch = {
 			'_id' : ObjectId('57109b1cc12fe22e66bfc09d'),
@@ -67,7 +67,7 @@ class TestMatchUpdater(unittest.TestCase):
 			'date' : 'quix',
 			'score1' : '2',
 			'score2' : '0',
-			'status' : '1'
+			'status' : 1
 		}
 		result = self.matchUpdater.update_match_if_needed(match,updatedMatch)
 		mock_update_an_existing_match.assert_called_with(updatedMatch)
