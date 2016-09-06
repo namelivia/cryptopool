@@ -111,30 +111,34 @@ if (Meteor.isServer) {
 
 	Meteor.publish("nextPlayingPoolsByUserId", function () {
 		var user = Meteor.users.findOne({ _id : this.userId });
-		var nextPools = Pools.find(
-			{_id: {$in: user.poolHistory},
-			matchDate: { 
-				$gte : new Date()
-					}
-			},{
-				limit : 5
-			});
-		return nextPools;
+		if (user !== undefined) {
+			var nextPools = Pools.find(
+				{_id: {$in: user.poolHistory},
+				matchDate: { 
+					$gte : new Date()
+						}
+				},{
+					limit : 5
+				});
+			return nextPools;
+		}
 	});
 
 	Meteor.publish("lastPlayedPoolsByUserId", function () {
 		var user = Meteor.users.findOne({ _id : this.userId });
-		var lastPools = Pools.find(
-			{_id: {$in: user.poolHistory},
-			matchDate: { 
-				$lte : new Date()
+		if (user !== undefined) {
+			var lastPools = Pools.find(
+				{_id: {$in: user.poolHistory},
+				matchDate: { 
+					$lte : new Date()
+						}
+				},{
+					limit:5, sort: {
+						date:-1
 					}
-			},{
-				limit:5, sort: {
-					date:-1
-				}
-			});
-		return lastPools;
+				});
+			return lastPools;
+		}
 	});
 
 	Meteor.publish("matchesByDateRange", function (startDate,endDate) {
@@ -160,6 +164,10 @@ if (Meteor.isServer) {
 
 	Meteor.publish("poolById", function (poolId) {
 		return Pools.find({_id : poolId});
+	});
+
+	Meteor.publish("userById", function (userId) {
+		return Meteor.users.find({_id : userId});
 	});
 
 	Meteor.publish('usersByPoolId', function (poolId) {

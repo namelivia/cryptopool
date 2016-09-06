@@ -1,5 +1,6 @@
 template(name='user')
 	tr
-		td #{username}
+		td 
+			+userTextLink(user=this)
 		td #{localScore}
 		td #{visitantScore}
