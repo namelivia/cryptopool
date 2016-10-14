@@ -2,5 +2,7 @@ template(name='userDetails')
 	div(class='container-fluid')
 		div(class='row')
 			h1 #{this.username}
-			h2 Tokens: #{this.tokens}
-			h2 Email: #{email}
+			if hasTokens
+				h2 Tokens: #{this.tokens}
+			if hasEmails
+				h2 Email: #{email}

@@ -29,6 +29,12 @@ if (Meteor.isClient) {
 	Template.userDetails.helpers({
 		email: function() {
 			return this.emails[0].address
+		},
+		hasTokens: function() {
+			return this.tokens !== undefined
+		},
+		hasEmails: function() {
+			return this.emails !== undefined
 		}
 	});
 }

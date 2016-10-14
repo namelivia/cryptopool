@@ -193,11 +193,17 @@ if (Meteor.isServer) {
 	});
 
 	Meteor.publish("userById", function (userId) {
+		var fields = {
+			'tokens' : 0,
+			'emails' : 0
+		}
 		if (userId === undefined) {
 			userId = this.userId;
+			fields.tokens = 1;
+			fields.emails = 1;
 		}
 		return Meteor.users.find(
-			{ _id : userId }
+			{ _id : userId }, {fields : fields}
 		);
 	});
 
