@@ -5,9 +5,10 @@ from scrapper_la_liga_oficial.usersCollectionManager import UsersCollectionManag
 from scrapper_la_liga_oficial.poolsCollectionManager import PoolsCollectionManager
 from scrapper_la_liga_oficial.teamsCollectionManager import TeamsCollectionManager
 from scrapper_la_liga_oficial.matchesCollectionManager import MatchesCollectionManager
+import random
 from random import randint
+import string
 from faker import Faker
-from random import randint
 import datetime
 import pprint
 import logging
@@ -68,6 +69,7 @@ class CryptoporraSimulator:
 							"loginTokens" : [ ] 
 						} 
 					},
+					"_id" : ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(17)),
 					"username" : username,
 					"emails" : [ { "verified" : True, "address" : email} ],
 					"tokens" : 10, "poolHistory" : [] }
@@ -139,6 +141,7 @@ class CryptoporraSimulator:
 		user = self.usersCollectionManager.get_a_random_user()
 		if user is not None :
 			pool = self.poolsCollectionManager.get_a_random_open_pool_for_tokens(user['tokens'])
+			#TODO: This way a user can participate twice on a bet, this should not be allowed
 			if pool is not None :
 				user['tokens'] -= pool['amount']
 				user['poolHistory'].append(pool['_id'])
@@ -155,4 +158,4 @@ class CryptoporraSimulator:
 			else:
 				self.logger.debug('There are no pools for making the bet')
 		else:
-			self.logger.debug('There are no useres for making the bet')
+			self.logger.debug('There are no users for making the bet')

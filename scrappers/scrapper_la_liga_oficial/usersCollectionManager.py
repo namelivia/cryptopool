@@ -1,5 +1,4 @@
 from pymongo import MongoClient
-from bson.objectid import ObjectId
 from random import randint
 
 class UsersCollectionManager:
@@ -8,7 +7,7 @@ class UsersCollectionManager:
 		db = MongoClient('localhost',3001).meteor
 		usersCollection = db.users
 		return usersCollection.find_one({
-			"_id" : ObjectId(userId),
+			"_id" : userId
 		})
 
 	def find_user_by_username(self, username):
