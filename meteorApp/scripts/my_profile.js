@@ -1,11 +1,24 @@
 'use strict';
-Router.route('/my_profile', { 
+Router.route('/my_profile', function () {
+	this.render('myProfile', {
+		data: function () {
+			return Meteor.users.findOne({});
+		}
+	});
+},{ 
 	name: 'myProfile',
 	waitOn: function() {
 		return [
-			Meteor.subscribe('userData'),
-			Meteor.subscribe('poolsByUserId')
+			Meteor.subscribe('userById')
 		];
+	},
+	onBeforeAction: function() {
+		if (!Meteor.user()) {
+			this.render('landing');
+		}
+		else {
+			this.next();
+		}
 	}
 });
 
@@ -16,17 +29,11 @@ if (Meteor.isClient) {
 	//helpers
 
 	Template.myProfile.helpers({
-		userEmail: function(){
-			return Meteor.user().emails[0].address;
-		},
-		userTokens: function(){
-			return Meteor.user().tokens;
-		},
-		userUsername: function(){
-			return Meteor.user().username;
+		email: function() {
+			return this.emails[0].address
 		},
 		poolHistory: function(){
 			return Pools.find();
-		},
+		}
 	});
 }

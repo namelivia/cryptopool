@@ -5,7 +5,7 @@ if (Meteor.isClient) {
 	Template.currentUserInfo.onCreated(function() {
 		var self = this;
 		this.autorun(function() {
-			self.subscribe('userData');  
+			self.subscribe('userById')
 		});
 	});
 	//events
@@ -18,5 +18,9 @@ if (Meteor.isClient) {
 		userUsername: function(){
 			return Meteor.user().username;
 		},
+		userId: function(){
+			console.log(Meteor.user());
+			return Meteor.user()._id;
+		}
 	});
 }

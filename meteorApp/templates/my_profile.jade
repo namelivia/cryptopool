@@ -9,18 +9,6 @@ template(name='myProfile')
 				td Tokens
 		tbody
 			tr
-				td #{userUsername}
-				td #{userEmail}
-				td #{userTokens}
-	h2 Pool history
-	if poolHistory.count
-		table(class='table table-bordered')
-			thead
-				tr
-					td poolId
-					td matchId
-			tbody
-				each poolHistory
-					+poolHistoryEntry(pool=this)
-	else
-		p The user has not participated in any pool yet
+				td #{username}
+				td #{email}
+				td #{tokens}

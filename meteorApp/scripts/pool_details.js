@@ -52,6 +52,7 @@ if (Meteor.isClient) {
 				var userData = Meteor.users.findOne({
 					_id : user._id
 				});
+				console.log(userData);
 				return _.merge(user,userData);
 			});
 		},

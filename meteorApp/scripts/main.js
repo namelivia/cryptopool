@@ -166,10 +166,6 @@ if (Meteor.isServer) {
 		return Pools.find({_id : poolId});
 	});
 
-	Meteor.publish("userById", function (userId) {
-		return Meteor.users.find({_id : userId});
-	});
-
 	Meteor.publish('usersByPoolId', function (poolId) {
 		var pool = Pools.findOne({ _id : poolId });
 		var userIds = _.map(pool.users,function(user){
@@ -196,9 +192,13 @@ if (Meteor.isServer) {
 		return Teams.find();
 	});
 
-	Meteor.publish("userData", function () {
-		return Meteor.users.find({_id: this.userId},
-			{fields: {'tokens': 1, 'poolHistory': 1}});
+	Meteor.publish("userById", function (userId) {
+		if (userId === undefined) {
+			userId = this.userId;
+		}
+		return Meteor.users.find(
+			{ _id : userId }
+		);
 	});
 
 	Meteor.publish("playersByTeamId", function (teamId) {

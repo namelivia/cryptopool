@@ -2,16 +2,14 @@
 Router.route('/user/:id', function () {
 	this.render('userDetails', {
 		data: function () {
-			var oid = new Meteor.Collection.ObjectID(this.params.id);
-			return Meteor.users.findOne({_id : oid});
+			return Meteor.users.findOne({_id : this.params.id});
 		}
 	});
 },{ 
 	name: 'userDetails',
 	waitOn: function() {
-		var oid = new Meteor.Collection.ObjectID(this.params.id);
 		return [
-			Meteor.subscribe('userById',oid)
+			Meteor.subscribe('userById', this.params.id)
 		];
 	},
 	onBeforeAction: function() {
