@@ -52,7 +52,6 @@ if (Meteor.isClient) {
 				var userData = Meteor.users.findOne({
 					_id : user._id
 				});
-				console.log(userData);
 				return _.merge(user,userData);
 			});
 		},
@@ -71,6 +70,9 @@ if (Meteor.isClient) {
 		},
 		timeLeft: function() {
 			return moment.duration(moment(this.pool.matchDate).diff(moment())).humanize();
+		},
+		isPrivate : function() {
+			return this.pool.is_private ? 'Yes' : 'No';
 		}
 	});
 }

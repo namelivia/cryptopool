@@ -19,7 +19,6 @@ if (Meteor.isClient) {
 			return Meteor.user().username;
 		},
 		userId: function(){
-			console.log(Meteor.user());
 			return Meteor.user()._id;
 		}
 	});

@@ -90,6 +90,7 @@ class CryptoporraSimulator:
 					"amount" :randint(1, 9),
 					"match_id" : match['_id'],
 					"status_id" : 0,
+					"is_private" : False,
 					"user_id" : user['_id'],
 					"users" : [],
 					"matchDate" : match['date']

@@ -6,6 +6,9 @@ if (Meteor.isClient) {
 	Template.pool.helpers({
 		userCount : function() {
 			return this.users.length;
+		},
+		isPrivate : function() {
+			return this.is_private ? 'Yes' : 'No';
 		}
 	});
 }

@@ -1,7 +1,7 @@
 template(name='poolList')
 	div(class='col-md-8 col-md-offset-2')
 		div(class='row')
-			h3 Public pools
+			h3 Pools for this match
 		div(class='row')
 			h4(class='text-center') Status: #{displayStatus}
 		div(class='row')
@@ -9,10 +9,10 @@ template(name='poolList')
 				thead
 					tr
 						th Id
-						th Match Id
 						th Amount
 						th StatusId
 						th Participants
+						th Private
 						th
 				tbody
 					each pools 

@@ -8,10 +8,15 @@ template(name='newPool')
 					div(class='modal-body')
 						div(class='container-fluid')
 							div(class='row')
-								div(class='col-md-6 col-md-offset-3 text-center')
-									div(class="form-group")
-										label Amount
-										input(type="number" name="amount")
+								div(class='col-md-6')
+									label Amount
+								div(class='col-md-6')
+									input(type="number" name="amount" class='form-control')
+							div(class='row')
+								div(class='col-md-6')
+									label This pool is private
+								div(class='col-md-6')
+									input(type="checkbox" name="private" class='form-control')
 					div(class='modal-footer')
 						button(class='btn btn-primary' type='submit' value='Create')
 							i(class='fa fa-plus') Create

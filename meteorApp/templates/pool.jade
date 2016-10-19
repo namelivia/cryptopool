@@ -1,9 +1,9 @@
 template(name='pool')
 	tr
 		td #{_id}
-		td #{match_id}
 		td #{amount}
 		td #{status_id}
 		td #{userCount}
+		td #{isPrivate}
 		td
 			a(href='{{pathFor route="poolDetails" matchId=match_id._str id=_id._str}}') Details

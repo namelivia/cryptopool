@@ -54,7 +54,7 @@ if (Meteor.isServer) {
 				);
 			}
 		},
-		'createPool': function(amount,matchId){
+		'createPool': function(amount,isPrivate,matchId){
 			if (isNaN(amount) || amount < 1) {
 				throw new Meteor.Error(
 					'invalid-token-amount',
@@ -70,6 +70,7 @@ if (Meteor.isServer) {
 					_id: new Mongo.ObjectID(),
 					amount: amount,
 					match_id: matchId,
+					is_private: isPrivate,
 					status_id : 0,
 					user_id : Meteor.user()._id,
 					users : [],
