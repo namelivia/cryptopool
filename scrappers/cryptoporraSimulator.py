@@ -92,6 +92,7 @@ class CryptoporraSimulator:
 					"status_id" : 0,
 					"is_private" : False,
 					"user_id" : user['_id'],
+					"allowed_users" : [{"id" : user['_id'], "confirmed" : True}],
 					"users" : [],
 					"matchDate" : match['date']
 				}

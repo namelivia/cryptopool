@@ -5,7 +5,8 @@ if (Meteor.isClient) {
 	Template.currentUserInfo.onCreated(function() {
 		var self = this;
 		this.autorun(function() {
-			self.subscribe('userById')
+			self.subscribe('userById'),
+			self.subscribe('myNotifications')
 		});
 	});
 	//events
@@ -20,6 +21,9 @@ if (Meteor.isClient) {
 		},
 		userId: function(){
 			return Meteor.user()._id;
+		},
+		notificationCount: function(){
+			return Notifications.find({}).count();
 		}
 	});
 }

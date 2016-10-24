@@ -1,4 +1,8 @@
 template(name='currentUserInfo')
 	if Template.subscriptionsReady
 		if currentUser
-			a(href='{{pathFor route="userDetails" id=userId}}') Username : #{userUsername} | Tokens : #{userTokens}
+			a(href='{{pathFor route="userDetails" id=userId}}') Username : #{userUsername}
+			span &nbsp;|&nbsp;
+			a(href='') Tokens : #{userTokens}
+			span &nbsp;|&nbsp;
+			a(href='{{pathFor route="notifications"}}') Notifications : #{notificationCount}

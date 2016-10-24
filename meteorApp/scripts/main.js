@@ -74,6 +74,7 @@ if (Meteor.isServer) {
 					status_id : 0,
 					user_id : Meteor.user()._id,
 					users : [],
+					allowed_users : [{'id' : Meteor.user()._id, 'confirmed' : true}],
 					matchDate : match.date,
 					createdAt: new Date()
 				});
@@ -84,6 +85,11 @@ if (Meteor.isServer) {
 					'You can\'t create a pool for a finished match'
 				);
 			}
+		},
+		'requestPoolAccess': function(poolId){
+			Pools.update(
+				{ _id: poolId },
+				{ $push: { allowed_users: {'id' : Meteor.user()._id ,'confirmed' : undefined}} });
 		},
 		'userExists': function(username){
 			return !!Meteor.users.findOne({username : username});
@@ -108,6 +114,14 @@ if (Meteor.isServer) {
 				limit : 5
 			});
 		return nextMatches;
+	});
+
+	Meteor.publish("myNotifications", function () {
+		return Notifications.find(
+			{
+				user_id : this.userId
+			}
+		);
 	});
 
 	Meteor.publish("nextPlayingPoolsByUserId", function () {

@@ -37,12 +37,44 @@ if (Meteor.isClient) {
 		"click .join": function (event) {
 			event.preventDefault();
 			Modal.show('confirmJoin',{ _id : this.pool._id });
-		}
+		},
+		"click .request-access": function (event) {
+			event.preventDefault();
+			Meteor.call('requestPoolAccess',this.pool._id,function(error,response){
+				if (error){
+					toastr.error(error.details, error.reason);
+				} else {
+					toastr.success('You have requested access to the pool', 'Access requested');
+				}
+			});
+		},
 	});
 	//helpers
 	Template.poolDetails.helpers({
 		userCount : function() {
 			return this.pool.users.length;
+		},
+		amIAllowed : function() {
+			if (this.pool.is_private) {
+				var foundUser = _.find(this.pool.allowed_users, function(user){
+					return user.id === Meteor.user()._id;
+				});
+				if (foundUser === undefined || foundUser.confirmed !== true) { 
+					return false;
+				}
+			}
+			return true;
+		},
+		amIWaiting : function() {
+			if (this.pool.is_private) {
+				var foundUser = _.find(this.pool.allowed_users, function(user){
+					return user.id === Meteor.user()._id;
+				});
+				if (foundUser !== undefined && foundUser.confirmed === null) { 
+					return true;
+				}
+			}
+			return false;
 		},
 		totalAmount: function() {
 			return this.pool.users.length*this.pool.amount;
