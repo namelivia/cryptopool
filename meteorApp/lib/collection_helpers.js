@@ -30,6 +30,6 @@ Messages.helpers({
 		return Meteor.users.findOne({_id : this.from});
 	},
 	toUser: function(){
-		return Meteor.users.findOne({_id : this.from});
-	},
+		return Meteor.users.findOne({_id : this.to});
+	}
 });

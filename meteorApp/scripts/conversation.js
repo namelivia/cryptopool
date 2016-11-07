@@ -10,6 +10,7 @@ Router.route('/conversation/:id', function () {
 	waitOn: function() {
 		return [
 			Meteor.subscribe('messagesByUserId',this.params.id),
+			Meteor.subscribe('userById',this.params.id)
 		];
 	},
 	onBeforeAction: function() {
@@ -29,6 +30,7 @@ if (Meteor.isClient) {
 		'submit .new-message': function (event) {
 			event.preventDefault();
 			var message = event.target.newMessage.value;
+			event.target.newMessage.value = '';
 			Meteor.call('sendMessage',message, this.userId,function(error,response){
 				if (error){
 					toastr.error(error.details, error.reason);
@@ -42,6 +44,9 @@ if (Meteor.isClient) {
 	Template.conversation.helpers({
 		messages: function() {
 			return Messages.find({});
-		}
+		},
+		hasMessages: function() {
+			return Messages.find({}).count() > 0;
+		},
 	});
 }

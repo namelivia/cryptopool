@@ -179,7 +179,10 @@ if (Meteor.isServer) {
 	});
 
 	Meteor.publish("messagesByUserId", function (userId) {
-		return Messages.find({to : userId, from: this.userId});
+		return Messages.find( {$or : [
+			{to : userId, from: this.userId},
+			{to : this.userId, from: userId}
+		]});
 	});
 
 	Meteor.publish("matchById", function (matchId) {

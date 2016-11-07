@@ -3,9 +3,11 @@ template(name='conversation')
 		h1 Conversation
 		div(class='row')
 			div(class='col-md-12')
-				p Send a message to this user to start a conversation
-				each messages
-					+message
+				if hasMessages
+					each messages
+						+message
+				else
+					p Send a message to this user to start a conversation
 		form(class='new-message form-inline' role='form')
 			div(class='col-md-10')
 				input(type="text" name="newMessage" class='form-control' style="width:100%;")
