@@ -6,3 +6,5 @@ template(name='userDetails')
 				h2 Tokens: #{this.tokens}
 			if hasEmails
 				h2 Email: #{email}
+			if canBeContacted
+				a(href='{{pathFor route="conversation" id=_id}}') Send a private message to this user

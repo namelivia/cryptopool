@@ -54,6 +54,15 @@ if (Meteor.isServer) {
 				);
 			}
 		},
+		'sendMessage': function(message,userId){
+			Messages.insert({
+				_id: new Mongo.ObjectID(),
+				from: this.userId,
+				to: userId,
+				message: message,
+				createdAt: new Date()
+			});
+		},
 		'createPool': function(amount,isPrivate,matchId){
 			if (isNaN(amount) || amount < 1) {
 				throw new Meteor.Error(
@@ -167,6 +176,10 @@ if (Meteor.isServer) {
 
 	Meteor.publish("poolsByMatchId", function (matchId) {
 		return Pools.find({match_id : matchId});
+	});
+
+	Meteor.publish("messagesByUserId", function (userId) {
+		return Messages.find({to : userId, from: this.userId});
 	});
 
 	Meteor.publish("matchById", function (matchId) {

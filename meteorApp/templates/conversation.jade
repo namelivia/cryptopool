@@ -1,0 +1,14 @@
+template(name='conversation')
+	div(class='container-fluid')
+		h1 Conversation
+		div(class='row')
+			div(class='col-md-12')
+				p Send a message to this user to start a conversation
+				each messages
+					+message
+		form(class='new-message form-inline' role='form')
+			div(class='col-md-10')
+				input(type="text" name="newMessage" class='form-control' style="width:100%;")
+			div(class='col-md-2')
+				button(class='btn btn-primary' type='submit' value='Send')
+					| Enviar

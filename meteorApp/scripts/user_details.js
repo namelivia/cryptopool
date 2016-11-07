@@ -35,6 +35,9 @@ if (Meteor.isClient) {
 		},
 		hasEmails: function() {
 			return this.emails !== undefined
+		},
+		canBeContacted: function() {
+			return this._id !== Meteor.user()._id
 		}
 	});
 }
