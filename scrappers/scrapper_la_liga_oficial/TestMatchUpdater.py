@@ -72,7 +72,7 @@ class TestMatchUpdater(unittest.TestCase):
 		result = self.matchUpdater.update_match_if_needed(match,updatedMatch)
 		mock_update_an_existing_match.assert_called_with(updatedMatch)
 		mock_increase_updated_matches_counter.assert_called_with()
-		mock_update_pools_for_a_match.assert_called_with(match['_id'])
+		mock_update_pools_for_a_match.assert_called_with(match['_id'], updatedMatch['score1'], updatedMatch['score2'])
 
 if __name__ == '__main__':
 	unittest.main()
