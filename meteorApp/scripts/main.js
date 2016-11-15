@@ -74,7 +74,7 @@ if (Meteor.isServer) {
 				message: message,
 				createdAt: new Date()
 			});
-			insertNotification('newMessage',userId,{'from' : this.userId});
+			insertNotification('newMessage',userId,{'from' : this.userId, 'username' : Meteor.user().username});
 		},
 
 		'insertNotification': insertNotification,

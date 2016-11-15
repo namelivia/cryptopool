@@ -22,7 +22,7 @@ if (Meteor.isClient) {
 	Template.notification.helpers({
 		content: function() {
 			if (this.key === 'newMessage') {
-				return 'You have a new private message from '+this.data.from
+				return 'You have a new private message from '+this.data.username
 			}
 			return 'Unknown notification';
 		},

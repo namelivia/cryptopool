@@ -1,6 +1,6 @@
 template(name='notification')
 	li 
-		span #{content}
+		a(href='{{pathFor route="conversation" id=this.data.from}}') #{content}
 		if alreadySeen
 			button(type='button' class="btn btn-primary toggleSeen" data-notificationId="#{notificationId}")
 				i(class="fa fa-eye-slash")
