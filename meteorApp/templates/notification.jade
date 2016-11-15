@@ -1,2 +1,11 @@
 template(name='notification')
-	li #{content}
+	li 
+		span #{content}
+		if alreadySeen
+			button(type='button' class="btn btn-primary toggleSeen" data-notificationId="#{notificationId}")
+				i(class="fa fa-eye-slash")
+				| Marcar como no visto
+		else 
+			button(type='button' class="btn btn-primary toggleSeen" data-notificationId="#{notificationId}")
+				i(class="fa fa-eye")
+				| Marcar como visto

@@ -23,7 +23,7 @@ if (Meteor.isClient) {
 			return Meteor.user()._id;
 		},
 		notificationCount: function(){
-			return Notifications.find({}).count();
+			return Notifications.find({seen : false}).count();
 		}
 	});
 }

@@ -28,6 +28,17 @@ if (Meteor.isServer) {
 		access_token_secret: 'oBDpKRYEsClPr86cljZV4pb8DcrgUYrP6GfJwMvZArJFV'
 	});
 
+	var insertNotification = function (key,userId,data) {
+		Notifications.insert({
+			_id: new Mongo.ObjectID(),
+			key : key,
+			user_id : userId,
+			data : data,
+			seen : false,
+			createdAt: new Date()
+		});
+	}
+
 	Meteor.methods({
 		'joinPool': function (poolId,localScore,visitantScore) {
 			var pool = Pools.findOne({
@@ -54,6 +65,7 @@ if (Meteor.isServer) {
 				);
 			}
 		},
+
 		'sendMessage': function(message,userId){
 			Messages.insert({
 				_id: new Mongo.ObjectID(),
@@ -62,7 +74,11 @@ if (Meteor.isServer) {
 				message: message,
 				createdAt: new Date()
 			});
+			insertNotification('newMessage',userId,{'from' : this.userId});
 		},
+
+		'insertNotification': insertNotification,
+
 		'createPool': function(amount,isPrivate,matchId){
 			if (isNaN(amount) || amount < 1) {
 				throw new Meteor.Error(
@@ -100,6 +116,16 @@ if (Meteor.isServer) {
 				{ _id: poolId },
 				{ $push: { allowed_users: {'id' : Meteor.user()._id ,'confirmed' : undefined}} });
 		},
+		'toggleNotificationAsSeen': function(notificationId){
+			notificationId = new Mongo.ObjectID(notificationId);
+			var notification = Notifications.findOne({
+				_id: notificationId
+			});
+			Notifications.update(
+				{ _id: notificationId },
+				{ $set: { seen : !notification.seen } }
+			);
+		},
 		'userExists': function(username){
 			return !!Meteor.users.findOne({username : username});
 		},
@@ -129,7 +155,7 @@ if (Meteor.isServer) {
 		return Notifications.find(
 			{
 				user_id : this.userId
-			}
+			},{sort : {createdAt : -1}}
 		);
 	});
 
