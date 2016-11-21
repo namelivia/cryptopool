@@ -21,10 +21,14 @@ if (Meteor.isClient) {
 	//helpers
 	Template.notification.helpers({
 		content: function() {
-			if (this.key === 'newMessage') {
-				return 'You have a new private message from '+this.data.username
+			switch (this.key) {
+				case 'newMessage':
+					return 'You have a new private message from '+this.data.username
+				case 'newAccessRequest':
+					return this.data.username+' is waiting to be approved on one of your pools'
+				default:
+					return 'Unknown notification';
 			}
-			return 'Unknown notification';
 		},
 		notificationId : function() {
 			return this._id._str;

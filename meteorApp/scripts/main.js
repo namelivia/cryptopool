@@ -39,6 +39,22 @@ if (Meteor.isServer) {
 		});
 	}
 
+	var setUserPoolAccess = function(userId, poolId, access) {
+		poolId = new Mongo.ObjectID(poolId);
+		var allowedUsers = Pools.findOne({_id : poolId}).allowed_users;
+		var index = _.indexOf(
+			allowedUsers, _.find(
+				allowedUsers, { id :userId }
+			)
+		);
+		allowedUsers.splice(index, 1, { id : allowedUsers[index].id, confirmed:access});
+		Pools.update(
+			{ _id: poolId },
+			{ $set: { allowed_users : allowedUsers } }
+		);
+		
+	}
+
 	Meteor.methods({
 		'joinPool': function (poolId,localScore,visitantScore) {
 			var pool = Pools.findOne({
@@ -79,6 +95,16 @@ if (Meteor.isServer) {
 
 		'insertNotification': insertNotification,
 
+		'setUserPoolAccess': setUserPoolAccess,
+
+		'allowUserToPool': function(userId, poolId) {
+			setUserPoolAccess(userId, poolId, true);
+		},
+
+		'denyUserToPool': function(userId, poolId) {
+			setUserPoolAccess(userId, poolId, false);
+		},
+
 		'createPool': function(amount,isPrivate,matchId){
 			if (isNaN(amount) || amount < 1) {
 				throw new Meteor.Error(
@@ -112,9 +138,11 @@ if (Meteor.isServer) {
 			}
 		},
 		'requestPoolAccess': function(poolId){
+			var pool = Pools.findOne({_id : poolId});
 			Pools.update(
 				{ _id: poolId },
 				{ $push: { allowed_users: {'id' : Meteor.user()._id ,'confirmed' : undefined}} });
+			insertNotification('newAccessRequest',pool.user_id,{'from' : this.userId, 'username' : Meteor.user().username, 'poolId' : poolId});
 		},
 		'toggleNotificationAsSeen': function(notificationId){
 			notificationId = new Mongo.ObjectID(notificationId);

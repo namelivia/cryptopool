@@ -1,0 +1,7 @@
+template(name='poolAdmin')
+	div(class='container-fluid')
+		div(class='row')
+			h2(class='text-center') Pool administration
+			ul
+				each allowed_users
+					+allowed_user
