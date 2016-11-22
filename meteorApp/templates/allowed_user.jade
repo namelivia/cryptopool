@@ -1,6 +1,7 @@
 template(name='allowed_user')
 	tr
-		td #{id}
+		td
+			+userTextLink(user=this.user)
 		if isApproved
 			span Access approved
 		if isDenied

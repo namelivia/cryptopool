@@ -4,10 +4,8 @@ Router.route('/match/:matchId/pool/:id/admin', function () {
 		data: function () {
 			var oid = new Meteor.Collection.ObjectID(this.params.id);
 			var pool = Pools.findOne({_id : oid});
-			var users = Meteor.users.find();
 			return {
-				pool : pool,
-				users : users
+				pool : pool
 			};
 		}
 	});
@@ -17,7 +15,7 @@ Router.route('/match/:matchId/pool/:id/admin', function () {
 		var oid = new Meteor.Collection.ObjectID(this.params.id);
 		return [
 			Meteor.subscribe('poolById',oid),
-			Meteor.subscribe('usersByPoolId',oid)
+			Meteor.subscribe('allowedUsersByPoolId',oid)
 		];
 	},
 	onBeforeAction: function() {
@@ -41,8 +39,10 @@ if (Meteor.isClient) {
 			var poolId = this.pool._id._str;
 			return _.map(this.pool.allowed_users, function (user) {
 				user.poolId = poolId;
+				user.user = Meteor.users.findOne({_id : user.id});
 				return user;
-			})
+			});
 		}
 	});
+
 }

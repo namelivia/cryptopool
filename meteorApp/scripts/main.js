@@ -259,6 +259,14 @@ if (Meteor.isServer) {
 		return Meteor.users.find({ _id: {$in: userIds }},{fields: {'username': 1}});
 	});
 
+	Meteor.publish('allowedUsersByPoolId', function (poolId) {
+		var pool = Pools.findOne({ _id : poolId });
+		var userIds = _.map(pool.allowed_users,function(user){
+			return user.id;
+		});
+		return Meteor.users.find({ _id: {$in: userIds }},{fields: {'username': 1}});
+	});
+
 	Meteor.publish('poolsByUserId', function () {
 		var user = Meteor.users.findOne({ _id : this.userId });
 		return Pools.find({ _id: {$in: user.poolHistory}});
