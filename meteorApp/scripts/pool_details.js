@@ -5,9 +5,11 @@ Router.route('/match/:matchId/pool/:id', function () {
 			var oid = new Meteor.Collection.ObjectID(this.params.id);
 			var pool = Pools.findOne({_id : oid});
 			var users = Meteor.users.find();
+			var matchId = this.params.matchId;
 			return {
 				pool : pool,
-				users : users
+				users : users,
+				matchId : matchId
 			};
 		}
 	});
@@ -64,6 +66,9 @@ if (Meteor.isClient) {
 				}
 			}
 			return true;
+		},
+		amIAdmin: function() {
+			return this.pool.user_id === Meteor.user()._id;
 		},
 		amIWaiting : function() {
 			if (this.pool.is_private) {

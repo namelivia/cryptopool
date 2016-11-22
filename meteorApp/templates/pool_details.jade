@@ -2,6 +2,9 @@ template(name='poolDetails')
 	div(class='container-fluid')
 		div(class='row')
 			h2(class='text-center') Pool details
+		if amIAdmin
+			a(href='{{pathFor route="poolAdmin" matchId=matchId id=this.pool._id._str}}')
+				| Pool administration
 		if amIAllowed
 			div(class='row')
 				h4(class='text-center') Status: #{displayStatus}
