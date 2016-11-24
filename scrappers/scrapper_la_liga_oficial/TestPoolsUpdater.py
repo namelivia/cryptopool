@@ -5,6 +5,7 @@ import mock
 from poolsUpdater import PoolsUpdater
 from lxml import html
 from datetime import datetime 
+from freezegun import freeze_time
 from bson.objectid import ObjectId
 import time
 import io
@@ -29,7 +30,7 @@ class TestPoolsUpdater(unittest.TestCase):
 	@mock.patch('scrapper_la_liga_oficial.usersCollectionManager.UsersCollectionManager.update_an_existing_user')
 	@mock.patch('scrapper_la_liga_oficial.poolsCollectionManager.PoolsCollectionManager.update_an_existing_pool')
 	@mock.patch('scrapper_la_liga_oficial.poolsUpdater.PoolsUpdater.generate_pool_finished_notification')
-	def test_updating_a_poll(self,mock_generate_pool_finished_notification, mock_update_an_existing_pool, mock_update_an_existing_user, mock_find_user_by_id):
+	def test_updating_a_pool(self,mock_generate_pool_finished_notification, mock_update_an_existing_pool, mock_update_an_existing_user, mock_find_user_by_id):
 		user = { "_id" : "AWSYqjXtATexZwvT3", "tokens" : 7}
 		mock_find_user_by_id.return_value = user;
 		matchId = 'foo'
@@ -53,16 +54,19 @@ class TestPoolsUpdater(unittest.TestCase):
 		self.assertEqual(mock_generate_pool_finished_notification.call_count,len(pool['users']))
 
 	@mock.patch('scrapper_la_liga_oficial.notificationsCollectionManager.NotificationsCollectionManager.insert_a_new_notification')
+	@freeze_time("2015-01-01")
 	def test_generating_pool_finished_notifications(self,mock_insert_a_new_notification):
 		userId = 'userId'
-		poolId = 'poolId'
-		matchId = 'matchId'
+		poolId = ObjectId('57109b1cc12fe22e66bfc09d')
+		matchId = ObjectId('47109b1cc12fe22e66bfc09d')
 		newNotification = {
 			"key" : "poolFinished",
 			"user_id" : userId,
+			"seen" : False,
+			"createdAt" : datetime.now(),
 			"data" : {
-				"matchId" : matchId,
-				"poolId" : poolId
+				"matchId" : str(matchId),
+				"poolId" : str(poolId)
 			}
 		}
 		self.poolsUpdater.generate_pool_finished_notification(userId,poolId,matchId)

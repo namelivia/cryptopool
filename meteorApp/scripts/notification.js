@@ -30,6 +30,8 @@ if (Meteor.isClient) {
 					return 'The pool administrator approved your access request'
 				case 'accessDenied':
 					return 'The pool administrator rejected your access request'
+				case 'poolFinished':
+					return 'The pool you were participating is has finished'
 				default:
 					return 'Unknown notification';
 			}
@@ -45,6 +47,9 @@ if (Meteor.isClient) {
 		},
 		isAccessDenied: function() {
 			return this.key === 'accessDenied';
+		},
+		isPoolFinished: function() {
+			return this.key === 'poolFinished';
 		},
 		notificationId : function() {
 			return this._id._str;

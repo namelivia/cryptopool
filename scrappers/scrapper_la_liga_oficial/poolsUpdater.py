@@ -2,6 +2,7 @@ import logging
 from poolsCollectionManager import PoolsCollectionManager
 from usersCollectionManager import UsersCollectionManager
 from notificationsCollectionManager import NotificationsCollectionManager
+from datetime import datetime 
 
 #TODO: This could have some more granularity, also for the tests
 
@@ -35,7 +36,7 @@ class PoolsUpdater:
 		#get the users that guessed the right score
 		for user in pool['users']:
 			#notify all the pool users that the pool has ended
-			self.generate_pool_finished_notification(user['_id'],matchId,pool['_id'])
+			self.generate_pool_finished_notification(user['_id'],pool['_id'],matchId)
 			if user['localScore'] == localScore and user['visitantScore'] == visitantScore:
 				winners.append(user)
 		if len(winners) == 0:
@@ -62,7 +63,9 @@ class PoolsUpdater:
 		newNotification = {}
 		newNotification['key'] = 'poolFinished'
 		newNotification['user_id'] = userId
+		newNotification['seen'] = False
+		newNotification['createdAt'] = datetime.now()
 		newNotification['data'] = {}
-		newNotification['data']['matchId'] = matchId
-		newNotification['data']['poolId'] = poolId
+		newNotification['data']['matchId'] = str(matchId)
+		newNotification['data']['poolId'] = str(poolId)
 		self.notificationsCollectionManager.insert_a_new_notification(newNotification)

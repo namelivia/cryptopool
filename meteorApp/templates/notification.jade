@@ -8,6 +8,8 @@ template(name='notification')
 			a(href='{{pathFor route="poolDetails" matchId=this.data.matchId id=this.data.poolId}}') #{content}
 		if isAccessDenied
 			a(href='{{pathFor route="poolDetails" matchId=this.data.matchId id=this.data.poolId}}') #{content}
+		if isPoolFinished
+			a(href='{{pathFor route="poolDetails" matchId=this.data.matchId id=this.data.poolId}}') #{content}
 		if alreadySeen
 			button(type='button' class="btn btn-primary toggleSeen" data-notificationId="#{notificationId}")
 				i(class="fa fa-eye-slash")
