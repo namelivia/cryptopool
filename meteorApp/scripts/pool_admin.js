@@ -4,8 +4,10 @@ Router.route('/match/:matchId/pool/:id/admin', function () {
 		data: function () {
 			var oid = new Meteor.Collection.ObjectID(this.params.id);
 			var pool = Pools.findOne({_id : oid});
+			var matchId = this.params.matchId;
 			return {
-				pool : pool
+				pool : pool,
+				matchId : matchId
 			};
 		}
 	});
@@ -37,8 +39,10 @@ if (Meteor.isClient) {
 	Template.poolAdmin.helpers({
 		allowed_users: function() {
 			var poolId = this.pool._id._str;
+			var matchId = this.matchId;
 			return _.map(this.pool.allowed_users, function (user) {
 				user.poolId = poolId;
+				user.matchId = matchId;
 				user.user = Meteor.users.findOne({_id : user.id});
 				return user;
 			});

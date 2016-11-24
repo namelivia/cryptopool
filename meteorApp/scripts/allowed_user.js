@@ -7,7 +7,8 @@ if (Meteor.isClient) {
 			event.preventDefault();
 			var userId = event.target.attributes.getNamedItem('data-userid').value;
 			var poolId = event.target.attributes.getNamedItem('data-poolid').value;
-			Meteor.call('allowUserToPool',userId,poolId,function(error){
+			var matchId = event.target.attributes.getNamedItem('data-matchid').value;
+			Meteor.call('allowUserToPool',userId,matchId,poolId,function(error){
 				if (error) {
 					toastr.error(error.details, error.reason);
 				} else {
@@ -22,7 +23,8 @@ if (Meteor.isClient) {
 			event.preventDefault();
 			var userId = event.target.attributes.getNamedItem('data-userid').value;
 			var poolId = event.target.attributes.getNamedItem('data-poolid').value;
-			Meteor.call('denyUserToPool',userId,poolId,function(error){
+			var matchId = event.target.attributes.getNamedItem('data-matchid').value;
+			Meteor.call('denyUserToPool',userId,matchId,poolId,function(error){
 				if (error) {
 					toastr.error(error.details, error.reason);
 				} else {

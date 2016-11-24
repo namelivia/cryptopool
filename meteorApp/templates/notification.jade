@@ -1,11 +1,18 @@
 template(name='notification')
 	li 
-		a(href='{{pathFor route="conversation" id=this.data.from}}') #{content}
+		if isNewMessage
+			a(href='{{pathFor route="conversation" id=this.data.from}}') #{content}
+		if isNewAccessRequest
+			a(href='{{pathFor route="poolAdmin" matchId=this.data.matchId id=this.data.poolId}}') #{content}
+		if isAccessAllowed
+			a(href='{{pathFor route="poolDetails" matchId=this.data.matchId id=this.data.poolId}}') #{content}
+		if isAccessDenied
+			a(href='{{pathFor route="poolDetails" matchId=this.data.matchId id=this.data.poolId}}') #{content}
 		if alreadySeen
 			button(type='button' class="btn btn-primary toggleSeen" data-notificationId="#{notificationId}")
 				i(class="fa fa-eye-slash")
-				| Marcar como no visto
+				| Mark as unseen
 		else 
 			button(type='button' class="btn btn-primary toggleSeen" data-notificationId="#{notificationId}")
 				i(class="fa fa-eye")
-				| Marcar como visto
+				| Mark as seen

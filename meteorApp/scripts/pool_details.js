@@ -42,7 +42,7 @@ if (Meteor.isClient) {
 		},
 		"click .request-access": function (event) {
 			event.preventDefault();
-			Meteor.call('requestPoolAccess',this.pool._id,function(error,response){
+			Meteor.call('requestPoolAccess',this.matchId,this.pool._id,function(error,response){
 				if (error){
 					toastr.error(error.details, error.reason);
 				} else {
@@ -66,6 +66,17 @@ if (Meteor.isClient) {
 				}
 			}
 			return true;
+		},
+		amIRejected: function() {
+			if (this.pool.is_private) {
+				var foundUser = _.find(this.pool.allowed_users, function(user){
+					return user.id === Meteor.user()._id;
+				});
+				if (foundUser !== undefined && foundUser.confirmed === false) { 
+					return true;
+				}
+			}
+			return false;
 		},
 		amIAdmin: function() {
 			return this.pool.user_id === Meteor.user()._id;

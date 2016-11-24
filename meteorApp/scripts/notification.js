@@ -26,12 +26,31 @@ if (Meteor.isClient) {
 					return 'You have a new private message from '+this.data.username
 				case 'newAccessRequest':
 					return this.data.username+' is waiting to be approved on one of your pools'
+				case 'accessAllowed':
+					return 'The pool administrator approved your access request'
+				case 'accessDenied':
+					return 'The pool administrator rejected your access request'
 				default:
 					return 'Unknown notification';
 			}
 		},
+		isNewMessage : function() {
+			return this.key === 'newMessage';
+		},
+		isNewAccessRequest : function() {
+			return this.key === 'newAccessRequest';
+		},
+		isAccessAllowed: function() {
+			return this.key === 'accessAllowed';
+		},
+		isAccessDenied: function() {
+			return this.key === 'accessDenied';
+		},
 		notificationId : function() {
 			return this._id._str;
+		},
+		route: function() {
+			return 'conversation';
 		},
 		alreadySeen: function() {
 			return this.seen;

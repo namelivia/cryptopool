@@ -8,10 +8,10 @@ template(name='allowed_user')
 			span Access denied
 		if isPending
 			td
-				button(type='button' class="btn btn-success allow" data-userId="#{id}" data-poolId="#{poolId}")
+				button(type='button' class="btn btn-success allow" data-userId="#{id}" data-poolId="#{poolId}" data-matchId="#{matchId}")
 					i(class="fa fa-check")
 					| Allow
 			td
-				button(type='button' class="btn btn-danger deny" data-userId="#{id}" data-poolId="#{poolId}")
+				button(type='button' class="btn btn-danger deny" data-userId="#{id}" data-poolId="#{poolId}" data-matchId="#{matchId}")
 					i(class="fa fa-ban")
 					| Deny

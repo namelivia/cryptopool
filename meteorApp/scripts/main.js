@@ -97,12 +97,14 @@ if (Meteor.isServer) {
 
 		'setUserPoolAccess': setUserPoolAccess,
 
-		'allowUserToPool': function(userId, poolId) {
+		'allowUserToPool': function(userId, matchId, poolId) {
 			setUserPoolAccess(userId, poolId, true);
+			insertNotification('accessAllowed',userId,{'from' : this.userId, 'username' : Meteor.user().username,'poolId' : poolId, 'matchId' : matchId});
 		},
 
-		'denyUserToPool': function(userId, poolId) {
+		'denyUserToPool': function(userId, matchId, poolId) {
 			setUserPoolAccess(userId, poolId, false);
+			insertNotification('accessDenied',userId,{'from' : this.userId, 'username' : Meteor.user().username,'poolId' : poolId, 'matchId' : matchId});
 		},
 
 		'createPool': function(amount,isPrivate,matchId){
@@ -137,12 +139,12 @@ if (Meteor.isServer) {
 				);
 			}
 		},
-		'requestPoolAccess': function(poolId){
+		'requestPoolAccess': function(matchId,poolId){
 			var pool = Pools.findOne({_id : poolId});
 			Pools.update(
 				{ _id: poolId },
 				{ $push: { allowed_users: {'id' : Meteor.user()._id ,'confirmed' : undefined}} });
-			insertNotification('newAccessRequest',pool.user_id,{'from' : this.userId, 'username' : Meteor.user().username, 'poolId' : poolId});
+			insertNotification('newAccessRequest',pool.user_id,{'from' : this.userId, 'username' : Meteor.user().username, 'poolId' : poolId._str, 'matchId' : matchId});
 		},
 		'toggleNotificationAsSeen': function(notificationId){
 			notificationId = new Mongo.ObjectID(notificationId);

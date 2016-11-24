@@ -24,11 +24,14 @@ template(name='poolDetails')
 				else
 					p There are no participants in this pool yet
 		else
-			div(class='row')
-				h4(class='text-center') You don't have access to view this pool
+			if amIRejected
+				h4(class='text-center') The pool administrator has denied your access request
+			else
 				div(class='row')
-					div(class='col-md-12 text-center')
-						if amIWaiting
-							button(class='btn btn-primary btn-success' disabled='disabled') Waiting to be accepted
-						else 
-							button(class='btn btn-primary btn-success request-access' value='RequestAccess') Request access to this pool
+					h4(class='text-center') You don't have access to view this pool
+					div(class='row')
+						div(class='col-md-12 text-center')
+							if amIWaiting
+								button(class='btn btn-primary btn-success' disabled='disabled') Waiting to be accepted
+							else 
+								button(class='btn btn-primary btn-success request-access' value='RequestAccess') Request access to this pool
