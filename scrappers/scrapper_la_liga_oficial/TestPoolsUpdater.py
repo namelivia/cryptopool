@@ -28,10 +28,13 @@ class TestPoolsUpdater(unittest.TestCase):
 	@mock.patch('scrapper_la_liga_oficial.usersCollectionManager.UsersCollectionManager.find_user_by_id')
 	@mock.patch('scrapper_la_liga_oficial.usersCollectionManager.UsersCollectionManager.update_an_existing_user')
 	@mock.patch('scrapper_la_liga_oficial.poolsCollectionManager.PoolsCollectionManager.update_an_existing_pool')
-	def test_updating_a_poll(self, mock_update_an_existing_pool, mock_update_an_existing_user, mock_find_user_by_id):
+	@mock.patch('scrapper_la_liga_oficial.poolsUpdater.PoolsUpdater.generate_pool_finished_notification')
+	def test_updating_a_poll(self,mock_generate_pool_finished_notification, mock_update_an_existing_pool, mock_update_an_existing_user, mock_find_user_by_id):
 		user = { "_id" : "AWSYqjXtATexZwvT3", "tokens" : 7}
 		mock_find_user_by_id.return_value = user;
+		matchId = 'foo'
 		pool = {
+			"_id" : "poolId",
 			"amount" : 3,
 			"status_id" : 0,
 			"users" : [ 
@@ -42,8 +45,25 @@ class TestPoolsUpdater(unittest.TestCase):
 				{ "_id" : "userId5","localScore" : 2,"visitantScore" : 0 }, 
 			]
 		}
-		self.poolsUpdater.update_pool(pool, 1, 0)
+		self.poolsUpdater.update_pool(pool, 1, 0, matchId)
 		mock_find_user_by_id.assert_called()
 		mock_update_an_existing_user.assert_called()
 		mock_update_an_existing_pool.assert_called()
+		mock_generate_pool_finished_notification.assert_called()
+		self.assertEqual(mock_generate_pool_finished_notification.call_count,len(pool['users']))
 
+	@mock.patch('scrapper_la_liga_oficial.notificationsCollectionManager.NotificationsCollectionManager.insert_a_new_notification')
+	def test_generating_pool_finished_notifications(self,mock_insert_a_new_notification):
+		userId = 'userId'
+		poolId = 'poolId'
+		matchId = 'matchId'
+		newNotification = {
+			"key" : "poolFinished",
+			"user_id" : userId,
+			"data" : {
+				"matchId" : matchId,
+				"poolId" : poolId
+			}
+		}
+		self.poolsUpdater.generate_pool_finished_notification(userId,poolId,matchId)
+		mock_insert_a_new_notification.assert_called_with(newNotification)

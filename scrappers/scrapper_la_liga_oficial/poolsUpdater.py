@@ -1,6 +1,7 @@
 import logging
 from poolsCollectionManager import PoolsCollectionManager
 from usersCollectionManager import UsersCollectionManager
+from notificationsCollectionManager import NotificationsCollectionManager
 
 #TODO: This could have some more granularity, also for the tests
 
@@ -10,6 +11,7 @@ class PoolsUpdater:
 		self.logger = logging.getLogger("scrapperLaLigaOficial")
 		self.poolsCollectionManager = PoolsCollectionManager()
 		self.usersCollectionManager = UsersCollectionManager()
+		self.notificationsCollectionManager = NotificationsCollectionManager()
 
 	def update_pools_for_a_match(self, matchId, localScore, visitantScore):
 		self.logger.debug('Updating the pools for the match')
@@ -20,11 +22,11 @@ class PoolsUpdater:
 		if foundPools is not None:
 			for pool in foundPools:
 				#decide the winner
-				self.update_pool(pool, localScore, visitantScore)
+				self.update_pool(pool, localScore, visitantScore, matchId)
 		else:
 			self.logger.debug('There are no pools for the match')
 	
-	def update_pool(self, pool, localScore, visitantScore):
+	def update_pool(self, pool, localScore, visitantScore, matchId):
 		self.logger.debug('Updating pool')
 		if pool['status_id'] == 1:
 			self.logger.debug('The pool status is already 1, this is weird')
@@ -32,6 +34,8 @@ class PoolsUpdater:
 		winners = []
 		#get the users that guessed the right score
 		for user in pool['users']:
+			#notify all the pool users that the pool has ended
+			self.generate_pool_finished_notification(user['_id'],matchId,pool['_id'])
 			if user['localScore'] == localScore and user['visitantScore'] == visitantScore:
 				winners.append(user)
 		if len(winners) == 0:
@@ -53,3 +57,12 @@ class PoolsUpdater:
 		#update the pool
 		pool['status_id'] = 1
 		self.poolsCollectionManager.update_an_existing_pool(pool)
+
+	def generate_pool_finished_notification(self, userId, poolId, matchId):
+		newNotification = {}
+		newNotification['key'] = 'poolFinished'
+		newNotification['user_id'] = userId
+		newNotification['data'] = {}
+		newNotification['data']['matchId'] = matchId
+		newNotification['data']['poolId'] = poolId
+		self.notificationsCollectionManager.insert_a_new_notification(newNotification)
