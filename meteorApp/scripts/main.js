@@ -107,7 +107,7 @@ if (Meteor.isServer) {
 			insertNotification('accessDenied',userId,{'from' : this.userId, 'username' : Meteor.user().username,'poolId' : poolId, 'matchId' : matchId});
 		},
 
-		'createPool': function(amount,isPrivate,matchId){
+		'createPool': function(amount,isPrivate,isMultiuser,isMultiscore,isClosest,matchId){
 			if (isNaN(amount) || amount < 1) {
 				throw new Meteor.Error(
 					'invalid-token-amount',
@@ -123,12 +123,17 @@ if (Meteor.isServer) {
 					_id: new Mongo.ObjectID(),
 					amount: amount,
 					match_id: matchId,
-					is_private: isPrivate,
 					status_id : 0,
 					user_id : Meteor.user()._id,
 					users : [],
 					allowed_users : [{'id' : Meteor.user()._id, 'confirmed' : true}],
 					matchDate : match.date,
+					options: {
+						is_private : isPrivate,
+						multiuser : isMultiuser,
+						multiscore : isMultiscore,
+						closest : isClosest
+					},
 					createdAt: new Date()
 				});
 			} else {

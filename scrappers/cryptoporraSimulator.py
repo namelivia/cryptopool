@@ -90,10 +90,10 @@ class CryptoporraSimulator:
 					"amount" :randint(1, 9),
 					"match_id" : match['_id'],
 					"status_id" : 0,
-					"is_private" : False,
 					"user_id" : user['_id'],
 					"allowed_users" : [{"id" : user['_id'], "confirmed" : True}],
 					"users" : [],
+					"options" : [{"is_private" : False}],
 					"matchDate" : match['date']
 				}
 				self.poolsCollectionManager.insert_a_new_pool(newPool)

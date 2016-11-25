@@ -57,7 +57,7 @@ if (Meteor.isClient) {
 			return this.pool.users.length;
 		},
 		amIAllowed : function() {
-			if (this.pool.is_private) {
+			if (this.pool.options.is_private) {
 				var foundUser = _.find(this.pool.allowed_users, function(user){
 					return user.id === Meteor.user()._id;
 				});
@@ -68,7 +68,7 @@ if (Meteor.isClient) {
 			return true;
 		},
 		amIRejected: function() {
-			if (this.pool.is_private) {
+			if (this.pool.options.is_private) {
 				var foundUser = _.find(this.pool.allowed_users, function(user){
 					return user.id === Meteor.user()._id;
 				});
@@ -82,7 +82,7 @@ if (Meteor.isClient) {
 			return this.pool.user_id === Meteor.user()._id;
 		},
 		amIWaiting : function() {
-			if (this.pool.is_private) {
+			if (this.pool.options.is_private) {
 				var foundUser = _.find(this.pool.allowed_users, function(user){
 					return user.id === Meteor.user()._id;
 				});
@@ -120,7 +120,7 @@ if (Meteor.isClient) {
 			return moment.duration(moment(this.pool.matchDate).diff(moment())).humanize();
 		},
 		isPrivate : function() {
-			return this.pool.is_private ? 'Yes' : 'No';
+			return this.pool.options.is_private ? 'Yes' : 'No';
 		}
 	});
 }

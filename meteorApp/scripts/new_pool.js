@@ -7,7 +7,10 @@ if (Meteor.isClient) {
 			event.preventDefault();
 			var amount = parseInt(event.target.amount.value);
 			var isPrivate = event.target.private.checked === true;
-			Meteor.call('createPool',amount,isPrivate,this.matchId,function(error,response){
+			var isMultiuser = event.target.multiuser.checked === true;
+			var isMultiscore = event.target.multiscore.checked === true;
+			var isClosest = event.target.closest.checked === true;
+			Meteor.call('createPool',amount,isPrivate,isMultiuser,isMultiscore,isClosest,this.matchId,function(error,response){
 				if (error){
 					toastr.error(error.details, error.reason);
 				} else {

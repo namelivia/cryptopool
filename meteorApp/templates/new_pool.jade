@@ -17,6 +17,21 @@ template(name='newPool')
 									label This pool is private
 								div(class='col-md-6')
 									input(type="checkbox" name="private" class='form-control')
+							div(class='row')
+								div(class='col-md-6')
+									label Users can participate multiple times
+								div(class='col-md-6')
+									input(type="checkbox" name="multiuser" class='form-control')
+							div(class='row')
+								div(class='col-md-6')
+									label Scores can be picked more than once
+								div(class='col-md-6')
+									input(type="checkbox" name="multiscore" class='form-control')
+							div(class='row')
+								div(class='col-md-6')
+									label If no one guess the score the prize go to the closest score
+								div(class='col-md-6')
+									input(type="checkbox" name="closest" class='form-control')
 					div(class='modal-footer')
 						button(class='btn btn-primary' type='submit' value='Create')
 							i(class='fa fa-plus') Create

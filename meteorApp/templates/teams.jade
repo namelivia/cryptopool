@@ -2,6 +2,7 @@ template(name='teams')
 	h3(class='text-center') Teams
 	if teams.count
 		each teams
-			+team(team=this)
+			div(class="col-md-1")
+				+team(team=this)
 	else
 		p There are no teams

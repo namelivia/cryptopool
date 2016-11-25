@@ -23,7 +23,7 @@ if (Meteor.isClient) {
 	//helpers
 	Template.teams.helpers({
 		teams: function() {
-			return Teams.find();
+			return Teams.find({}, {sort: {name : 1}});
 		}
 	});
 }
