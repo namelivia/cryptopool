@@ -33,15 +33,30 @@ class PoolsUpdater:
 			self.logger.debug('The pool status is already 1, this is weird')
 			return
 		winners = []
+		minDistance = None;
 		#get the users that guessed the right score
 		for user in pool['users']:
 			#notify all the pool users that the pool has ended
 			self.generate_pool_finished_notification(user['_id'],pool['_id'],matchId)
-			if user['localScore'] == localScore and user['visitantScore'] == visitantScore:
+			distance = abs(user['localScore'] - localScore) + abs(user['visitantScore'] - visitantScore)
+			if minDistance == None or distance < minDistance:
+				minDistance = distance
+			user['distance'] = distance
+			if user['distance'] == 0:
+				user['winner'] = True
 				winners.append(user)
 		if len(winners) == 0:
-			self.logger.debug('No one guessed the score, everyone is a winner')
-			winners = pool['users']
+			if pool['options']['closest']:
+				self.logger.debug('No one guessed the score, I should look for the closest bet')
+				for user in pool['users']:
+					if user['distance'] == minDistance :
+						user['winner'] = True
+						winners.append(user)
+			else:
+				self.logger.debug('No one guessed the score, everyone is a winner')
+				winners = pool['users']
+				for user in pool['users']:
+					user['winner'] = True
 		if len(pool['users']) > 0:
 			#share the price with those users
 			prize = float(pool['amount'])*len(pool['users'])/len(winners)

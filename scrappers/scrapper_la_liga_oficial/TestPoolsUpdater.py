@@ -52,6 +52,75 @@ class TestPoolsUpdater(unittest.TestCase):
 		mock_update_an_existing_pool.assert_called()
 		mock_generate_pool_finished_notification.assert_called()
 		self.assertEqual(mock_generate_pool_finished_notification.call_count,len(pool['users']))
+		self.assertEqual(user['tokens'], 22)
+
+	@mock.patch('scrapper_la_liga_oficial.usersCollectionManager.UsersCollectionManager.find_user_by_id')
+	@mock.patch('scrapper_la_liga_oficial.usersCollectionManager.UsersCollectionManager.update_an_existing_user')
+	@mock.patch('scrapper_la_liga_oficial.poolsCollectionManager.PoolsCollectionManager.update_an_existing_pool')
+	@mock.patch('scrapper_la_liga_oficial.poolsUpdater.PoolsUpdater.generate_pool_finished_notification')
+	def test_updating_a_pool_with_no_winners(self,mock_generate_pool_finished_notification, mock_update_an_existing_pool, mock_update_an_existing_user, mock_find_user_by_id):
+		user = { "_id" : "AWSYqjXtATexZwvT3", "tokens" : 7}
+		mock_find_user_by_id.return_value = user;
+		matchId = 'foo'
+		pool = {
+			"_id" : "poolId",
+			"amount" : 3,
+			"status_id" : 0,
+			"users" : [ 
+				{ "_id" : "userId1","localScore" : 1,"visitantScore" : 0 }, 
+				{ "_id" : "userId2","localScore" : 0,"visitantScore" : 1 }, 
+				{ "_id" : "userId3","localScore" : 1,"visitantScore" : 0 }, 
+				{ "_id" : "userId4","localScore" : 0,"visitantScore" : 0 }, 
+				{ "_id" : "userId5","localScore" : 2,"visitantScore" : 0 }, 
+			],
+			"options" : {
+				"is_private" : False ,
+				"multiscore" : False ,
+				"multiuser" : True ,
+				"closest" : False
+			}
+		}
+		self.poolsUpdater.update_pool(pool, 5, 0, matchId)
+		mock_find_user_by_id.assert_called()
+		mock_update_an_existing_user.assert_called()
+		mock_update_an_existing_pool.assert_called()
+		mock_generate_pool_finished_notification.assert_called()
+		self.assertEqual(mock_generate_pool_finished_notification.call_count,len(pool['users']))
+		self.assertEqual(user['tokens'], 22)
+
+	@mock.patch('scrapper_la_liga_oficial.usersCollectionManager.UsersCollectionManager.find_user_by_id')
+	@mock.patch('scrapper_la_liga_oficial.usersCollectionManager.UsersCollectionManager.update_an_existing_user')
+	@mock.patch('scrapper_la_liga_oficial.poolsCollectionManager.PoolsCollectionManager.update_an_existing_pool')
+	@mock.patch('scrapper_la_liga_oficial.poolsUpdater.PoolsUpdater.generate_pool_finished_notification')
+	def test_updating_a_pool_with_no_winners_but_closest(self,mock_generate_pool_finished_notification, mock_update_an_existing_pool, mock_update_an_existing_user, mock_find_user_by_id):
+		user = { "_id" : "AWSYqjXtATexZwvT3", "tokens" : 7}
+		mock_find_user_by_id.return_value = user;
+		matchId = 'foo'
+		pool = {
+			"_id" : "poolId",
+			"amount" : 3,
+			"status_id" : 0,
+			"users" : [ 
+				{ "_id" : "userId1","localScore" : 1,"visitantScore" : 0 }, 
+				{ "_id" : "userId2","localScore" : 0,"visitantScore" : 1 }, 
+				{ "_id" : "userId3","localScore" : 1,"visitantScore" : 0 }, 
+				{ "_id" : "userId4","localScore" : 0,"visitantScore" : 0 }, 
+				{ "_id" : "userId5","localScore" : 2,"visitantScore" : 0 }, 
+			],
+			"options" : {
+				"is_private" : False ,
+				"multiscore" : False ,
+				"multiuser" : True ,
+				"closest" : True
+			}
+		}
+		self.poolsUpdater.update_pool(pool, 5, 0, matchId)
+		mock_find_user_by_id.assert_called()
+		mock_update_an_existing_user.assert_called()
+		mock_update_an_existing_pool.assert_called()
+		mock_generate_pool_finished_notification.assert_called()
+		self.assertEqual(mock_generate_pool_finished_notification.call_count,len(pool['users']))
+		self.assertEqual(user['tokens'], 22)
 
 	@mock.patch('scrapper_la_liga_oficial.notificationsCollectionManager.NotificationsCollectionManager.insert_a_new_notification')
 	@freeze_time("2015-01-01")
