@@ -31,13 +31,14 @@ template(name='poolDetails')
 							li If no one guess the exact score, the prize will not be given and everyone will get their tokens back.
 			div(class='row')
 				div(class='col-md-3 col-md-offset-1')
-					if userAlreadyIn
-						h3 Your current score: #{userAlreadyIn.localScore} - #{userAlreadyIn.visitantScore}
-						h3 #{timeLeft} left for the match
-						if pool.options.multiuser
-							button(class='btn btn-primary btn-success join' value='Participate') Participate again
-					else
-						button(class='btn btn-primary btn-success join' value='Participate') Participate
+					if isItOpen 
+						if userAlreadyIn
+							h3 Your current score: #{userAlreadyIn.localScore} - #{userAlreadyIn.visitantScore}
+							h3 #{timeLeft} left for the match
+							if pool.options.multiuser
+								button(class='btn btn-primary btn-success join' value='Participate') Participate again
+						else
+							button(class='btn btn-primary btn-success join' value='Participate') Participate
 			div(class='row')
 				if participants.length
 					+userList(users=participants)

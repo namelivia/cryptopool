@@ -60,6 +60,13 @@ if (Meteor.isServer) {
 			var pool = Pools.findOne({
 				_id: poolId
 			});
+			if (pool.status_id === 1) {
+				throw new Meteor.Error (
+					'finished-pool',
+					'Finished pool', 
+					'You can\'t join the pool because the pool is already finished'
+				);
+			}
 			if (Meteor.user().tokens >= pool.amount) {
 
 				if (pool.options.multiscore === false) {

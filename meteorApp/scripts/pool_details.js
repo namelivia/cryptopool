@@ -110,6 +110,9 @@ if (Meteor.isClient) {
 				return 'Finished';
 			}
 		},
+		isItOpen: function() {
+			return this.pool.status_id === 0;
+		},
 		userAlreadyIn: function() {
 			var result = _.find(this.pool.users,function(user){
 				return user._id == Meteor.user()._id;
