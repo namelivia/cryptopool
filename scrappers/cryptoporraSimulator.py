@@ -93,7 +93,7 @@ class CryptoporraSimulator:
 					"user_id" : user['_id'],
 					"allowed_users" : [{"id" : user['_id'], "confirmed" : True}],
 					"users" : [],
-					"options" : [{"is_private" : False}],
+					"options" : [{"is_private" : False, "multiuser" : True, "multiscore" : False, "closest" : False}],
 					"matchDate" : match['date']
 				}
 				self.poolsCollectionManager.insert_a_new_pool(newPool)
