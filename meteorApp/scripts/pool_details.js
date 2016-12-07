@@ -53,7 +53,7 @@ if (Meteor.isClient) {
 	});
 	//helpers
 	Template.poolDetails.helpers({
-		userCount : function() {
+		betCount : function() {
 			return this.pool.users.length;
 		},
 		amIAllowed : function() {

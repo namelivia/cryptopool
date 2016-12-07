@@ -61,6 +61,7 @@ if (Meteor.isServer) {
 				_id: poolId
 			});
 			if (Meteor.user().tokens >= pool.amount) {
+
 				if (pool.options.multiscore === false) {
 					var sameBetUser = _.find(pool.users, function(poolUser) {
 						return poolUser.localScore === localScore && poolUser.visitantScore === visitantScore;
@@ -70,6 +71,19 @@ if (Meteor.isServer) {
 							'invalid-score',
 							'Invalid score', 
 							'The score you have entered is already chosen by another participant'
+						);
+					}
+				}
+
+				if (pool.options.multiuser === false) {
+					var userAlreadyIn = _.find(pool.users, function(poolUser) {
+						return poolUser.id === Meteor.user().id;
+					});
+					if (userAlreadyIn !== undefined) {
+						throw new Meteor.Error (
+							'invalid-user',
+							'Invalid user', 
+							'This user can only participate once in this pool, and is alredy participating'
 						);
 					}
 				}
