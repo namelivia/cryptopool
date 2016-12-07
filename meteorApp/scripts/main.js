@@ -61,6 +61,18 @@ if (Meteor.isServer) {
 				_id: poolId
 			});
 			if (Meteor.user().tokens >= pool.amount) {
+				if (pool.options.multiscore === false) {
+					var sameBetUser = _.find(pool.users, function(poolUser) {
+						return poolUser.localScore === localScore && poolUser.visitantScore === visitantScore;
+					});
+					if (sameBetUser !== undefined) {
+						throw new Meteor.Error (
+							'invalid-score',
+							'Invalid score', 
+							'The score you have entered is already chosen by another participant'
+						);
+					}
+				}
 				var userTokensLeft = Meteor.user().tokens - pool.amount;
 				var user = {
 					'_id' : Meteor.user()._id,

@@ -9,10 +9,28 @@ template(name='poolDetails')
 			div(class='row')
 				h4(class='text-center') Status: #{displayStatus}
 			div(class='row')
-				div(class='col-md-3 col-md-offset-1')
-					h3 Participation amount: #{pool.amount}
+				div(class='col-md-10 col-md-offset-1')
 					h3 Number of participants: #{userCount}
 					h3 Total prize amount: #{totalAmount}
+					h3 Pool rules
+					span
+						b Token amount: 
+						| #{pool.amount}
+					ul
+						if pool.options.multiscore
+							li Any score can be chosen multiple times by any user.
+						else
+							li Any score can be chosen only once.
+						if pool.options.multiuser
+							li Users can participate multiple times on this pool.
+						else
+							li Users can participate just once on this pool.
+						if pool.options.closest
+							li If no one guess the exact score, the prize will be given to the closest guess.
+						else
+							li If no one guess the exact score, the prize will not be given and everyone will get their tokens back.
+			div(class='row')
+				div(class='col-md-3 col-md-offset-1')
 					if userAlreadyIn
 						h3 Your current score: #{userAlreadyIn.localScore} - #{userAlreadyIn.visitantScore}
 						h3 #{timeLeft} left for the match
