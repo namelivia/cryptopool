@@ -84,7 +84,7 @@ if (Meteor.isServer) {
 
 				if (pool.options.multiuser === false) {
 					var userAlreadyIn = _.find(pool.users, function(poolUser) {
-						return poolUser.id === Meteor.user().id;
+						return poolUser.id === Meteor.user()._id;
 					});
 					if (userAlreadyIn !== undefined) {
 						throw new Meteor.Error (
