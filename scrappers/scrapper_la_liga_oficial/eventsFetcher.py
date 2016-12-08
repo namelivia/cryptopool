@@ -31,13 +31,20 @@ class EventsFetcher:
 		queryData = {'filtro': event['url']}
 		page = requests.post(eventUrl, data=queryData)
 		tree = html.fromstring(page.text)
+		header = tree.xpath('//td[@id="titulo-jornada"]')
+		competitionId = None
+		if (len(header) > 0):
+			competitionId = header[0].get('class')[18:]
+			self.logger.debug('The competition id is :'+competitionId)
+		else:
+			self.logger.debug('This event has no competition Id')
 
 		self.logger.debug('Fetching the event content')
 		matches = tree.xpath('//div[contains(@class,"partido")]')[2:]
 
 		for idx, match in enumerate(matches):
 			self.logger.debug('Trying to fetch a match')
-			matchInfo = self.matchInfoExtractor.fetch_match_info(match)
+			matchInfo = self.matchInfoExtractor.fetch_match_info(match,competitionId)
 			if (matchInfo is not None) :
 				self.matchUpdater.create_or_update_the_match(matchInfo)
 

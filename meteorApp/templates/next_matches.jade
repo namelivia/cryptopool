@@ -4,10 +4,11 @@ template(name='nextMatches')
 		table(class='table table-bordered')
 			thead
 				tr
-					td Time
-					td Local
-					td Visitant
-					td
+					th Competition Id
+					th Time
+					th Local
+					th Visitant
+					th
 			tbody
 				each matches
 					+match(match=this showDate=true showScore=false showReferee=false)

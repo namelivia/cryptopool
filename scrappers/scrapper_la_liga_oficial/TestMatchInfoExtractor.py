@@ -30,6 +30,7 @@ class TestMatchInfoExtractor(unittest.TestCase):
 		mock_extract_referee,
 		mock_extract_hashtag
 	):
+		competitionId = 1
 		expectedMatchInfo = {
 			'status': 1, 
 			'player2': ObjectId('57109b1cc12fe22e66bfc09d'), 
@@ -38,6 +39,7 @@ class TestMatchInfoExtractor(unittest.TestCase):
 			'score2': 2,
 			'hashtag': '#hashtag', 
 			'date': datetime(2015, 10, 4, 2, 20, 19),
+			'competition_id': competitionId,
 			'referee': 'RefereeName RefereeSurname'
 		}
 		mock_extract_score_and_status.return_value = (
@@ -73,7 +75,7 @@ class TestMatchInfoExtractor(unittest.TestCase):
 			'matchesWithoutHashtag' : 0,
 			'matchesWithoutLink' : 0
 		}
-		result = self.matchInfoExtractor.fetch_match_info(match)
+		result = self.matchInfoExtractor.fetch_match_info(match,competitionId)
 		mock_extract_hashtag.assert_called_with("http://www.laliga.es/directo/temporada-2015-2016/liga-bbva/38/valencia_real-sociedad")
 		mock_extract_referee.assert_called_with(match)
 		mock_extract_local_team.assert_called_with(match)

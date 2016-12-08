@@ -16,6 +16,9 @@ if (Meteor.isClient) {
 		score2: function(){
 			return this.match.score2;
 		},
+		competitionId: function(){
+			return this.match.competition_id;
+		},
 		local : function(){
 			return this.match.local();
 		},

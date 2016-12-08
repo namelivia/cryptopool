@@ -13,7 +13,7 @@ class MatchInfoExtractor:
 		self.teamsCollectionManager = TeamsCollectionManager()
 		self.logger = logging.getLogger("scrapperLaLigaOficial")
 
-	def fetch_match_info(self, match):
+	def fetch_match_info(self, match, competitionId):
 		newMatch = {}
 
 		#TODO: From here this should be moved to extract_details
@@ -24,6 +24,7 @@ class MatchInfoExtractor:
 			return
 
 		link = prelink[0].get('href')
+		newMatch['competition_id'] = competitionId
 		newMatch['hashtag'] = self.extract_hashtag(link)
 		newMatch['referee'] = self.extract_referee(match)
 		newMatch['player1'] = self.extract_local_team(match)
