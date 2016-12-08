@@ -36,7 +36,7 @@ for url in urls :
 	images = tree.xpath('//img[contains(@class,"size-thumbnail")]')
 	for image in images :
 		filename = image.attrib['title'].lower().replace(' ','_')
-		with open('../public/logos/'+filename+'.jpg', 'wb') as outf:
+		with open('../meteorApp/public/logos/'+filename+'.jpg', 'wb') as outf:
 			data = requests.get(image.attrib['src']).content
 			outf.write(data)
 		logosFetched += 1

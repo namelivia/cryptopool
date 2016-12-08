@@ -51,15 +51,17 @@ class MatchInfoExtractor:
 		return (result['score1'], result['score2'], result['status'])
 
 	def extract_match_date(self,match):
-		hour = match.xpath('.//span[@class="fecha left"]//span[@class="hora"]')[0].text
-		if hour is not None:
-			hour = hour[2:].strip(' ')
-		day = match.xpath('.//span[@class="fecha left"]//span[@class="dia"]')[0].text.strip(' ')
-		splittedDate = day.split("-")
-		result = splittedDate[2]+"-"+splittedDate[1]+"-"+splittedDate[0]
-		if hour is not None:
-			result = result+"T"+hour
-		return dateutil.parser.parse(result)
+		date = match.xpath('.//span[@class="fecha left"]')[0]
+		day = date.xpath('.//span[@class="dia"]')
+		if (len(day) > 0):
+			splittedDate = day[0].text.strip(' ').split("-")
+			result = splittedDate[2]+"-"+splittedDate[1]+"-"+splittedDate[0]
+			hour = date.xpath('.//span[@class="hora"]')[0].text
+			if hour is not None:
+				hour = hour[2:].strip(' ')
+			if hour is not None:
+				result = result+"T"+hour
+			return dateutil.parser.parse(result)
 
 	def extract_referee(self,match):
 		referee = match.xpath('.//span[@class="arbitro last"]')
