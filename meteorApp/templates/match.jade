@@ -1,6 +1,7 @@
 template(name='match')
 	tr
-		td #{competitionId}
+		td 
+			+competition(competition=matchCompetition imageSize=50)
 		if showDate 
 			td #{prettyDateTime}
 		else

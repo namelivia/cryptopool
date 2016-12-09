@@ -1,0 +1,5 @@
+template(name='competition')
+	div(class='thumbnail')
+		a(href='{{pathFor route="calendar"}}')
+			img(src='#{competitionLogo}' width='#{imageSize}' height='#{imageSize}' alt='#{competitionName}')
+			p(class='text-center') #{competitionName}

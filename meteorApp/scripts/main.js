@@ -325,6 +325,10 @@ if (Meteor.isServer) {
 		return Teams.find();
 	});
 
+	Meteor.publish("competitions", function () {
+		return Competitions.find();
+	});
+
 	Meteor.publish("userById", function (userId) {
 		var fields = {
 			'tokens' : 0,

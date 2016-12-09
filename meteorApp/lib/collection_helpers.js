@@ -2,6 +2,7 @@ Matches = new Mongo.Collection('matches');
 Teams = new Mongo.Collection('teams');
 Pools = new Mongo.Collection('pools');
 Players = new Mongo.Collection('players');
+Competitions = new Mongo.Collection('competitions');
 Notifications = new Mongo.Collection('notifications');
 Messages = new Mongo.Collection('messages');
 Matches.helpers({
@@ -13,6 +14,9 @@ Matches.helpers({
 	},
 	pools: function() {
 		return Pools.find({match_id : this._id});
+	},
+	competition: function() {
+		return Competitions.findOne({_id : this.competition_id});
 	}
 });
 Teams.helpers({

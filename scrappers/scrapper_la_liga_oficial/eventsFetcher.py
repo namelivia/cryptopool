@@ -5,8 +5,10 @@ from datetime import datetime
 import logging
 import time
 import requests
+from executionCounters import ExecutionCounters
 from matchInfoExtractor import MatchInfoExtractor
 from matchUpdater import MatchUpdater
+from competitionsCollectionManager import CompetitionsCollectionManager
 from fetchingHistoryManager import FetchingHistoryManager
 
 class EventsFetcher:
@@ -14,6 +16,8 @@ class EventsFetcher:
 	def __init__(self):
 		self.matchInfoExtractor = MatchInfoExtractor()
 		self.matchUpdater = MatchUpdater()
+		self.executionCounters = ExecutionCounters()
+		self.competitionsCollectionManager = CompetitionsCollectionManager()
 		self.fetchingHistoryManager = FetchingHistoryManager()
 		self.logger = logging.getLogger("scrapperLaLigaOficial")
 
@@ -31,14 +35,7 @@ class EventsFetcher:
 		queryData = {'filtro': event['url']}
 		page = requests.post(eventUrl, data=queryData)
 		tree = html.fromstring(page.text)
-		header = tree.xpath('//td[@id="titulo-jornada"]')
-		competitionId = None
-		if (len(header) > 0):
-			competitionId = header[0].get('class')[18:]
-			self.logger.debug('The competition id is :'+competitionId)
-		else:
-			self.logger.debug('This event has no competition Id')
-
+		competitionId = self.fetch_the_competition_for_an_event(tree, event['url'])
 		self.logger.debug('Fetching the event content')
 		matches = tree.xpath('//div[contains(@class,"partido")]')[2:]
 
@@ -49,3 +46,23 @@ class EventsFetcher:
 				self.matchUpdater.create_or_update_the_match(matchInfo)
 
 		self.fetchingHistoryManager.insert_a_new_record(event['url'])
+
+	def fetch_the_competition_for_an_event(self, tree, eventUrl):
+		header = tree.xpath('//td[@id="titulo-jornada"]')
+		if (len(header) > 0):
+			code = header[0].get('class')[18:]
+			competition = self.competitionsCollectionManager.find_a_competition(code)
+			if competition is None:
+				self.logger.debug('This competition is new so I will create it')
+				newCompetition = {
+						'code' : code,
+						#TODO: There is no way to determine the competition name, so
+						#provisionally I will store the event url to check it manually
+						'name' : 'event'+eventUrl
+				}
+				self.executionCounters.increase_new_competitions_counter()
+				return self.competitionsCollectionManager.insert_a_new_competition(newCompetition)
+			else:
+				return competition['_id']
+		else:
+			self.logger.debug('This event has no competition code')

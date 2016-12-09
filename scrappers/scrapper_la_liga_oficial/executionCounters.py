@@ -4,7 +4,8 @@ class ExecutionCounters:
 		'newTeamsCounter' : 0,
 		'updatedMatchesCounter' : 0,
 		'matchesWithoutHashtag' : 0,
-		'matchesWithoutLink' : 0
+		'matchesWithoutLink' : 0,
+		'newCompetitionsCounter' : 0,
 	}
 
 	def increase_matches_without_hashtag_counter(self):
@@ -15,6 +16,9 @@ class ExecutionCounters:
 
 	def increase_new_matches_counter(self):
 		self.counters['newMatchesCounter'] += 1
+
+	def increase_new_competitions_counter(self):
+		self.counters['newCompetitionsCounter'] += 1
 
 	def increase_updated_matches_counter(self):
 		self.counters['updatedMatchesCounter'] += 1

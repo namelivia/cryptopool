@@ -21,7 +21,8 @@ def main():
 			3.- Make a random bet
 			4.- Make a random pool
 			5.- Make a random user
-			6.- Go back
+			6.- Make a random competition
+			7.- Go back
 				""")
 				intOpt = raw_input("What operation do you want to do? ")
 				if intOpt=="1":
@@ -40,9 +41,12 @@ def main():
 					cryptoporraSimulator.make_a_random_user()
 					print("Random user created")
 				elif intOpt=="6":
+					cryptoporraSimulator.create_a_random_competition()
+					print("Random competition created")
+				elif intOpt=="7":
 					intOpt = False
 		elif opt=="2":
-			print("Auto mode")
+			print("Auto mode (Still to be implemented)")
 		elif opt=="3":
 			print("Goodbye")
 			exit()

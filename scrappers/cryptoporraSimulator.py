@@ -5,6 +5,7 @@ from scrapper_la_liga_oficial.usersCollectionManager import UsersCollectionManag
 from scrapper_la_liga_oficial.poolsCollectionManager import PoolsCollectionManager
 from scrapper_la_liga_oficial.teamsCollectionManager import TeamsCollectionManager
 from scrapper_la_liga_oficial.matchesCollectionManager import MatchesCollectionManager
+from scrapper_la_liga_oficial.competitionsCollectionManager import CompetitionsCollectionManager
 import random
 from random import randint
 import string
@@ -23,6 +24,7 @@ class CryptoporraSimulator:
 		self.matchesCollectionManager = MatchesCollectionManager()
 		self.teamsCollectionManager = TeamsCollectionManager()
 		self.matchUpdater = MatchUpdater()
+		self.competitionsCollectionManager = CompetitionsCollectionManager()
 		self.logger = self.init_logger()
 
 	def init_logger(self):
@@ -46,7 +48,9 @@ class CryptoporraSimulator:
 				self.create_a_random_match()
 			if operation == 1:
 				self.random_update_a_match()
-			if operation > 1 and operation < 8:
+			if operation == 2:
+				self.make_a_random_competition()
+			if operation > 2 and operation < 8:
 				self.make_a_random_bet()
 			if operation == 9:
 				self.make_a_random_pool()
@@ -108,6 +112,7 @@ class CryptoporraSimulator:
 		self.logger.debug('Creating a random match')
 		player1Id = self.teamsCollectionManager.get_a_random_team()['_id'];
 		player2Id = self.teamsCollectionManager.get_a_random_team()['_id'];
+		competitionId = self.competitionsCollectionManager.get_a_random_competition()['_id'];
 		if player1Id is not None and player2Id is not None :
 			match = {
 				'player1' : player1Id,
@@ -116,6 +121,7 @@ class CryptoporraSimulator:
 				'score1' : '',
 				'score2' : '',
 				'status' : 0,
+				'competition_id' : competitionId,
 				'referee' : self.faker.name(),
 				'hashtag' : '#Madrid'
 			}
@@ -124,6 +130,16 @@ class CryptoporraSimulator:
 			self.logger.debug(pprint.pformat(match))
 		else:
 			self.logger.debug('There are no teams for creating the match')
+
+	def create_a_random_competition(self):
+		self.logger.debug('Creating a random competition')
+		competition = {
+			'code' : randint(0, 99),
+			'name' : self.faker.name()
+		}
+		self.competitionsCollectionManager.insert_a_new_competition(competition)
+		self.logger.debug('New competition created')
+		self.logger.debug(pprint.pformat(competition))
 
 	def random_update_a_match(self):
 		self.logger.debug('Random updating a match')
@@ -143,7 +159,7 @@ class CryptoporraSimulator:
 		user = self.usersCollectionManager.get_a_random_user()
 		if user is not None :
 			pool = self.poolsCollectionManager.get_a_random_open_pool_for_tokens(user['tokens'])
-			#TODO: This way a user can participate twice on a bet, this should not be allowed
+			#TODO: This way a user can participate twice on a bet, this should not be always allowed
 			if pool is not None :
 				user['tokens'] -= pool['amount']
 				user['poolHistory'].append(pool['_id'])

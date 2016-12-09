@@ -4,7 +4,8 @@ Router.route('/calendar', {
 	template: 'calendar',
 	waitOn: function() {
 		return [
-			Meteor.subscribe('teams')
+			Meteor.subscribe('teams'),
+			Meteor.subscribe('competitions')
 		];
 	},
 	onBeforeAction: function() {

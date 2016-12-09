@@ -12,6 +12,7 @@ Router.route('/match/:id', function () {
 		var oid = new Meteor.Collection.ObjectID(this.params.id);
 		return [
 			Meteor.subscribe('teams'),
+			Meteor.subscribe('competitions'),
 			Meteor.subscribe('poolsByMatchId',oid),
 			Meteor.subscribe('matchById',oid)
 		];
@@ -60,6 +61,9 @@ if (Meteor.isClient) {
 		},
 		isMatchFinished : function(){
 			return this.status === 1;
+		},
+		matchCompetition: function(){
+			return this.competition();
 		},
 		newPoolsAllowed : function() {
 			return this.status === 0;
