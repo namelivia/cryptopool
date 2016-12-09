@@ -11,8 +11,12 @@ Router.route('/team/:id', function () {
 	waitOn: function() {
 		var oid = new Meteor.Collection.ObjectID(this.params.id);
 		return [
+			Meteor.subscribe('teams'),
+			Meteor.subscribe('competitions'),
 			Meteor.subscribe('teamById',oid),
-			Meteor.subscribe('playersByTeamId',oid),
+			Meteor.subscribe('lastMatchesByTeamId',oid),
+			Meteor.subscribe('nextMatchesByTeamId',oid),
+			Meteor.subscribe('playersByTeamId',oid)
 		];
 	},
 	onBeforeAction: function() {
@@ -36,5 +40,32 @@ if (Meteor.isClient) {
 		players : function(){
 			return this.players();
 		},
+		lastMatches: function() {
+			return Matches.find(
+				{date : { 
+					$lte : new Date()
+						},
+				$or : [
+					{player1 : this._id}, 
+					{player2 : this._id}
+				]
+				},{ 
+					limit : 5, sort : { date: -1 }
+				}
+			);
+		},
+		nextMatches: function() {
+		return Matches.find(
+			{date : { 
+				$gt : new Date()
+					},
+			$or : [
+				{player1 : this._id}, 
+				{player2 : this._id}
+			]
+			},{
+				limit : 5
+			});
+		}
 	});
 }

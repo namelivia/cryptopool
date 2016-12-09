@@ -209,14 +209,29 @@ if (Meteor.isServer) {
 
 	//Publish the public collections
 	Meteor.publish("nextMatches", function () {
-		var nextMatches = Matches.find(
+		return Matches.find(
 			{date : { 
 				$gt : new Date()
 					}
 			},{
 				limit : 5
-			});
-		return nextMatches;
+			}
+		);
+	});
+
+	Meteor.publish("nextMatchesByTeamId", function (teamId) {
+		return Matches.find(
+			{date : { 
+				$gt : new Date()
+					},
+			$or : [
+				{player1 : teamId}, 
+				{player2 : teamId}
+			]
+			},{
+				limit : 5
+			}
+		);
 	});
 
 	Meteor.publish("myNotifications", function () {
@@ -319,6 +334,21 @@ if (Meteor.isServer) {
 					}
 			},{ limit : 5, sort : { date: -1 }}
 		);
+	});
+
+	Meteor.publish("lastMatchesByTeamId", function (teamId) {
+		var lastMatches = Matches.find(
+			{date : { 
+				$lt : new Date()
+					},
+			$or : [
+				{player1 : teamId}, 
+				{player2 : teamId}
+			]
+			},{ limit : 5, sort : { date: -1 }}
+		);
+		console.log(lastMatches.count())
+		return lastMatches;
 	});
 
 	Meteor.publish("teams", function () {
